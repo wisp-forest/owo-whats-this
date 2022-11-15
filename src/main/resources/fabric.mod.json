@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "owo-whats-this",
+  "version": "${version}",
+
+  "name": "oωo whats this",
+  "description": "",
+  "authors": [],
+  "contact": {},
+
+  "license": "MIT",
+  "icon": "assets/owo-whats-this/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.wispforest.owowhatsthis.client.OwoWhatsThisClient"
+    ], "main": [
+      "io.wispforest.owowhatsthis.OwoWhatsThis"
+    ]
+  },
+
+  "mixins": [
+    "owo-whats-this.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "fabric": "*",
+    "minecraft": "*"
+  }
+}
