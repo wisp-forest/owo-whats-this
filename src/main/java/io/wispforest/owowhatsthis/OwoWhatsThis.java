@@ -1,6 +1,9 @@
 package io.wispforest.owowhatsthis;
 
+import io.wispforest.owowhatsthis.information.InformationProvider;
+import io.wispforest.owowhatsthis.information.InformationProviders;
 import io.wispforest.owowhatsthis.information.TargetType;
+import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.loader.api.FabricLoader;
@@ -21,10 +24,19 @@ public class OwoWhatsThis implements ModInitializer {
     public static final Registry<TargetType<?>> TARGET_TYPES =
             (Registry<TargetType<?>>) (Object) FabricRegistryBuilder.createSimple(TargetType.class, id("target_types")).buildAndRegister();
 
+    @SuppressWarnings("unchecked")
+    public static final Registry<InformationProvider<?, ?>> INFORMATION_PROVIDERS =
+            (Registry<InformationProvider<?, ?>>) (Object) FabricRegistryBuilder.createSimple(InformationProvider.class, id("information_providers")).buildAndRegister();
+
     @Override
     public void onInitialize() {
         Registry.register(TARGET_TYPES, id("block"), TargetType.BLOCK);
         Registry.register(TARGET_TYPES, id("entity"), TargetType.ENTITY);
+
+        Registry.register(INFORMATION_PROVIDERS, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
+        Registry.register(INFORMATION_PROVIDERS, id("entity_health"), InformationProviders.ENTITY_HEALTH);
+
+        OwoWhatsThisNetworking.initialize();
     }
 
     public static Identifier id(String path) {

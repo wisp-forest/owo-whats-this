@@ -2,11 +2,8 @@ package io.wispforest.owowhatsthis.information;
 
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.container.Containers;
-import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
-import io.wispforest.owo.ui.core.VerticalAlignment;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.AligningEntityComponent;
 import net.fabricmc.api.EnvType;
@@ -43,39 +40,33 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
     public interface DisplayAdapter<T> {
 
         DisplayAdapter<BlockPos> BLOCK = blockPos -> {
-            return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(titleRow -> {
-                titleRow.gap(5).verticalAlignment(VerticalAlignment.CENTER);
+            var targetState = MinecraftClient.getInstance().world.getBlockState(blockPos);
 
-                var targetState = MinecraftClient.getInstance().world.getBlockState(blockPos);
-                var title = TextOps.concat(
-                        targetState.getBlock().getName(),
-                        Text.literal("\n").append(
-                                TextOps.withFormatting(OwoWhatsThis.modNameOf(Registries.BLOCK.getId(targetState.getBlock())), Formatting.BLUE)
-                        )
-                );
-
-                titleRow.child(Components.item(targetState.getBlock().asItem().getDefaultStack()));
-                titleRow.child(Components.label(title).shadow(true));
-            });
+            return new PreviewData(
+                    TextOps.concat(
+                            targetState.getBlock().getName(),
+                            Text.literal("\n").append(
+                                    TextOps.withFormatting(OwoWhatsThis.modNameOf(Registries.BLOCK.getId(targetState.getBlock())), Formatting.BLUE)
+                            )
+                    ),
+                    Components.item(targetState.getBlock().asItem().getDefaultStack())
+            );
         };
 
-        DisplayAdapter<Entity> ENTITY = entity -> {
-            return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(titleRow -> {
-                titleRow.gap(5).verticalAlignment(VerticalAlignment.CENTER);
-
-                var title = TextOps.concat(
+        DisplayAdapter<Entity> ENTITY = entity -> new PreviewData(
+                TextOps.concat(
                         entity.getDisplayName(),
                         Text.literal("\n").append(
                                 TextOps.withFormatting(OwoWhatsThis.modNameOf(Registries.ENTITY_TYPE.getId(entity.getType())), Formatting.BLUE)
                         )
-                );
+                ),
+                new AligningEntityComponent<>(Sizing.fixed(24), entity).scaleToFit(true)
+        );
 
-                titleRow.child(new AligningEntityComponent<>(Sizing.fixed(24), entity).scaleToFit(true));
-                titleRow.child(Components.label(title).shadow(true));
-            });
-        };
-
-        Component build(T value);
+        PreviewData buildPreview(T value);
     }
+
+    @Environment(EnvType.CLIENT)
+    public record PreviewData(Text name, Component preview) {}
 
 }
