@@ -5,26 +5,15 @@ import io.wispforest.owo.ui.core.Component;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
 
-public class InformationProvider<T, D> {
+public record InformationProvider<T, D>(TargetType<T> applicableTargetType, BiFunction<World, T, D> transformer, PacketBufSerializer<D> serializer,
+                                        boolean live, boolean client) {
 
-    public final TargetType<T> applicableTargetType;
-    public final PacketBufSerializer<D> serializer;
-
-    private final BiFunction<World, T, @Nullable D> transformer;
-
-    public InformationProvider(TargetType<T> applicableTargetType, BiFunction<World, T, @Nullable D> transformer, Class<D> dataTransportType) {
-        this.applicableTargetType = applicableTargetType;
-        this.transformer = transformer;
-
-        this.serializer = PacketBufSerializer.get(dataTransportType);
-    }
-
-    public @Nullable D apply(World world, T data) {
-        return this.transformer.apply(world, data);
+    public InformationProvider(TargetType<T> applicableTargetType, BiFunction<World, T, D> transformer, Class<D> dataTransportClass,
+                               boolean live, boolean client) {
+        this(applicableTargetType, transformer, PacketBufSerializer.get(dataTransportClass), live, client);
     }
 
     @Environment(EnvType.CLIENT)

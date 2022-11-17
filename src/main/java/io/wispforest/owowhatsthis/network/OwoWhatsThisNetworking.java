@@ -7,38 +7,46 @@ import io.wispforest.owowhatsthis.information.InformationProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.text.Text;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class OwoWhatsThisNetworking {
 
     public static final OwoNetChannel CHANNEL = OwoNetChannel.create(OwoWhatsThis.id("main"));
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     public static void initialize() {
         CHANNEL.registerServerbound(RequestDataPacket.class, (message, access) -> {
-            var target = OwoWhatsThis.raycast(access.player(), 0);
-            for (var type : OwoWhatsThis.TARGET_TYPES) {
-                var transformed = type.transformer().apply(access.player().world, target);
-                if (transformed == null) continue;
+            var type = message.targetData().readRegistryValue(OwoWhatsThis.TARGET_TYPES);
+            var target = type.deserializer().apply(access, message.targetData());
 
-                var buffer = PacketByteBufs.create();
-                var applicableProviders = new ArrayList<InformationProvider<Object, Object>>();
+            var buffer = PacketByteBufs.create();
+            var applicableProviders = new HashMap<InformationProvider<Object, Object>, Object>();
 
-                for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {
-                    if (provider.applicableTargetType != type) continue;
-                    applicableProviders.add((InformationProvider<Object, Object>) provider);
-                }
+            for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {
+                if (provider.client() || provider.applicableTargetType() != type) continue;
+                applicableProviders.put(
+                        (InformationProvider<Object, Object>) provider,
+                        ((InformationProvider<Object, Object>) provider).transformer().apply(access.player().world, target)
+                );
+            }
 
-                buffer.writeVarInt(applicableProviders.size());
-                for (var provider : applicableProviders) {
-                    buffer.writeRegistryValue(OwoWhatsThis.INFORMATION_PROVIDERS, provider);
-                    provider.serializer.serializer().accept(buffer, provider.apply(access.player().world, transformed));
-                }
-
-                CHANNEL.serverHandle(access.player()).send(new DataUpdatePacket(message.nonce(), buffer));
+            applicableProviders.values().removeIf(Objects::isNull);
+            if (applicableProviders.isEmpty()) {
+                access.player().sendMessage(Text.literal("skipping update as no providers are applicable"));
                 return;
             }
+
+            buffer.writeVarInt(applicableProviders.size());
+            applicableProviders.forEach((provider, transformed) -> {
+                buffer.writeRegistryValue(OwoWhatsThis.INFORMATION_PROVIDERS, provider);
+                provider.serializer().serializer().accept(buffer, transformed);
+            });
+
+            CHANNEL.serverHandle(access.player()).send(new DataUpdatePacket(message.nonce(), buffer));
+            access.player().sendMessage(Text.literal("updating " + applicableProviders.size() + " providers"));
         });
 
         CHANNEL.registerClientboundDeferred(DataUpdatePacket.class);
@@ -47,9 +55,7 @@ public class OwoWhatsThisNetworking {
     @Environment(EnvType.CLIENT)
     public static void initializeClient() {
         CHANNEL.registerClientbound(DataUpdatePacket.class, (message, access) -> {
-            if (OwoWhatsThisHUD.currentHash() != message.nonce()) return;
-            OwoWhatsThisHUD.loadProviderData(message.data());
+            OwoWhatsThisHUD.loadProviderData(message);
         });
     }
-
 }

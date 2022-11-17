@@ -35,6 +35,7 @@ public class OwoWhatsThis implements ModInitializer {
 
         Registry.register(INFORMATION_PROVIDERS, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
         Registry.register(INFORMATION_PROVIDERS, id("entity_health"), InformationProviders.ENTITY_HEALTH);
+        Registry.register(INFORMATION_PROVIDERS, id("block_inventory"), InformationProviders.BLOCK_INVENTORY);
 
         OwoWhatsThisNetworking.initialize();
     }
@@ -54,11 +55,11 @@ public class OwoWhatsThis implements ModInitializer {
     public static HitResult raycast(Entity entity, float tickDelta) {
         var blockTarget = entity.raycast(5, tickDelta, OwoWhatsThis.CONFIG.includeFluids());
 
-        var maxReach = entity.getEyePos().add(entity.getRotationVec(tickDelta).multiply(5));
+        var maxReach = entity.getRotationVec(tickDelta).multiply(5);
         var entityTarget = ProjectileUtil.raycast(
                 entity,
                 entity.getEyePos(),
-                maxReach,
+                entity.getEyePos().add(maxReach),
                 entity.getBoundingBox().stretch(maxReach),
                 candidate -> true,
                 5 * 5

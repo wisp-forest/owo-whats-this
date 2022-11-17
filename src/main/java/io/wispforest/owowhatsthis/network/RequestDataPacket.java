@@ -1,3 +1,5 @@
 package io.wispforest.owowhatsthis.network;
 
-public record RequestDataPacket(int nonce) {}
+import net.minecraft.network.PacketByteBuf;
+
+public record RequestDataPacket(int nonce, boolean refresh, PacketByteBuf targetData) {}

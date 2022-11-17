@@ -11,10 +11,11 @@ import io.wispforest.owo.util.OwoFreezer;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
+import io.wispforest.owowhatsthis.network.DataUpdatePacket;
 import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import io.wispforest.owowhatsthis.network.RequestDataPacket;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.network.PacketByteBuf;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
 
@@ -30,7 +31,8 @@ public class OwoWhatsThisHUD {
     private static final Map<Identifier, TargetType<?>> SORTED_TARGET_TYPES = new LinkedHashMap<>();
     private static int currentHash = 0;
 
-    private static Map<InformationProvider<?, ?>, Object> PROVIDER_DATA = new HashMap<>();
+    private static final Map<InformationProvider<?, ?>, Object> PROVIDER_DATA = new HashMap<>();
+    private static int lastUpdateHash = 0;
 
     @SuppressWarnings("unchecked")
     public static void initialize() {
@@ -47,13 +49,13 @@ public class OwoWhatsThisHUD {
                     .margins(Insets.top(5));
         });
 
-        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.world == null) return;
 
             var component = Hud.getComponent(COMPONENT_ID);
             if (!(component instanceof VerticalFlowLayout view)) return;
 
-            final var target = OwoWhatsThis.raycast(client.player, 0);
+            final var target = OwoWhatsThis.raycast(client.player, 1);
 
             view.<FlowLayout>configure(layout -> {
                 view.clearChildren();
@@ -62,13 +64,6 @@ public class OwoWhatsThisHUD {
                 for (var type : SORTED_TARGET_TYPES.values()) {
                     var transformed = type.transformer().apply(client.world, target);
                     if (transformed == null) continue;
-
-                    int newHash = transformed.hashCode();
-                    if (newHash != currentHash) {
-                        OwoWhatsThisNetworking.CHANNEL.clientHandle().send(new RequestDataPacket(newHash));
-                        PROVIDER_DATA.clear();
-                    }
-                    currentHash = newHash;
 
                     view.surface(Surface.flat(0x77000000).and(Surface.outline(0x77000000)));
                     view.child(
@@ -82,17 +77,36 @@ public class OwoWhatsThisHUD {
 
                                 grid.child(
                                         Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(infoView -> {
-                                            infoView.padding(Insets.top(5));
-
+                                            boolean mustRefresh = false;
                                             for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {
-                                                if (provider.applicableTargetType != type) continue;
-                                                if (!PROVIDER_DATA.containsKey(provider)) continue;
+                                                if (provider.applicableTargetType() != type) continue;
 
-                                                infoView.child(
-                                                        ((InformationProvider.DisplayAdapter<Object>)DisplayAdapters.get(provider)).build(PROVIDER_DATA.get(provider))
-                                                );
+                                                if (provider.client()) {
+                                                    var infoTransformed = ((InformationProvider<Object, ?>) provider).transformer().apply(client.world, transformed);
+                                                    if (infoTransformed == null) continue;
+
+                                                    infoView.child(
+                                                            ((InformationProvider.DisplayAdapter<Object>) DisplayAdapters.get(provider)).build(infoTransformed)
+                                                    ).padding(Insets.top(5));
+                                                } else {
+                                                    if (!PROVIDER_DATA.containsKey(provider)) continue;
+                                                    if (provider.live()) mustRefresh = true;
+                                                    infoView.child(
+                                                            ((InformationProvider.DisplayAdapter<Object>) DisplayAdapters.get(provider)).build(PROVIDER_DATA.get(provider))
+                                                    ).padding(Insets.top(5));
+                                                }
                                             }
 
+                                            int newHash = transformed.hashCode();
+
+                                            if (newHash != currentHash || mustRefresh) {
+                                                var targetBuf = PacketByteBufs.create();
+                                                targetBuf.writeRegistryValue(OwoWhatsThis.TARGET_TYPES, type);
+                                                ((TargetType<Object>) type).serializer().accept(targetBuf, transformed);
+                                                OwoWhatsThisNetworking.CHANNEL.clientHandle().send(new RequestDataPacket(newHash, newHash != currentHash, targetBuf));
+                                            }
+
+                                            currentHash = newHash;
                                         }),
                                         1,
                                         1
@@ -104,16 +118,21 @@ public class OwoWhatsThisHUD {
         });
     }
 
-    public static int currentHash() {
-        return currentHash;
-    }
-
     @SuppressWarnings("ConstantConditions")
-    public static void loadProviderData(PacketByteBuf buffer) {
+    public static void loadProviderData(DataUpdatePacket message) {
+        if (message.nonce() != currentHash) return;
+
+        if (lastUpdateHash != message.nonce()) {
+            lastUpdateHash = message.nonce();
+            PROVIDER_DATA.clear();
+        }
+
+        final var buffer = message.data();
         final var dataCount = buffer.readVarInt();
+
         for (int i = 0; i < dataCount; i++) {
             var provider = buffer.readRegistryValue(OwoWhatsThis.INFORMATION_PROVIDERS);
-            var data = provider.serializer.deserializer().apply(buffer);
+            var data = provider.serializer().deserializer().apply(buffer);
             PROVIDER_DATA.put(provider, data);
         }
     }

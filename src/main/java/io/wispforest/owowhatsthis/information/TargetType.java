@@ -1,5 +1,6 @@
 package io.wispforest.owowhatsthis.information;
 
+import io.wispforest.owo.network.ServerAccess;
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Component;
@@ -10,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.BlockHitResult;
@@ -20,19 +22,29 @@ import net.minecraft.util.registry.Registries;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transformer, int priority) {
+public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transformer, BiConsumer<PacketByteBuf, T> serializer,
+                            BiFunction<ServerAccess, PacketByteBuf, @Nullable T> deserializer, int priority) {
 
     public static final TargetType<BlockPos> BLOCK = new TargetType<>(
             (world, hitResult) -> hitResult instanceof BlockHitResult blockHit && !world.getBlockState(blockHit.getBlockPos()).isAir()
                     ? blockHit.getBlockPos()
                     : null,
+            PacketByteBuf::writeBlockPos,
+            (access, buf) -> {
+                var pos = buf.readBlockPos();
+                if (access.player().getPos().squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) > 75) return null;
+                return pos;
+            },
             0
     );
 
     public static final TargetType<Entity> ENTITY = new TargetType<>(
             (world, hitResult) -> hitResult instanceof EntityHitResult entityHit ? entityHit.getEntity() : null,
+            (buf, entity) -> buf.writeVarInt(entity.getId()),
+            (access, buf) -> access.player().world.getEntityById(buf.readVarInt()),
             10
     );
 
