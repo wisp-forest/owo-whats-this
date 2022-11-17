@@ -1,4 +1,11 @@
 {
   "text.config.owo-whats-this.title": "oωo whats this - configuration",
-  "text.config.owo-whats-this.option.includeFluids": "include fluids"
+  "text.config.owo-whats-this.option.includeFluids": "include fluids",
+
+  "text.owo-whats-this.tooltip.status_effect": [
+    { "index": 0 },
+    { "text": " (", "color": "gray" },
+    { "index": 1, "color": "gray" },
+    { "text": ")", "color": "gray" }
+  ]
 }

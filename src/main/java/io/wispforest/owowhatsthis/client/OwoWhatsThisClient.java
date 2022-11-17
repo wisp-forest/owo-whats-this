@@ -15,8 +15,10 @@ public class OwoWhatsThisClient implements ClientModInitializer {
         DisplayAdapters.register(TargetType.ENTITY, TargetType.DisplayAdapter.ENTITY);
 
         DisplayAdapters.register(InformationProviders.BLOCK_HARDNESS, InformationProviders.DisplayAdapters.TEXT);
-        DisplayAdapters.register(InformationProviders.ENTITY_HEALTH, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.BLOCK_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
+
+        DisplayAdapters.register(InformationProviders.ENTITY_HEALTH, InformationProviders.DisplayAdapters.ENTITY_HEALTH);
+        DisplayAdapters.register(InformationProviders.ENTITY_STATUS_EFFECTS, InformationProviders.DisplayAdapters.TEXT);
 
         OwoWhatsThisHUD.initialize();
 

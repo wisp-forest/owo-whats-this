@@ -77,6 +77,8 @@ public class OwoWhatsThisHUD {
 
                                 grid.child(
                                         Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(infoView -> {
+                                            infoView.gap(4);
+
                                             boolean mustRefresh = false;
                                             for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {
                                                 if (provider.applicableTargetType() != type) continue;
@@ -87,13 +89,13 @@ public class OwoWhatsThisHUD {
 
                                                     infoView.child(
                                                             ((InformationProvider.DisplayAdapter<Object>) DisplayAdapters.get(provider)).build(infoTransformed)
-                                                    ).padding(Insets.top(5));
+                                                    );
                                                 } else {
                                                     if (!PROVIDER_DATA.containsKey(provider)) continue;
                                                     if (provider.live()) mustRefresh = true;
                                                     infoView.child(
                                                             ((InformationProvider.DisplayAdapter<Object>) DisplayAdapters.get(provider)).build(PROVIDER_DATA.get(provider))
-                                                    ).padding(Insets.top(5));
+                                                    );
                                                 }
                                             }
 
