@@ -34,10 +34,6 @@ public class OwoWhatsThisNetworking {
             }
 
             applicableProviders.values().removeIf(Objects::isNull);
-            if (applicableProviders.isEmpty()) {
-                access.player().sendMessage(Text.literal("skipping update as no providers are applicable"));
-                return;
-            }
 
             buffer.writeVarInt(applicableProviders.size());
             applicableProviders.forEach((provider, transformed) -> {
@@ -46,7 +42,7 @@ public class OwoWhatsThisNetworking {
             });
 
             CHANNEL.serverHandle(access.player()).send(new DataUpdatePacket(message.nonce(), buffer));
-            access.player().sendMessage(Text.literal("updating " + applicableProviders.size() + " providers"));
+//            access.player().sendMessage(Text.literal("updating " + applicableProviders.size() + " providers"));
         });
 
         CHANNEL.registerClientboundDeferred(DataUpdatePacket.class);
