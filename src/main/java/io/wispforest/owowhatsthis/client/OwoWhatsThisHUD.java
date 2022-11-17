@@ -77,7 +77,7 @@ public class OwoWhatsThisHUD {
 
                                 grid.child(
                                         Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(infoView -> {
-                                            infoView.gap(4);
+                                            infoView.gap(4).margins(Insets.top(5));
 
                                             boolean mustRefresh = false;
                                             for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {

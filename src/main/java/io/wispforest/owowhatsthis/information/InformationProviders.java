@@ -9,6 +9,7 @@ import io.wispforest.owo.ui.core.PositionedRectangle;
 import io.wispforest.owo.ui.core.Sizing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
@@ -18,10 +19,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registries;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("UnstableApiUsage")
 public class InformationProviders {
 
     public static final InformationProvider<BlockPos, Text> BLOCK_HARDNESS = new InformationProvider<>(
@@ -30,7 +33,7 @@ public class InformationProviders {
             Text.class, false, true
     );
 
-    @SuppressWarnings({"unchecked", "UnstableApiUsage"})
+    @SuppressWarnings("unchecked")
     public static final InformationProvider<BlockPos, List<ItemStack>> BLOCK_INVENTORY = new InformationProvider<>(
             TargetType.BLOCK,
             (world, blockPos) -> {
@@ -47,6 +50,31 @@ public class InformationProviders {
             },
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             true, false
+    );
+
+    public static final InformationProvider<BlockPos, Text> BLOCK_FLUID_STORAGE = new InformationProvider<>(
+            TargetType.BLOCK,
+            (world, blockPos) -> {
+                var storage = FluidStorage.SIDED.find(world, blockPos, null);
+                if (storage == null) return null;
+
+                var fluidTexts = new ArrayList<Text>();
+                storage.forEach(variant -> {
+                    if (variant.getResource().isBlank()) return;
+                    final var id = Registries.FLUID.getId(variant.getResource().getFluid());
+                    fluidTexts.add(
+                            Text.translatable("fluid." + id.toTranslationKey()).append(Text.literal(": " + (variant.getAmount() / 81) + " /" + (variant.getCapacity() / 81)))
+                    );
+                });
+
+                var display = Text.empty();
+                for (int i = 0; i < fluidTexts.size(); i++) {
+                    display.append(fluidTexts.get(i));
+                    if (i < fluidTexts.size() - 1) display.append("\n");
+                }
+                return display;
+            },
+            Text.class, true, false
     );
 
     public static final InformationProvider<Entity, Float> ENTITY_HEALTH = new InformationProvider<>(
@@ -73,7 +101,7 @@ public class InformationProviders {
                 var display = Text.empty();
                 for (int i = 0; i < effectTexts.size(); i++) {
                     display.append(effectTexts.get(i));
-                    if (i < effects.size() - 1) display.append("\n");
+                    if (i < effectTexts.size() - 1) display.append("\n");
                 }
                 return display;
             },

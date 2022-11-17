@@ -35,6 +35,7 @@ public class OwoWhatsThis implements ModInitializer {
 
         Registry.register(INFORMATION_PROVIDERS, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
         Registry.register(INFORMATION_PROVIDERS, id("block_inventory"), InformationProviders.BLOCK_INVENTORY);
+        Registry.register(INFORMATION_PROVIDERS, id("block_fluid_storage"), InformationProviders.BLOCK_FLUID_STORAGE);
 
         Registry.register(INFORMATION_PROVIDERS, id("entity_health"), InformationProviders.ENTITY_HEALTH);
         Registry.register(INFORMATION_PROVIDERS, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
