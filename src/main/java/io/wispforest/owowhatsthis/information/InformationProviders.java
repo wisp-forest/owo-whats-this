@@ -7,6 +7,8 @@ import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.util.RegistryAccess;
+import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,6 +26,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +36,32 @@ public class InformationProviders {
 
     public static final InformationProvider<BlockPos, Text> BLOCK_HARDNESS = new InformationProvider<>(
             TargetType.BLOCK,
-            (world, blockPos) -> Text.literal("Hardness: " + world.getBlockState(blockPos).getHardness(world, blockPos)),
+            (player, world, blockPos) -> Text.literal("Hardness: " + world.getBlockState(blockPos).getHardness(world, blockPos)),
+            Text.class, false, true
+    );
+
+    public static final InformationProvider<BlockPos, Text> BLOCK_HARVESTABILITY = new InformationProvider<>(
+            TargetType.BLOCK,
+            (player, world, target) -> {
+                var state = world.getBlockState(target);
+                var harvestable = !state.isToolRequired() || player.getMainHandStack().isSuitableFor(state);
+
+                var effectiveTools = RegistryAccess.getEntry(Registries.BLOCK, state.getBlock()).streamTags()
+                        .filter(blockTagKey -> OwoWhatsThis.effectiveToolTags().containsKey(blockTagKey.id()))
+                        .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
+                        .reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
+
+                return Text.literal("Harvestable: " + harvestable)
+                        .append("\n")
+                        .append("Effective Tools: ").append(effectiveTools.orElse(Text.empty()));
+            },
             Text.class, false, true
     );
 
     @SuppressWarnings("unchecked")
     public static final InformationProvider<BlockPos, List<ItemStack>> BLOCK_INVENTORY = new InformationProvider<>(
             TargetType.BLOCK,
-            (world, blockPos) -> {
+            (player, world, blockPos) -> {
                 var storage = ItemStorage.SIDED.find(world, blockPos, null);
                 if (storage == null) return null;
 
@@ -60,7 +81,7 @@ public class InformationProviders {
     @SuppressWarnings("unchecked")
     public static final InformationProvider<BlockPos, List<NbtCompound>> BLOCK_FLUID_STORAGE = new InformationProvider<>(
             TargetType.BLOCK,
-            (world, blockPos) -> {
+            (player, world, blockPos) -> {
                 var storage = FluidStorage.SIDED.find(world, blockPos, null);
                 if (storage == null) return null;
 
@@ -81,7 +102,7 @@ public class InformationProviders {
 
     public static final InformationProvider<Entity, Float> ENTITY_HEALTH = new InformationProvider<>(
             TargetType.ENTITY,
-            (world, entity) -> (entity instanceof LivingEntity living)
+            (player, world, entity) -> (entity instanceof LivingEntity living)
                     ? living.getHealth()
                     : null,
             Float.class, true, false
@@ -89,7 +110,7 @@ public class InformationProviders {
 
     public static final InformationProvider<Entity, Text> ENTITY_STATUS_EFFECTS = new InformationProvider<>(
             TargetType.ENTITY,
-            (world, entity) -> {
+            (player, world, entity) -> {
                 if (!(entity instanceof LivingEntity living)) return null;
 
                 var effects = living.getStatusEffects();

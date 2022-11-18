@@ -4,16 +4,19 @@ import io.wispforest.owo.network.serialization.PacketBufSerializer;
 import io.wispforest.owo.ui.core.Component;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
-import java.util.function.BiFunction;
-
-public record InformationProvider<T, D>(TargetType<T> applicableTargetType, BiFunction<World, T, D> transformer, PacketBufSerializer<D> serializer,
+public record InformationProvider<T, D>(TargetType<T> applicableTargetType, Transformer<T, D> transformer, PacketBufSerializer<D> serializer,
                                         boolean live, boolean client) {
 
-    public InformationProvider(TargetType<T> applicableTargetType, BiFunction<World, T, D> transformer, Class<D> dataTransportClass,
+    public InformationProvider(TargetType<T> applicableTargetType, Transformer<T, D> transformer, Class<D> dataTransportClass,
                                boolean live, boolean client) {
         this(applicableTargetType, transformer, PacketBufSerializer.get(dataTransportClass), live, client);
+    }
+
+    public interface Transformer<T, D> {
+        D apply(PlayerEntity player, World world, T target);
     }
 
     @Environment(EnvType.CLIENT)

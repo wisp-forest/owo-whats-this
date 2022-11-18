@@ -2,6 +2,11 @@
   "text.config.owo-whats-this.title": "oωo whats this - configuration",
   "text.config.owo-whats-this.option.includeFluids": "include fluids",
 
+  "text.owo-whats-this.toolType.axe": "Axe",
+  "text.owo-whats-this.toolType.pickaxe": "Pickaxe",
+  "text.owo-whats-this.toolType.shovel": "Shovel",
+  "text.owo-whats-this.toolType.hoe": "Hoe",
+
   "text.owo-whats-this.tooltip.status_effect": [
     { "index": 0 },
     { "text": " (", "color": "gray" },

@@ -13,9 +13,14 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.registry.Registry;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OwoWhatsThis implements ModInitializer {
 
@@ -30,11 +35,15 @@ public class OwoWhatsThis implements ModInitializer {
     public static final Registry<InformationProvider<?, ?>> INFORMATION_PROVIDERS =
             (Registry<InformationProvider<?, ?>>) (Object) FabricRegistryBuilder.createSimple(InformationProvider.class, id("information_providers")).buildAndRegister();
 
+    private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS = new HashMap<>();
+    private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS_VIEW = Collections.unmodifiableMap(EFFECTIVE_TOOL_TAGS);
+
     @Override
     public void onInitialize() {
         Registry.register(TARGET_TYPES, id("block"), TargetType.BLOCK);
         Registry.register(TARGET_TYPES, id("entity"), TargetType.ENTITY);
 
+        Registry.register(INFORMATION_PROVIDERS, id("block_harvestability"), InformationProviders.BLOCK_HARVESTABILITY);
         Registry.register(INFORMATION_PROVIDERS, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
         Registry.register(INFORMATION_PROVIDERS, id("block_inventory"), InformationProviders.BLOCK_INVENTORY);
         Registry.register(INFORMATION_PROVIDERS, id("block_fluid_storage"), InformationProviders.BLOCK_FLUID_STORAGE);
@@ -44,6 +53,9 @@ public class OwoWhatsThis implements ModInitializer {
 
         OwoWhatsThisNetworking.initialize();
         OwoFreezer.registerFreezeCallback(HudElementManager::sortAndFreeze);
+
+        cacheEffectiveToolTags();
+        CONFIG.subscribeToEffectiveToolTags(strings -> cacheEffectiveToolTags());
     }
 
     public static Identifier id(String path) {
@@ -56,6 +68,21 @@ public class OwoWhatsThis implements ModInitializer {
                 .map(ModContainer::getMetadata)
                 .map(ModMetadata::getName)
                 .orElse(id.getNamespace());
+    }
+
+    public static Map<Identifier, Text> effectiveToolTags() {
+        return EFFECTIVE_TOOL_TAGS_VIEW;
+    }
+
+    private static void cacheEffectiveToolTags() {
+        EFFECTIVE_TOOL_TAGS.clear();
+        CONFIG.effectiveToolTags().forEach(s -> {
+            var splitName = s.split("/");
+            EFFECTIVE_TOOL_TAGS.put(
+                    new Identifier(s),
+                    Text.translatable("text.owo-whats-this.toolType." + splitName[splitName.length - 1])
+            );
+        });
     }
 
     public static HitResult raycast(Entity entity, float tickDelta) {
