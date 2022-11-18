@@ -8,11 +8,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public record InformationProvider<T, D>(TargetType<T> applicableTargetType, Transformer<T, D> transformer, PacketBufSerializer<D> serializer,
-                                        boolean live, boolean client) {
+                                        boolean live, boolean client, int priority) {
 
     public InformationProvider(TargetType<T> applicableTargetType, Transformer<T, D> transformer, Class<D> dataTransportClass,
-                               boolean live, boolean client) {
-        this(applicableTargetType, transformer, PacketBufSerializer.get(dataTransportClass), live, client);
+                               boolean live, boolean client, int priority) {
+        this(applicableTargetType, transformer, PacketBufSerializer.get(dataTransportClass), live, client, priority);
     }
 
     public interface Transformer<T, D> {

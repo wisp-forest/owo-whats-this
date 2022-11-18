@@ -1,13 +1,12 @@
-package io.wispforest.owowhatsthis.client;
+package io.wispforest.owowhatsthis;
 
-import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
 import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.*;
 
-public class HudElementManager {
+public class TooltipObjectManager {
 
     private static final List<TargetType<?>> SORTED_TARGET_TYPES = new ArrayList<>();
     private static final List<TargetType<?>> SORTED_TARGET_TYPES_VIEW = Collections.unmodifiableList(SORTED_TARGET_TYPES);
@@ -24,10 +23,13 @@ public class HudElementManager {
                 .forEach(SORTED_TARGET_TYPES::add);
 
         var providersByType = new HashMap<TargetType<?>, List<InformationProvider<?, ?>>>();
-        for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {
-            providersByType.computeIfAbsent(provider.applicableTargetType(), targetType -> new ArrayList<>()).add(provider);
-            if (provider.live()) LIVE_PROVIDERS.add(provider);
-        }
+        OwoWhatsThis.INFORMATION_PROVIDERS.streamEntries()
+                .sorted(Comparator.comparingInt(entry -> -entry.value().priority()))
+                .map(RegistryEntry.Reference::value)
+                .forEach(provider -> {
+                    providersByType.computeIfAbsent(provider.applicableTargetType(), targetType -> new ArrayList<>()).add(provider);
+                    if (provider.live()) LIVE_PROVIDERS.add(provider);
+                });
 
         providersByType.forEach((targetType, informationProviders) -> PROVIDERS_BY_TYPE.put(targetType, Collections.unmodifiableList(informationProviders)));
     }

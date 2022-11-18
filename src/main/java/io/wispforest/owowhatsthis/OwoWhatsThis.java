@@ -1,7 +1,6 @@
 package io.wispforest.owowhatsthis;
 
 import io.wispforest.owo.util.OwoFreezer;
-import io.wispforest.owowhatsthis.client.HudElementManager;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.InformationProviders;
 import io.wispforest.owowhatsthis.information.TargetType;
@@ -43,6 +42,7 @@ public class OwoWhatsThis implements ModInitializer {
         Registry.register(TARGET_TYPES, id("block"), TargetType.BLOCK);
         Registry.register(TARGET_TYPES, id("entity"), TargetType.ENTITY);
 
+        Registry.register(INFORMATION_PROVIDERS, id("block_breaking_progress"), InformationProviders.BLOCK_BREAKING_PROGRESS);
         Registry.register(INFORMATION_PROVIDERS, id("block_harvestability"), InformationProviders.BLOCK_HARVESTABILITY);
         Registry.register(INFORMATION_PROVIDERS, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
         Registry.register(INFORMATION_PROVIDERS, id("block_inventory"), InformationProviders.BLOCK_INVENTORY);
@@ -52,7 +52,7 @@ public class OwoWhatsThis implements ModInitializer {
         Registry.register(INFORMATION_PROVIDERS, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
 
         OwoWhatsThisNetworking.initialize();
-        OwoFreezer.registerFreezeCallback(HudElementManager::sortAndFreeze);
+        OwoFreezer.registerFreezeCallback(TooltipObjectManager::sortAndFreeze);
 
         cacheEffectiveToolTags();
         CONFIG.subscribeToEffectiveToolTags(strings -> cacheEffectiveToolTags());

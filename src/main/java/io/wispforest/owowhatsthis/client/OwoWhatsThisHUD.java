@@ -7,6 +7,7 @@ import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.container.VerticalFlowLayout;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.hud.Hud;
+import io.wispforest.owowhatsthis.TooltipObjectManager;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
@@ -27,7 +28,6 @@ public class OwoWhatsThisHUD {
     private static final Map<InformationProvider<?, ?>, Object> PROVIDER_DATA = new HashMap<>();
 
     private static int currentHash = 0;
-    private static int lastUpdateHash = 0;
 
     @SuppressWarnings("unchecked")
     public static void initialize() {
@@ -51,7 +51,7 @@ public class OwoWhatsThisHUD {
                 view.clearChildren();
                 view.surface(Surface.BLANK);
 
-                for (var type : HudElementManager.sortedTargetTypes()) {
+                for (var type : TooltipObjectManager.sortedTargetTypes()) {
                     var transformed = type.transformer().apply(client.world, target);
                     if (transformed == null) continue;
 
@@ -69,8 +69,13 @@ public class OwoWhatsThisHUD {
                                         Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(infoView -> {
                                             infoView.gap(4).margins(Insets.top(5));
 
+                                            int newHash = transformed.hashCode();
+                                            if (newHash != currentHash) {
+                                                PROVIDER_DATA.clear();
+                                            }
+
                                             boolean mustRefresh = false;
-                                            for (var provider : HudElementManager.getProviders(type)) {
+                                            for (var provider : TooltipObjectManager.getProviders(type)) {
                                                 if (provider.client()) {
                                                     var infoTransformed = ((InformationProvider<Object, ?>) provider).transformer().apply(client.player, client.world, transformed);
                                                     if (infoTransformed == null) continue;
@@ -88,13 +93,11 @@ public class OwoWhatsThisHUD {
                                                 }
                                             }
 
-                                            int newHash = transformed.hashCode();
-
                                             if (newHash != currentHash || mustRefresh) {
                                                 var targetBuf = PacketByteBufs.create();
                                                 targetBuf.writeRegistryValue(OwoWhatsThis.TARGET_TYPES, type);
                                                 ((TargetType<Object>) type).serializer().accept(targetBuf, transformed);
-                                                OwoWhatsThisNetworking.CHANNEL.clientHandle().send(new RequestDataPacket(newHash, newHash != currentHash, targetBuf));
+                                                OwoWhatsThisNetworking.CHANNEL.clientHandle().send(new RequestDataPacket(newHash, targetBuf));
                                             }
 
                                             currentHash = newHash;
@@ -113,12 +116,7 @@ public class OwoWhatsThisHUD {
     public static void readProviderData(DataUpdatePacket message) {
         if (message.nonce() != currentHash) return;
 
-        if (lastUpdateHash != message.nonce()) {
-            lastUpdateHash = message.nonce();
-            PROVIDER_DATA.clear();
-        }
-
-        for (var liveProvider : HudElementManager.liveProviders()) PROVIDER_DATA.remove(liveProvider);
+        for (var liveProvider : TooltipObjectManager.liveProviders()) PROVIDER_DATA.remove(liveProvider);
 
         final var buffer = message.data();
         final var dataCount = buffer.readVarInt();

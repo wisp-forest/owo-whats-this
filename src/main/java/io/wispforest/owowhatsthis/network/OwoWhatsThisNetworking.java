@@ -2,7 +2,7 @@ package io.wispforest.owowhatsthis.network;
 
 import io.wispforest.owo.network.OwoNetChannel;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
-import io.wispforest.owowhatsthis.client.HudElementManager;
+import io.wispforest.owowhatsthis.TooltipObjectManager;
 import io.wispforest.owowhatsthis.client.OwoWhatsThisHUD;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import net.fabricmc.api.EnvType;
@@ -25,7 +25,7 @@ public class OwoWhatsThisNetworking {
             var buffer = PacketByteBufs.create();
             var applicableProviders = new HashMap<InformationProvider<Object, Object>, Object>();
 
-            for (var provider : HudElementManager.getProviders(type)) {
+            for (var provider : TooltipObjectManager.getProviders(type)) {
                 if (provider.client()) continue;
                 applicableProviders.put(
                         (InformationProvider<Object, Object>) provider,

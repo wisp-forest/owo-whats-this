@@ -10,6 +10,7 @@ import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
+import io.wispforest.owowhatsthis.mixin.ClientPlayerInteractionManagerAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -17,6 +18,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +26,7 @@ import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registries;
@@ -37,7 +40,7 @@ public class InformationProviders {
     public static final InformationProvider<BlockPos, Text> BLOCK_HARDNESS = new InformationProvider<>(
             TargetType.BLOCK,
             (player, world, blockPos) -> Text.literal("Hardness: " + world.getBlockState(blockPos).getHardness(world, blockPos)),
-            Text.class, false, true
+            Text.class, false, true, 0
     );
 
     public static final InformationProvider<BlockPos, Text> BLOCK_HARVESTABILITY = new InformationProvider<>(
@@ -55,7 +58,16 @@ public class InformationProviders {
                         .append("\n")
                         .append("Effective Tools: ").append(effectiveTools.orElse(Text.empty()));
             },
-            Text.class, false, true
+            Text.class, false, true, 0
+    );
+
+    public static final InformationProvider<BlockPos, Float> BLOCK_BREAKING_PROGRESS = new InformationProvider<>(
+            TargetType.BLOCK,
+            (player, world, target) -> {
+                float progress = ((ClientPlayerInteractionManagerAccessor) MinecraftClient.getInstance().interactionManager).whatsthis$getCurrentBreakingProgress();
+                return progress > 0 ? progress : null;
+            },
+            Float.class, false, true, -6900
     );
 
     @SuppressWarnings("unchecked")
@@ -75,7 +87,7 @@ public class InformationProviders {
                 return items.isEmpty() ? null : items;
             },
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
-            true, false
+            true, false, 0
     );
 
     @SuppressWarnings("unchecked")
@@ -97,7 +109,8 @@ public class InformationProviders {
 
                 return fluidData.isEmpty() ? null : fluidData;
             },
-            (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class), true, false
+            (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
+            true, false, 0
     );
 
     public static final InformationProvider<Entity, Float> ENTITY_HEALTH = new InformationProvider<>(
@@ -105,7 +118,7 @@ public class InformationProviders {
             (player, world, entity) -> (entity instanceof LivingEntity living)
                     ? living.getHealth()
                     : null,
-            Float.class, true, false
+            Float.class, true, false, 0
     );
 
     public static final InformationProvider<Entity, Text> ENTITY_STATUS_EFFECTS = new InformationProvider<>(
@@ -128,7 +141,7 @@ public class InformationProviders {
                 }
                 return display;
             },
-            Text.class, true, false
+            Text.class, true, false, 0
     );
 
     @Environment(EnvType.CLIENT)
@@ -200,6 +213,15 @@ public class InformationProviders {
                             })
                     );
                 }
+            });
+        };
+
+        public static final InformationProvider.DisplayAdapter<Float> BREAKING_PROGRESS = data -> {
+            return Containers.horizontalFlow(Sizing.fixed(110), Sizing.content()).<FlowLayout>configure(flowLayout -> {
+                flowLayout.child(
+                        Components.box(Sizing.fixed((int) (data * 110)), Sizing.fixed(2))
+                                .fill(true).color(Color.ofFormatting(Formatting.BLUE))
+                );
             });
         };
 
