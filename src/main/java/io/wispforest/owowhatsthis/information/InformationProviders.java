@@ -10,6 +10,7 @@ import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
+import io.wispforest.owowhatsthis.client.component.ProgressBarComponent;
 import io.wispforest.owowhatsthis.mixin.ClientPlayerInteractionManagerAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,7 +27,6 @@ import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registries;
@@ -54,9 +54,9 @@ public class InformationProviders {
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
 
-                return Text.literal("Harvestable: " + harvestable)
+                return Text.translatable(harvestable ? "text.owo-whats-this.tooltip.harvestable" : "text.owo-whats-this.tooltip.not_harvestable")
                         .append("\n")
-                        .append("Effective Tools: ").append(effectiveTools.orElse(Text.empty()));
+                        .append(Text.translatable("text.owo-whats-this.tooltip.effectiveTools", effectiveTools.orElse(Text.empty())));
             },
             Text.class, false, true, 0
     );
@@ -207,7 +207,7 @@ public class InformationProviders {
 
                                 spriteContainer.child(
                                         Components.label(
-                                                TextOps.concat(FluidVariantAttributes.getName(variant), Text.literal(": " + (amount / 81) + "/" + (capacity / 81)))
+                                                Text.translatable("text.owo-whats-this.tooltip.fluidAmount", FluidVariantAttributes.getName(variant), amount / 81, capacity / 81)
                                         ).positioning(Positioning.relative(0, 50)).margins(Insets.left(5))
                                 );
                             })
@@ -217,12 +217,7 @@ public class InformationProviders {
         };
 
         public static final InformationProvider.DisplayAdapter<Float> BREAKING_PROGRESS = data -> {
-            return Containers.horizontalFlow(Sizing.fixed(110), Sizing.content()).<FlowLayout>configure(flowLayout -> {
-                flowLayout.child(
-                        Components.box(Sizing.fixed((int) (data * 110)), Sizing.fixed(2))
-                                .fill(true).color(Color.ofFormatting(Formatting.BLUE))
-                );
-            });
+            return new ProgressBarComponent(Sizing.fixed(110), Sizing.fixed(2)).progress(data);
         };
 
         public static final InformationProvider.DisplayAdapter<List<ItemStack>> ITEM_STACK_LIST = data -> {

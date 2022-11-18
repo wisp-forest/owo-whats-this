@@ -55,7 +55,9 @@ public class OwoWhatsThisHUD {
                     var transformed = type.transformer().apply(client.world, target);
                     if (transformed == null) continue;
 
-                    view.surface(Surface.flat(0x77000000).and(Surface.outline(0x77000000)));
+                    view.surface(Surface.flat(Integer.parseUnsignedInt(OwoWhatsThis.CONFIG.tooltipColor().substring(1), 16))
+                            .and(Surface.outline(Integer.parseUnsignedInt(OwoWhatsThis.CONFIG.tooltipBorderColor().substring(1), 16))));
+
                     view.child(
                             Containers.grid(Sizing.content(), Sizing.content(), 2, 2).<GridLayout>configure(grid -> {
                                 grid.verticalAlignment(VerticalAlignment.CENTER);

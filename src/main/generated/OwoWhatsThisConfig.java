@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis.OwoWhatsThisConfigModel> {
 
     private final Option<java.lang.Boolean> includeFluids = this.optionForKey(new Option.Key("includeFluids"));
+    private final Option<java.lang.String> tooltipColor = this.optionForKey(new Option.Key("tooltipColor"));
+    private final Option<java.lang.String> tooltipBorderColor = this.optionForKey(new Option.Key("tooltipBorderColor"));
     private final Option<java.util.List<java.lang.String>> effectiveToolTags = this.optionForKey(new Option.Key("effectiveToolTags"));
 
     private OwoWhatsThisConfig() {
@@ -29,6 +31,22 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
 
     public void includeFluids(boolean value) {
         includeFluids.set(value);
+    }
+
+    public java.lang.String tooltipColor() {
+        return tooltipColor.value();
+    }
+
+    public void tooltipColor(java.lang.String value) {
+        tooltipColor.set(value);
+    }
+
+    public java.lang.String tooltipBorderColor() {
+        return tooltipBorderColor.value();
+    }
+
+    public void tooltipBorderColor(java.lang.String value) {
+        tooltipBorderColor.set(value);
     }
 
     public java.util.List<java.lang.String> effectiveToolTags() {
