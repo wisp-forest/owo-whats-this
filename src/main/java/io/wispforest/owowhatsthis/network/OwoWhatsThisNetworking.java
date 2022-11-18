@@ -2,12 +2,12 @@ package io.wispforest.owowhatsthis.network;
 
 import io.wispforest.owo.network.OwoNetChannel;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
+import io.wispforest.owowhatsthis.client.HudElementManager;
 import io.wispforest.owowhatsthis.client.OwoWhatsThisHUD;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.text.Text;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -25,8 +25,8 @@ public class OwoWhatsThisNetworking {
             var buffer = PacketByteBufs.create();
             var applicableProviders = new HashMap<InformationProvider<Object, Object>, Object>();
 
-            for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {
-                if (provider.client() || provider.applicableTargetType() != type) continue;
+            for (var provider : HudElementManager.getProviders(type)) {
+                if (provider.client()) continue;
                 applicableProviders.put(
                         (InformationProvider<Object, Object>) provider,
                         ((InformationProvider<Object, Object>) provider).transformer().apply(access.player().world, target)
@@ -51,7 +51,7 @@ public class OwoWhatsThisNetworking {
     @Environment(EnvType.CLIENT)
     public static void initializeClient() {
         CHANNEL.registerClientbound(DataUpdatePacket.class, (message, access) -> {
-            OwoWhatsThisHUD.loadProviderData(message);
+            OwoWhatsThisHUD.readProviderData(message);
         });
     }
 }

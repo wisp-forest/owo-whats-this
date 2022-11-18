@@ -22,7 +22,7 @@ public class ColoringComponent<C extends Component> extends WrappingParentCompon
     public void draw(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, float delta) {
         super.draw(matrices, mouseX, mouseY, partialTicks, delta);
 
-        RenderSystem.setShaderColor(color.red(), color.green(), color.blue(), color.alpha());
+        RenderSystem.setShaderColor(this.color.red(), this.color.green(), this.color.blue(), this.color.alpha());
         this.drawChildren(matrices, mouseX, mouseY, partialTicks, delta, List.of(this.child));
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }

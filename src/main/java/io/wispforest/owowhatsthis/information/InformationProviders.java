@@ -50,7 +50,8 @@ public class InformationProviders {
                     if (stack.isEmpty()) return;
                     items.add(stack);
                 });
-                return items;
+
+                return items.isEmpty() ? null : items;
             },
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             true, false
@@ -73,7 +74,7 @@ public class InformationProviders {
                     fluidData.add(nbt);
                 }
 
-                return fluidData;
+                return fluidData.isEmpty() ? null : fluidData;
             },
             (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class), true, false
     );
@@ -156,8 +157,10 @@ public class InformationProviders {
                     long capacity = fluidNbt.getLong("owo-whats-this:capacity");
 
                     layout.child(
-                            Containers.horizontalFlow(Sizing.fixed(120), Sizing.fixed(12)).<FlowLayout>configure(spriteContainer -> {
-                                int width = Math.round(120 * (amount / (float) capacity));
+                            Containers.horizontalFlow(Sizing.fixed(110), Sizing.fixed(12)).<FlowLayout>configure(spriteContainer -> {
+                                spriteContainer.padding(Insets.of(1)).surface(Surface.outline(0xA7000000));
+
+                                int width = Math.round(110 * (amount / (float) capacity));
                                 while (width > 0) {
                                     spriteContainer.child(
                                             new ColoringComponent<>(
