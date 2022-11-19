@@ -58,13 +58,14 @@ public class OwoWhatsThis implements ModInitializer {
 
         Registry.register(INFORMATION_PROVIDERS, id("entity_health"), InformationProviders.ENTITY_HEALTH);
         Registry.register(INFORMATION_PROVIDERS, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
+        Registry.register(INFORMATION_PROVIDERS, id("player_ping"), InformationProviders.PLAYER_PING);
 
         OwoWhatsThisNetworking.initialize();
         OwoFreezer.registerFreezeCallback(TooltipObjectManager::updateAndSort);
+        CONFIG.subscribeToDisabledProviders(strings -> TooltipObjectManager.updateAndSort());
 
         cacheEffectiveToolTags();
         CONFIG.subscribeToEffectiveToolTags(strings -> cacheEffectiveToolTags());
-        CONFIG.subscribeToDisabledProviders(strings -> TooltipObjectManager.updateAndSort());
     }
 
     public static Identifier id(String path) {
@@ -107,7 +108,7 @@ public class OwoWhatsThis implements ModInitializer {
                 5 * 5
         );
 
-        return entityTarget != null
+        return entityTarget != null && entityTarget.squaredDistanceTo(entity) < blockTarget.squaredDistanceTo(entity)
                 ? entityTarget
                 : blockTarget;
     }

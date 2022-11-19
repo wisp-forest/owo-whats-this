@@ -6,8 +6,8 @@ import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
-import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.FluidToVariant;
+import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.AligningEntityComponent;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
 import net.fabricmc.api.EnvType;
@@ -35,7 +35,9 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                             BiFunction<ServerAccess, PacketByteBuf, @Nullable T> deserializer, int priority) {
 
     public static final TargetType<BlockPos> BLOCK = new TargetType<>(
-            (world, hitResult) -> hitResult instanceof BlockHitResult blockHit && !world.getBlockState(blockHit.getBlockPos()).isAir()
+            (world, hitResult) -> hitResult instanceof BlockHitResult blockHit
+                    && blockHit.getType() == HitResult.Type.BLOCK
+                    && !world.getBlockState(blockHit.getBlockPos()).isAir()
                     ? blockHit.getBlockPos()
                     : null,
             PacketByteBuf::writeBlockPos,
@@ -45,6 +47,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
 
     public static final TargetType<BlockPos> FLUID = new TargetType<>(
             (world, hitResult) -> hitResult instanceof BlockHitResult blockHit
+                    && blockHit.getType() == HitResult.Type.BLOCK
                     && world.getBlockState(blockHit.getBlockPos()).getBlock() instanceof FluidBlock
                     && !world.getFluidState(blockHit.getBlockPos()).isEmpty()
                     ? blockHit.getBlockPos()

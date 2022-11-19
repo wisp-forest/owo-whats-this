@@ -77,9 +77,9 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
                                                     else this.backingSet.add(providerId);
                                                 })
                                                 .enabled(!this.backingSet.contains(providerId))
-                                                .renderer(ButtonComponent.Renderer.flat(0, 0, 0))
+                                                .renderer(ButtonComponent.Renderer.flat(0, 0x77000000, 0))
                                                 .positioning(Positioning.relative(100, 50))
-                                                .margins(Insets.right(5)).horizontalSizing(Sizing.fixed(40))
+                                                .margins(Insets.right(5)).sizing(Sizing.fixed(25), Sizing.fixed(15))
                                         );
                             }), i / 2, i % 2
                     );

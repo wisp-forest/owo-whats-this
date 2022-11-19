@@ -11,6 +11,7 @@ import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.FluidToVariant;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
+import io.wispforest.owowhatsthis.client.component.HeartSpriteComponent;
 import io.wispforest.owowhatsthis.client.component.ProgressBarComponent;
 import io.wispforest.owowhatsthis.mixin.ClientPlayerInteractionManagerAccessor;
 import net.fabricmc.api.EnvType;
@@ -22,6 +23,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
@@ -153,6 +155,19 @@ public class InformationProviders {
             Text.class, true, false, 0
     );
 
+    public static final InformationProvider<Entity, Integer> PLAYER_PING = new InformationProvider<>(
+            TargetType.ENTITY,
+            (player, world, target) -> {
+                if (!(target instanceof OtherClientPlayerEntity otherPlayer)) return null;
+
+                var entry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(otherPlayer.getUuid());
+                if (entry == null) return null;
+
+                return entry.getLatency();
+            },
+            Integer.class, true, true, 0
+    );
+
     @Environment(EnvType.CLIENT)
     public static class DisplayAdapters {
 
@@ -163,18 +178,13 @@ public class InformationProviders {
         public static final InformationProvider.DisplayAdapter<Float> ENTITY_HEALTH = data -> {
             if (data < 30) {
                 return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
-                    flowLayout.gap(2);
+                    flowLayout.gap(-1);
                     for (int i = 0; i < Math.floor(data / 2); i++) {
-                        flowLayout.child(
-                                Components.texture(InGameHud.GUI_ICONS_TEXTURE, 53, 1, 7, 7)
-                        );
+                        flowLayout.child(new HeartSpriteComponent(1f));
                     }
 
                     if (data % 2f > 0.05) {
-                        flowLayout.child(
-                                Components.texture(InGameHud.GUI_ICONS_TEXTURE, 53, 1, 7, 7)
-                                        .visibleArea(PositionedRectangle.of(0, 0, Math.round(7 * (data * .5f % 1f)), 7))
-                        );
+                        flowLayout.child(new HeartSpriteComponent(data * .5f % 1f));
                     }
                 });
             } else {
@@ -183,10 +193,33 @@ public class InformationProviders {
                     flowLayout.child(
                             Components.label(Text.literal(Math.round(data / 2f) + "x"))
                     ).child(
-                            Components.texture(InGameHud.GUI_ICONS_TEXTURE, 53, 1, 7, 7)
+                            new HeartSpriteComponent(1)
                     );
                 });
             }
+        };
+
+        public static final InformationProvider.DisplayAdapter<Integer> PLAYER_PING = data -> {
+            int pingStep;
+
+            if (data < 0) {
+                pingStep = 5;
+            } else if (data < 150) {
+                pingStep = 0;
+            } else if (data < 300) {
+                pingStep = 1;
+            } else if (data < 600) {
+                pingStep = 2;
+            } else if (data < 1000) {
+                pingStep = 3;
+            } else {
+                pingStep = 4;
+            }
+
+            return Components.texture(
+                    InGameHud.GUI_ICONS_TEXTURE,
+                    0, 176 + pingStep * 8, 10, 8
+            );
         };
 
         public static final InformationProvider.DisplayAdapter<List<NbtCompound>> FLUID_STORAGE_LIST = data -> {
