@@ -23,10 +23,10 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
@@ -124,12 +124,20 @@ public class InformationProviders {
             Text.class, false, true, 0
     );
 
-    public static final InformationProvider<Entity, Float> ENTITY_HEALTH = new InformationProvider<>(
+    public static final InformationProvider<Entity, EntityHealthInfo> ENTITY_HEALTH = new InformationProvider<>(
             TargetType.ENTITY,
             (player, world, entity) -> (entity instanceof LivingEntity living)
-                    ? living.getHealth()
+                    ? new EntityHealthInfo(living.getHealth(), living.getMaxHealth())
                     : null,
-            Float.class, true, false, 0
+            EntityHealthInfo.class, true, false, 20
+    );
+
+    public static final InformationProvider<Entity, Integer> ENTITY_ARMOR = new InformationProvider<>(
+            TargetType.ENTITY,
+            (player, world, entity) -> (entity instanceof LivingEntity living)
+                    ? living.getArmor()
+                    : null,
+            Integer.class, true, false, 10
     );
 
     public static final InformationProvider<Entity, Text> ENTITY_STATUS_EFFECTS = new InformationProvider<>(
@@ -155,18 +163,25 @@ public class InformationProviders {
             Text.class, true, false, 0
     );
 
-    public static final InformationProvider<Entity, Integer> PLAYER_PING = new InformationProvider<>(
-            TargetType.ENTITY,
+    @SuppressWarnings("unchecked")
+    public static final InformationProvider<PlayerEntity, List<ItemStack>> PLAYER_INVENTORY = new InformationProvider<>(
+            TargetType.PLAYER,
             (player, world, target) -> {
-                if (!(target instanceof OtherClientPlayerEntity otherPlayer)) return null;
+                var items = new ArrayList<ItemStack>();
+                for (int i = 0; i < player.getInventory().size(); i++) {
+                    var stack = player.getInventory().getStack(i);
+                    if (stack.isEmpty()) continue;
 
-                var entry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(otherPlayer.getUuid());
-                if (entry == null) return null;
+                    items.add(stack);
+                }
 
-                return entry.getLatency();
+                return items;
             },
-            Integer.class, true, true, 0
+            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
+            true, false, 0
     );
+
+    public record EntityHealthInfo(float health, float maxHealth) {}
 
     @Environment(EnvType.CLIENT)
     public static class DisplayAdapters {
@@ -175,51 +190,62 @@ public class InformationProviders {
             return Components.label(data).shadow(true);
         };
 
-        public static final InformationProvider.DisplayAdapter<Float> ENTITY_HEALTH = data -> {
-            if (data < 30) {
-                return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
+        public static final InformationProvider.DisplayAdapter<EntityHealthInfo> ENTITY_HEALTH = data -> {
+            return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
+                if (data.health < 30 && data.maxHealth < 30) {
                     flowLayout.gap(-1);
-                    for (int i = 0; i < Math.floor(data / 2); i++) {
+                    for (int i = 0; i < Math.floor(data.health / 2); i++) {
                         flowLayout.child(new HeartSpriteComponent(1f));
                     }
 
-                    if (data % 2f > 0.05) {
-                        flowLayout.child(new HeartSpriteComponent(data * .5f % 1f));
+                    if (data.health % 2f > 0.05) {
+                        flowLayout.child(new HeartSpriteComponent(data.health * .5f % 1f));
                     }
-                });
-            } else {
-                return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
+
+                    int missingHearts = (int) Math.floor((data.maxHealth - data.health) / 2);
+                    for (int i = 0; i < missingHearts; i++) {
+                        flowLayout.child(new HeartSpriteComponent(0));
+                    }
+                } else {
+                    flowLayout.gap(2);
+                    flowLayout.child(
+                            Components.label(Text.literal(Math.round(data.health / 2f) + "x"))
+                    ).child(
+                            new HeartSpriteComponent(1)
+                    );
+                }
+            });
+        };
+
+        public static final InformationProvider.DisplayAdapter<Integer> ENTITY_ARMOR = data -> {
+            return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
+                if (data < 30) {
+                    flowLayout.gap(-1);
+                    for (int i = 0; i < data / 2; i++) {
+                        flowLayout.child(Components.texture(
+                                InGameHud.GUI_ICONS_TEXTURE,
+                                34, 9, 9, 9
+                        ));
+                    }
+
+                    if (data % 2 != 0) {
+                        flowLayout.child(Components.texture(
+                                InGameHud.GUI_ICONS_TEXTURE,
+                                25, 9, 9, 9
+                        ));
+                    }
+                } else {
                     flowLayout.gap(2);
                     flowLayout.child(
                             Components.label(Text.literal(Math.round(data / 2f) + "x"))
                     ).child(
-                            new HeartSpriteComponent(1)
+                            Components.texture(
+                                    InGameHud.GUI_ICONS_TEXTURE,
+                                    34, 9, 9, 9
+                            )
                     );
-                });
-            }
-        };
-
-        public static final InformationProvider.DisplayAdapter<Integer> PLAYER_PING = data -> {
-            int pingStep;
-
-            if (data < 0) {
-                pingStep = 5;
-            } else if (data < 150) {
-                pingStep = 0;
-            } else if (data < 300) {
-                pingStep = 1;
-            } else if (data < 600) {
-                pingStep = 2;
-            } else if (data < 1000) {
-                pingStep = 3;
-            } else {
-                pingStep = 4;
-            }
-
-            return Components.texture(
-                    InGameHud.GUI_ICONS_TEXTURE,
-                    0, 176 + pingStep * 8, 10, 8
-            );
+                }
+            });
         };
 
         public static final InformationProvider.DisplayAdapter<List<NbtCompound>> FLUID_STORAGE_LIST = data -> {

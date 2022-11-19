@@ -14,6 +14,7 @@ public class OwoWhatsThisClient implements ClientModInitializer {
     public void onInitializeClient() {
         DisplayAdapters.register(TargetType.BLOCK, TargetType.DisplayAdapter.BLOCK);
         DisplayAdapters.register(TargetType.ENTITY, TargetType.DisplayAdapter.ENTITY);
+        DisplayAdapters.register(TargetType.PLAYER, TargetType.DisplayAdapter.PLAYER);
         DisplayAdapters.register(TargetType.FLUID, TargetType.DisplayAdapter.FLUID);
 
         DisplayAdapters.register(InformationProviders.BLOCK_HARDNESS, InformationProviders.DisplayAdapters.TEXT);
@@ -26,7 +27,9 @@ public class OwoWhatsThisClient implements ClientModInitializer {
 
         DisplayAdapters.register(InformationProviders.ENTITY_HEALTH, InformationProviders.DisplayAdapters.ENTITY_HEALTH);
         DisplayAdapters.register(InformationProviders.ENTITY_STATUS_EFFECTS, InformationProviders.DisplayAdapters.TEXT);
-        DisplayAdapters.register(InformationProviders.PLAYER_PING, InformationProviders.DisplayAdapters.PLAYER_PING);
+        DisplayAdapters.register(InformationProviders.ENTITY_ARMOR, InformationProviders.DisplayAdapters.ENTITY_ARMOR);
+
+        DisplayAdapters.register(InformationProviders.PLAYER_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
 
         OwoWhatsThisHUD.initialize();
 

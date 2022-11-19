@@ -46,6 +46,7 @@ public class OwoWhatsThis implements ModInitializer {
     public void onInitialize() {
         Registry.register(TARGET_TYPES, id("block"), TargetType.BLOCK);
         Registry.register(TARGET_TYPES, id("entity"), TargetType.ENTITY);
+        Registry.register(TARGET_TYPES, id("player"), TargetType.PLAYER);
         Registry.register(TARGET_TYPES, id("fluid"), TargetType.FLUID);
 
         Registry.register(INFORMATION_PROVIDERS, id("block_breaking_progress"), InformationProviders.BLOCK_BREAKING_PROGRESS);
@@ -58,7 +59,9 @@ public class OwoWhatsThis implements ModInitializer {
 
         Registry.register(INFORMATION_PROVIDERS, id("entity_health"), InformationProviders.ENTITY_HEALTH);
         Registry.register(INFORMATION_PROVIDERS, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
-        Registry.register(INFORMATION_PROVIDERS, id("player_ping"), InformationProviders.PLAYER_PING);
+        Registry.register(INFORMATION_PROVIDERS, id("entity_armor"), InformationProviders.ENTITY_ARMOR);
+
+        Registry.register(INFORMATION_PROVIDERS, id("player_inventory"), InformationProviders.PLAYER_INVENTORY);
 
         OwoWhatsThisNetworking.initialize();
         OwoFreezer.registerFreezeCallback(TooltipObjectManager::updateAndSort);

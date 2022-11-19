@@ -68,7 +68,7 @@ public class OwoWhatsThisHUD {
                                 final var preview = ((TargetType.DisplayAdapter<Object>) DisplayAdapters.get(type)).buildPreview(transformed);
 
                                 grid.child(Containers.verticalFlow(Sizing.content(), Sizing.content()).child(preview.preview()).padding(Insets.right(5)), 0, 0);
-                                grid.child(Components.label(preview.name()).shadow(true), 0, 1);
+                                grid.child(preview.title(), 0, 1);
 
                                 grid.child(
                                         Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(infoView -> {

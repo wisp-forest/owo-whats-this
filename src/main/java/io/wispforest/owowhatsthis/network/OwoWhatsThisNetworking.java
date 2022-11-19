@@ -21,6 +21,7 @@ public class OwoWhatsThisNetworking {
         CHANNEL.registerServerbound(RequestDataPacket.class, (message, access) -> {
             var type = message.targetData().readRegistryValue(OwoWhatsThis.TARGET_TYPES);
             var target = type.deserializer().apply(access, message.targetData());
+            if (target == null) return;
 
             var buffer = PacketByteBufs.create();
             var applicableProviders = new HashMap<InformationProvider<Object, Object>, Object>();

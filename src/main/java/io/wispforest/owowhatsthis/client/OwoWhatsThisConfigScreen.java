@@ -4,6 +4,7 @@ import io.wispforest.owo.config.Option;
 import io.wispforest.owo.config.ui.ConfigScreen;
 import io.wispforest.owo.config.ui.OptionComponentFactory;
 import io.wispforest.owo.config.ui.component.OptionComponent;
+import io.wispforest.owo.config.ui.component.SearchAnchorComponent;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -70,7 +71,10 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
                             Containers.horizontalFlow(Sizing.fill(50), Sizing.fixed(30)).<FlowLayout>configure(optionLayout -> {
                                 optionLayout.padding(Insets.of(5)).verticalAlignment(VerticalAlignment.CENTER);
 
-                                optionLayout.child(Components.label(Text.translatable("informationProvider." + providerId.toTranslationKey())))
+                                final var providerName = Text.translatable("informationProvider." + providerId.toTranslationKey());
+
+                                optionLayout.child(new SearchAnchorComponent(optionLayout, Option.Key.ROOT, providerName::getString));
+                                optionLayout.child(Components.label(providerName))
                                         .child(new ProviderConfigButton()
                                                 .onChanged(enabled -> {
                                                     if (enabled) this.backingSet.remove(providerId);

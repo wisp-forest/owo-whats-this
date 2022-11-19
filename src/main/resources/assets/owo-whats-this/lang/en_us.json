@@ -17,6 +17,9 @@
   "informationProvider.owo-whats-this.entity_health": "health",
   "informationProvider.owo-whats-this.entity_status_effects": "status effects",
 
+  "targetType.owo-whats-this.player": "players",
+  "informationProvider.owo-whats-this.player_inventory": "inventory",
+
   "targetType.owo-whats-this.block": "blocks",
   "informationProvider.owo-whats-this.block_hardness": "hardness",
   "informationProvider.owo-whats-this.block_harvestability": "harvestability",

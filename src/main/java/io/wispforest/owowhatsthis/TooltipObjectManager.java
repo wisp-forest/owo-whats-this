@@ -23,22 +23,32 @@ public class TooltipObjectManager {
         LIVE_PROVIDERS.clear();
 
         OwoWhatsThis.TARGET_TYPES.streamEntries()
-                .sorted(Comparator.comparingInt(entry -> -entry.value().priority()))
                 .map(RegistryEntry.Reference::value)
+                .sorted(Comparator.comparingInt(type -> -type.priority()))
                 .forEach(SORTED_TARGET_TYPES::add);
 
         var providersByType = new HashMap<TargetType<?>, List<InformationProvider<?, ?>>>();
         OwoWhatsThis.INFORMATION_PROVIDERS.streamEntries()
                 .filter(entry -> !OwoWhatsThis.CONFIG.disabledProviders().contains(entry.getKey().map(RegistryKey::getValue).orElse(null)))
-                .sorted(Comparator.comparingInt(entry -> -entry.value().priority()))
                 .map(RegistryEntry.Reference::value)
+                .sorted(Comparator.comparingInt(provider -> -provider.priority()))
                 .forEach(provider -> {
-                    providersByType.computeIfAbsent(provider.applicableTargetType(), targetType -> new ArrayList<>()).add(provider);
+                    providersByType.computeIfAbsent(provider.applicableTargetType(), type -> new ArrayList<>()).add(provider);
                     if (provider.live()) LIVE_PROVIDERS.add(provider);
                 });
 
         SORTED_TARGET_TYPES.forEach(targetType -> {
-            PROVIDERS_BY_TYPE.put(targetType, Collections.unmodifiableList(providersByType.getOrDefault(targetType, List.of())));
+            var providers = providersByType.getOrDefault(targetType, new ArrayList<>());
+            var parent = targetType.parent();
+            while (parent != null) {
+                providers.addAll(providersByType.getOrDefault(parent, List.of()));
+                parent = parent.parent();
+            }
+
+            PROVIDERS_BY_TYPE.put(
+                    targetType,
+                    Collections.unmodifiableList(providers)
+            );
         });
     }
 
