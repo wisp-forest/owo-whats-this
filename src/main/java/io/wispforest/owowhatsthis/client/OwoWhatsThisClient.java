@@ -1,5 +1,6 @@
 package io.wispforest.owowhatsthis.client;
 
+import io.wispforest.owo.config.ui.ConfigScreen;
 import io.wispforest.owowhatsthis.information.InformationProviders;
 import io.wispforest.owowhatsthis.information.TargetType;
 import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
@@ -26,5 +27,7 @@ public class OwoWhatsThisClient implements ClientModInitializer {
         OwoWhatsThisHUD.initialize();
 
         OwoWhatsThisNetworking.initializeClient();
+
+        ConfigScreen.registerProvider("owo-whats-this", OwoWhatsThisConfigScreen::new);
     }
 }

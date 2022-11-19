@@ -3,6 +3,7 @@ package io.wispforest.owowhatsthis;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 
 import java.util.*;
 
@@ -16,7 +17,11 @@ public class TooltipObjectManager {
     private static final List<InformationProvider<?, ?>> LIVE_PROVIDERS = new ArrayList<>();
     private static final List<InformationProvider<?, ?>> LIVE_PROVIDERS_VIEW = Collections.unmodifiableList(LIVE_PROVIDERS);
 
-    public static void sortAndFreeze() {
+    public static void updateAndSort() {
+        SORTED_TARGET_TYPES.clear();
+        PROVIDERS_BY_TYPE.clear();
+        LIVE_PROVIDERS.clear();
+
         OwoWhatsThis.TARGET_TYPES.streamEntries()
                 .sorted(Comparator.comparingInt(entry -> -entry.value().priority()))
                 .map(RegistryEntry.Reference::value)
@@ -24,6 +29,7 @@ public class TooltipObjectManager {
 
         var providersByType = new HashMap<TargetType<?>, List<InformationProvider<?, ?>>>();
         OwoWhatsThis.INFORMATION_PROVIDERS.streamEntries()
+                .filter(entry -> !OwoWhatsThis.CONFIG.disabledProviders().contains(entry.getKey().map(RegistryKey::getValue).orElse(null)))
                 .sorted(Comparator.comparingInt(entry -> -entry.value().priority()))
                 .map(RegistryEntry.Reference::value)
                 .forEach(provider -> {
@@ -31,7 +37,9 @@ public class TooltipObjectManager {
                     if (provider.live()) LIVE_PROVIDERS.add(provider);
                 });
 
-        providersByType.forEach((targetType, informationProviders) -> PROVIDERS_BY_TYPE.put(targetType, Collections.unmodifiableList(informationProviders)));
+        SORTED_TARGET_TYPES.forEach(targetType -> {
+            PROVIDERS_BY_TYPE.put(targetType, Collections.unmodifiableList(providersByType.getOrDefault(targetType, List.of())));
+        });
     }
 
     public static List<TargetType<?>> sortedTargetTypes() {

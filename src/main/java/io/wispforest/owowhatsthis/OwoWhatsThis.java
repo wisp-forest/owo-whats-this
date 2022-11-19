@@ -7,6 +7,7 @@ import io.wispforest.owowhatsthis.information.TargetType;
 import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -28,11 +29,15 @@ public class OwoWhatsThis implements ModInitializer {
 
     @SuppressWarnings("unchecked")
     public static final Registry<TargetType<?>> TARGET_TYPES =
-            (Registry<TargetType<?>>) (Object) FabricRegistryBuilder.createSimple(TargetType.class, id("target_types")).buildAndRegister();
+            (Registry<TargetType<?>>) (Object) FabricRegistryBuilder.createSimple(TargetType.class, id("target_types"))
+                    .attribute(RegistryAttribute.SYNCED)
+                    .buildAndRegister();
 
     @SuppressWarnings("unchecked")
     public static final Registry<InformationProvider<?, ?>> INFORMATION_PROVIDERS =
-            (Registry<InformationProvider<?, ?>>) (Object) FabricRegistryBuilder.createSimple(InformationProvider.class, id("information_providers")).buildAndRegister();
+            (Registry<InformationProvider<?, ?>>) (Object) FabricRegistryBuilder.createSimple(InformationProvider.class, id("information_providers"))
+                    .attribute(RegistryAttribute.SYNCED)
+                    .buildAndRegister();
 
     private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS = new HashMap<>();
     private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS_VIEW = Collections.unmodifiableMap(EFFECTIVE_TOOL_TAGS);
@@ -52,10 +57,11 @@ public class OwoWhatsThis implements ModInitializer {
         Registry.register(INFORMATION_PROVIDERS, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
 
         OwoWhatsThisNetworking.initialize();
-        OwoFreezer.registerFreezeCallback(TooltipObjectManager::sortAndFreeze);
+        OwoFreezer.registerFreezeCallback(TooltipObjectManager::updateAndSort);
 
         cacheEffectiveToolTags();
         CONFIG.subscribeToEffectiveToolTags(strings -> cacheEffectiveToolTags());
+        CONFIG.subscribeToDisabledProviders(strings -> TooltipObjectManager.updateAndSort());
     }
 
     public static Identifier id(String path) {

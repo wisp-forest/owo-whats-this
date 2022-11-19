@@ -14,6 +14,7 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
     private final Option<java.lang.String> tooltipColor = this.optionForKey(new Option.Key("tooltipColor"));
     private final Option<java.lang.String> tooltipBorderColor = this.optionForKey(new Option.Key("tooltipBorderColor"));
     private final Option<java.util.List<java.lang.String>> effectiveToolTags = this.optionForKey(new Option.Key("effectiveToolTags"));
+    private final Option<java.util.Set<net.minecraft.util.Identifier>> disabledProviders = this.optionForKey(new Option.Key("disabledProviders"));
 
     private OwoWhatsThisConfig() {
         super(io.wispforest.owowhatsthis.OwoWhatsThisConfigModel.class);
@@ -59,6 +60,18 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
 
     public void subscribeToEffectiveToolTags(Consumer<java.util.List<java.lang.String>> subscriber) {
         effectiveToolTags.observe(subscriber);
+    }
+
+    public java.util.Set<net.minecraft.util.Identifier> disabledProviders() {
+        return disabledProviders.value();
+    }
+
+    public void disabledProviders(java.util.Set<net.minecraft.util.Identifier> value) {
+        disabledProviders.set(value);
+    }
+
+    public void subscribeToDisabledProviders(Consumer<java.util.Set<net.minecraft.util.Identifier>> subscriber) {
+        disabledProviders.observe(subscriber);
     }
 
 
