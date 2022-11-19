@@ -14,44 +14,23 @@ public class AligningEntityComponent<E extends Entity> extends EntityComponent<E
 
     @Override
     public void draw(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, float delta) {
-        float prevBodyYaw = this.entity.getBodyYaw();
-        float prevPrevBodyYaw = 0;
+        float prevHeadYaw = 0f;
+        float prevPrevHeadYaw = 0f;
 
-        float prevYaw = this.entity.getYaw();
-        float prevPrevYaw = this.entity.prevYaw;
-
-        float prevHeadYaw = this.entity.getHeadYaw();
-        float prevPrevHeadYaw = 0;
-
-        this.entity.setBodyYaw(-90);
-        this.entity.setHeadYaw(-90);
         if (this.entity instanceof LivingEntity living) {
+            prevHeadYaw = living.headYaw;
             prevPrevHeadYaw = living.prevHeadYaw;
-            living.prevHeadYaw = -90;
-            prevPrevBodyYaw = living.prevBodyYaw;
-            living.prevBodyYaw = -90;
+
+            living.headYaw = living.prevBodyYaw;
+            living.prevHeadYaw = living.prevBodyYaw;
         }
-        this.entity.prevYaw = 0;
 
-        float prevPitch = this.entity.getPitch();
-        float prevPrevPitch = entity.prevPitch;
-
-        this.entity.setPitch(0);
-        this.entity.prevPitch = 0;
-
+        this.mouseRotation = 90 + (entity instanceof LivingEntity living ? living.prevBodyYaw : entity.getBodyYaw());
         super.draw(matrices, mouseX, mouseY, partialTicks, delta);
 
-        this.entity.setYaw(prevYaw);
-        this.entity.setBodyYaw(prevBodyYaw);
-
-        this.entity.setHeadYaw(prevHeadYaw);
         if (this.entity instanceof LivingEntity living) {
+            living.headYaw = prevHeadYaw;
             living.prevHeadYaw = prevPrevHeadYaw;
-            living.prevBodyYaw = prevPrevBodyYaw;
         }
-        this.entity.prevYaw = prevPrevYaw;
-
-        this.entity.setPitch(prevPitch);
-        this.entity.prevPitch = prevPrevPitch;
     }
 }
