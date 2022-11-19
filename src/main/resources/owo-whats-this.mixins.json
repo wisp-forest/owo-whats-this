@@ -3,10 +3,10 @@
   "minVersion": "0.8",
   "package": "io.wispforest.owowhatsthis.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "ClientPlayerInteractionManagerAccessor"
-  ],
+  "mixins": [],
   "client": [
+    "ClientPlayerInteractionManagerAccessor",
+    "PlayerListHudAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

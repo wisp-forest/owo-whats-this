@@ -1,21 +1,22 @@
 package io.wispforest.owowhatsthis.client;
 
-import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.container.VerticalFlowLayout;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.hud.Hud;
-import io.wispforest.owowhatsthis.TooltipObjectManager;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
+import io.wispforest.owowhatsthis.TooltipObjectManager;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
+import io.wispforest.owowhatsthis.mixin.PlayerListHudAccessor;
 import io.wispforest.owowhatsthis.network.DataUpdatePacket;
 import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import io.wispforest.owowhatsthis.network.RequestDataPacket;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -50,6 +51,8 @@ public class OwoWhatsThisHUD {
             view.<FlowLayout>configure(layout -> {
                 view.clearChildren();
                 view.surface(Surface.BLANK);
+
+                if (((PlayerListHudAccessor) MinecraftClient.getInstance().inGameHud.getPlayerListHud()).whatsThis$isVisible()) return;
 
                 for (var type : TooltipObjectManager.sortedTargetTypes()) {
                     var transformed = type.transformer().apply(client.world, target);
