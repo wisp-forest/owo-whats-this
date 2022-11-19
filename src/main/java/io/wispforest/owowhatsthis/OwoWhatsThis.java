@@ -46,12 +46,15 @@ public class OwoWhatsThis implements ModInitializer {
     public void onInitialize() {
         Registry.register(TARGET_TYPES, id("block"), TargetType.BLOCK);
         Registry.register(TARGET_TYPES, id("entity"), TargetType.ENTITY);
+        Registry.register(TARGET_TYPES, id("fluid"), TargetType.FLUID);
 
         Registry.register(INFORMATION_PROVIDERS, id("block_breaking_progress"), InformationProviders.BLOCK_BREAKING_PROGRESS);
         Registry.register(INFORMATION_PROVIDERS, id("block_harvestability"), InformationProviders.BLOCK_HARVESTABILITY);
         Registry.register(INFORMATION_PROVIDERS, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
         Registry.register(INFORMATION_PROVIDERS, id("block_inventory"), InformationProviders.BLOCK_INVENTORY);
         Registry.register(INFORMATION_PROVIDERS, id("block_fluid_storage"), InformationProviders.BLOCK_FLUID_STORAGE);
+
+        Registry.register(INFORMATION_PROVIDERS, id("fluid_viscosity"), InformationProviders.FLUID_VISCOSITY);
 
         Registry.register(INFORMATION_PROVIDERS, id("entity_health"), InformationProviders.ENTITY_HEALTH);
         Registry.register(INFORMATION_PROVIDERS, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);

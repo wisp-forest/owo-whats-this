@@ -10,22 +10,30 @@
 
   "text.config.owo-whats-this.section.providers": "tooltip elements",
 
+  "targetType.owo-whats-this.fluid": "fluids",
+  "informationProvider.owo-whats-this.fluid_viscosity": "viscosity",
+
   "targetType.owo-whats-this.entity": "entities",
   "informationProvider.owo-whats-this.entity_health": "health",
-  "informationProvider.owo-whats-this.entity_status_effects": "status Effects",
+  "informationProvider.owo-whats-this.entity_status_effects": "status effects",
 
   "targetType.owo-whats-this.block": "blocks",
   "informationProvider.owo-whats-this.block_hardness": "hardness",
   "informationProvider.owo-whats-this.block_harvestability": "harvestability",
-  "informationProvider.owo-whats-this.block_inventory": "item Storage",
-  "informationProvider.owo-whats-this.block_fluid_storage": "fluid Storage",
-  "informationProvider.owo-whats-this.block_breaking_progress": "breaking Progress",
+  "informationProvider.owo-whats-this.block_inventory": "item storage",
+  "informationProvider.owo-whats-this.block_fluid_storage": "fluid storage",
+  "informationProvider.owo-whats-this.block_breaking_progress": "breaking progress",
 
   "text.owo-whats-this.toolType.axe": "Axe",
   "text.owo-whats-this.toolType.pickaxe": "Pickaxe",
   "text.owo-whats-this.toolType.shovel": "Shovel",
   "text.owo-whats-this.toolType.hoe": "Hoe",
 
+  "text.owo-whats-this.tooltip.noTools": "No tools",
+  "text.owo-whats-this.tooltip.tools": [
+    "Tools: ",
+    {"index": 0, "color": "#47B5FF"}
+  ],
   "text.owo-whats-this.tooltip.harvestable": [
     "",
     {"text": "✔", "color": "#28FFBF"},
@@ -36,14 +44,45 @@
     {"text": "❌", "color": "#EB1D36"},
     " Not harvestable"
   ],
-  "text.owo-whats-this.tooltip.effectiveTools": "Effective Tools: %s",
 
-  "text.owo-whats-this.tooltip.fluidAmount": "%s: %d/%d",
+  "text.owo-whats-this.tooltip.blockHardness": "Hardness: %d",
+  "text.owo-whats-this.tooltip.blockFluidAmount": "%s: %d/%d",
+
+  "text.owo-whats-this.tooltip.fluidViscosity": "Viscosity: %d",
 
   "text.owo-whats-this.tooltip.status_effect": [
     {"index": 0},
     {"text": " (", "color": "gray"},
     {"index": 1, "color": "gray"},
     {"text": ")", "color": "gray"}
+  ],
+
+  "text.owo-whats-this.config.provider_toggle.enabled": [
+    {
+      "text": "[",
+      "color": "gray"
+    },
+    {
+      "text": "✔",
+      "color": "#28FFBF"
+    },
+    {
+      "text": "]",
+      "color": "gray"
+    }
+  ],
+  "text.owo-whats-this.config.provider_toggle.disabled": [
+    {
+      "text": "[",
+      "color": "gray"
+    },
+    {
+      "text": "❌",
+      "color": "#EB1D36"
+    },
+    {
+      "text": "]",
+      "color": "gray"
+    }
   ]
 }

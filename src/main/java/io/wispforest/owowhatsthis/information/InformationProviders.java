@@ -8,6 +8,7 @@ import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.util.RegistryAccess;
+import io.wispforest.owowhatsthis.FluidToVariant;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
 import io.wispforest.owowhatsthis.client.component.ProgressBarComponent;
@@ -39,7 +40,7 @@ public class InformationProviders {
 
     public static final InformationProvider<BlockPos, Text> BLOCK_HARDNESS = new InformationProvider<>(
             TargetType.BLOCK,
-            (player, world, blockPos) -> Text.literal("Hardness: " + world.getBlockState(blockPos).getHardness(world, blockPos)),
+            (player, world, blockPos) -> Text.translatable("text.owo-whats-this.tooltip.blockHardness", world.getBlockState(blockPos).getHardness(world, blockPos)),
             Text.class, false, true, 0
     );
 
@@ -54,9 +55,9 @@ public class InformationProviders {
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
 
-                return Text.translatable(harvestable ? "text.owo-whats-this.tooltip.harvestable" : "text.owo-whats-this.tooltip.not_harvestable")
+                return effectiveTools.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
                         .append("\n")
-                        .append(Text.translatable("text.owo-whats-this.tooltip.effectiveTools", effectiveTools.orElse(Text.empty())));
+                        .append(Text.translatable(harvestable ? "text.owo-whats-this.tooltip.harvestable" : "text.owo-whats-this.tooltip.not_harvestable"));
             },
             Text.class, false, true, 0
     );
@@ -113,6 +114,14 @@ public class InformationProviders {
             true, false, 0
     );
 
+    public static final InformationProvider<BlockPos, Text> FLUID_VISCOSITY = new InformationProvider<>(
+            TargetType.FLUID,
+            (player, world, target) -> {
+                return Text.translatable("text.owo-whats-this.tooltip.fluidViscosity", FluidVariantAttributes.getViscosity(FluidToVariant.apply(world.getFluidState(target).getFluid()), world));
+            },
+            Text.class, false, true, 0
+    );
+
     public static final InformationProvider<Entity, Float> ENTITY_HEALTH = new InformationProvider<>(
             TargetType.ENTITY,
             (player, world, entity) -> (entity instanceof LivingEntity living)
@@ -147,7 +156,9 @@ public class InformationProviders {
     @Environment(EnvType.CLIENT)
     public static class DisplayAdapters {
 
-        public static final InformationProvider.DisplayAdapter<Text> TEXT = Components::label;
+        public static final InformationProvider.DisplayAdapter<Text> TEXT = data -> {
+            return Components.label(data).shadow(true);
+        };
 
         public static final InformationProvider.DisplayAdapter<Float> ENTITY_HEALTH = data -> {
             if (data < 30) {
@@ -207,7 +218,7 @@ public class InformationProviders {
 
                                 spriteContainer.child(
                                         Components.label(
-                                                Text.translatable("text.owo-whats-this.tooltip.fluidAmount", FluidVariantAttributes.getName(variant), amount / 81, capacity / 81)
+                                                Text.translatable("text.owo-whats-this.tooltip.blockFluidAmount", FluidVariantAttributes.getName(variant), amount / 81, capacity / 81)
                                         ).positioning(Positioning.relative(0, 50)).margins(Insets.left(5))
                                 );
                             })

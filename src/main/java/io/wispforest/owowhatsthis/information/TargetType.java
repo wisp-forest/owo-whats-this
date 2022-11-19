@@ -3,12 +3,18 @@ package io.wispforest.owowhatsthis.information;
 import io.wispforest.owo.network.ServerAccess;
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.ui.component.Components;
+import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
+import io.wispforest.owowhatsthis.FluidToVariant;
 import io.wispforest.owowhatsthis.client.component.AligningEntityComponent;
+import io.wispforest.owowhatsthis.client.component.ColoringComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
@@ -33,20 +39,33 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                     ? blockHit.getBlockPos()
                     : null,
             PacketByteBuf::writeBlockPos,
-            (access, buf) -> {
-                var pos = buf.readBlockPos();
-                if (access.player().getPos().squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) > 75) return null;
-                return pos;
-            },
+            TargetType::readBlockPos,
             0
+    );
+
+    public static final TargetType<BlockPos> FLUID = new TargetType<>(
+            (world, hitResult) -> hitResult instanceof BlockHitResult blockHit
+                    && world.getBlockState(blockHit.getBlockPos()).getBlock() instanceof FluidBlock
+                    && !world.getFluidState(blockHit.getBlockPos()).isEmpty()
+                    ? blockHit.getBlockPos()
+                    : null,
+            PacketByteBuf::writeBlockPos,
+            TargetType::readBlockPos,
+            10
     );
 
     public static final TargetType<Entity> ENTITY = new TargetType<>(
             (world, hitResult) -> hitResult instanceof EntityHitResult entityHit ? entityHit.getEntity() : null,
             (buf, entity) -> buf.writeVarInt(entity.getId()),
             (access, buf) -> access.player().world.getEntityById(buf.readVarInt()),
-            10
+            20
     );
+
+    private static BlockPos readBlockPos(ServerAccess access, PacketByteBuf buf) {
+        var pos = buf.readBlockPos();
+        if (access.player().getPos().squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) > 75) return null;
+        return pos;
+    }
 
     @Environment(EnvType.CLIENT)
     public interface DisplayAdapter<T> {
@@ -62,6 +81,24 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                             )
                     ),
                     Components.item(targetState.getBlock().asItem().getDefaultStack())
+            );
+        };
+
+        @SuppressWarnings("UnstableApiUsage")
+        DisplayAdapter<BlockPos> FLUID = blockPos -> {
+            var fluidVariant = FluidToVariant.apply(MinecraftClient.getInstance().world.getFluidState(blockPos));
+
+            return new PreviewData(
+                    TextOps.concat(
+                            FluidVariantAttributes.getName(fluidVariant),
+                            Text.literal("\n").append(
+                                    TextOps.withFormatting(OwoWhatsThis.modNameOf(Registries.FLUID.getId(fluidVariant.getFluid())), Formatting.BLUE)
+                            )
+                    ),
+                    new ColoringComponent<>(
+                            Color.ofArgb(FluidVariantRendering.getColor(fluidVariant)),
+                            Components.sprite(FluidVariantRendering.getSprite(fluidVariant))
+                    )
             );
         };
 
