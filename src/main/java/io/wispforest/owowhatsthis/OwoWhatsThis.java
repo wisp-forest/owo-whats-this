@@ -58,9 +58,8 @@ public class OwoWhatsThis implements ModInitializer {
 
         Registry.register(INFORMATION_PROVIDER, id("fluid_viscosity"), InformationProviders.FLUID_VISCOSITY);
 
-        Registry.register(INFORMATION_PROVIDER, id("entity_health"), InformationProviders.ENTITY_HEALTH);
+        Registry.register(INFORMATION_PROVIDER, id("entity_health_and_armor"), InformationProviders.ENTITY_HEALTH_AND_ARMOR);
         Registry.register(INFORMATION_PROVIDER, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
-        Registry.register(INFORMATION_PROVIDER, id("entity_armor"), InformationProviders.ENTITY_ARMOR);
         Registry.register(INFORMATION_PROVIDER, id("entity_growing_time"), InformationProviders.ENTITY_GROWING_TIME);
         Registry.register(INFORMATION_PROVIDER, id("entity_breeding_cooldown"), InformationProviders.ENTITY_BREEDING_COOLDOWN);
         Registry.register(INFORMATION_PROVIDER, id("entity_tnt_fuse"), InformationProviders.ENTITY_TNT_FUSE);

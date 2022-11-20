@@ -1,9 +1,17 @@
 package io.wispforest.owowhatsthis;
 
-import io.wispforest.owo.config.annotation.*;
+import io.wispforest.owo.config.annotation.Config;
+import io.wispforest.owo.config.annotation.Hook;
+import io.wispforest.owo.config.annotation.RegexConstraint;
+import io.wispforest.owo.config.annotation.SectionHeader;
+import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Config(name = "owo-whats-this", wrapperName = "OwoWhatsThisConfig")
 public class OwoWhatsThisConfigModel {
@@ -18,7 +26,14 @@ public class OwoWhatsThisConfigModel {
 
     @Hook
     public List<String> effectiveToolTags = new ArrayList<>(
-            List.of("minecraft:mineable/axe", "minecraft:mineable/pickaxe", "minecraft:mineable/shovel", "minecraft:mineable/hoe")
+            List.of(
+                    BlockTags.AXE_MINEABLE.id().toString(),
+                    BlockTags.PICKAXE_MINEABLE.id().toString(),
+                    BlockTags.SHOVEL_MINEABLE.id().toString(),
+                    BlockTags.HOE_MINEABLE.id().toString(),
+                    FabricMineableTags.SHEARS_MINEABLE.id().toString(),
+                    FabricMineableTags.SWORD_MINEABLE.id().toString()
+            )
     );
 
     @Hook

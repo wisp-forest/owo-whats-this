@@ -29,9 +29,8 @@ public class OwoWhatsThisClient implements ClientModInitializer {
 
         DisplayAdapters.register(InformationProviders.FLUID_VISCOSITY, InformationProviders.DisplayAdapters.TEXT);
 
-        DisplayAdapters.register(InformationProviders.ENTITY_HEALTH, InformationProviders.DisplayAdapters.ENTITY_HEALTH);
+        DisplayAdapters.register(InformationProviders.ENTITY_HEALTH_AND_ARMOR, InformationProviders.DisplayAdapters.ENTITY_HEALTH);
         DisplayAdapters.register(InformationProviders.ENTITY_STATUS_EFFECTS, InformationProviders.DisplayAdapters.TEXT);
-        DisplayAdapters.register(InformationProviders.ENTITY_ARMOR, InformationProviders.DisplayAdapters.ENTITY_ARMOR);
         DisplayAdapters.register(InformationProviders.ENTITY_GROWING_TIME, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_BREEDING_COOLDOWN, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_TNT_FUSE, InformationProviders.DisplayAdapters.TEXT);

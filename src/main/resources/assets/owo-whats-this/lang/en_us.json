@@ -14,12 +14,12 @@
   "informationProvider.owo-whats-this.fluid_viscosity": "viscosity",
 
   "targetType.owo-whats-this.entity": "entities",
-  "informationProvider.owo-whats-this.entity_health": "health",
-  "informationProvider.owo-whats-this.entity_armor": "armor",
+  "informationProvider.owo-whats-this.entity_health_and_armor": "health and armor",
   "informationProvider.owo-whats-this.entity_status_effects": "status effects",
   "informationProvider.owo-whats-this.entity_tnt_fuse": "tnt fuse",
   "informationProvider.owo-whats-this.entity_growing_time": "growing time",
   "informationProvider.owo-whats-this.entity_breeding_cooldown": "breeding cooldown",
+  "informationProvider.owo-whats-this.entity_item_count": "item count",
 
   "targetType.owo-whats-this.player": "players",
   "informationProvider.owo-whats-this.player_inventory": "inventory",
@@ -36,6 +36,8 @@
   "text.owo-whats-this.toolType.pickaxe": "Pickaxe",
   "text.owo-whats-this.toolType.shovel": "Shovel",
   "text.owo-whats-this.toolType.hoe": "Hoe",
+  "text.owo-whats-this.toolType.sword": "Sword",
+  "text.owo-whats-this.toolType.shears": "Shears",
 
   "text.owo-whats-this.tooltip.noTools": "No tools",
   "text.owo-whats-this.tooltip.tools": [

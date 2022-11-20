@@ -22,8 +22,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.minecraft.block.CropBlock;
-import net.minecraft.block.StemBlock;
+import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
@@ -35,6 +34,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -42,18 +42,37 @@ import net.minecraft.util.registry.Registries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
 public class InformationProviders {
 
-    public static final InformationProvider<BlockPos, Text> BLOCK_HARDNESS = new InformationProvider<>(
-            TargetType.BLOCK,
-            (player, world, blockPos) -> Text.translatable("text.owo-whats-this.tooltip.blockHardness", world.getBlockState(blockPos).getHardness(world, blockPos)),
-            Text.class, false, true, 0
+    private static final Predicate<BlockState> SWORD_MINEABLE = state -> {
+        return state.isOf(Blocks.COBWEB)
+                || state.isIn(BlockTags.LEAVES)
+                || state.getMaterial() == Material.REPLACEABLE_PLANT
+                || state.getMaterial() == Material.GOURD
+                || state.getMaterial() == Material.PLANT;
+    };
+
+    private static final Predicate<BlockState> SHEARS_MINEABLE = state -> {
+        return state.isOf(Blocks.COBWEB)
+                || state.isIn(BlockTags.LEAVES)
+                || state.isIn(BlockTags.WOOL)
+                || state.isOf(Blocks.GLOW_LICHEN)
+                || state.isOf(Blocks.REDSTONE_WIRE)
+                || state.isOf(Blocks.TRIPWIRE)
+                || state.isOf(Blocks.VINE);
+    };
+
+    public static final InformationProvider<BlockPos, Text> BLOCK_HARDNESS = InformationProvider.client(
+            TargetType.BLOCK, 0,
+            (player, world, blockPos) -> Text.translatable("text.owo-whats-this.tooltip.blockHardness", world.getBlockState(blockPos).getHardness(world, blockPos))
     );
 
-    public static final InformationProvider<BlockPos, Text> BLOCK_HARVESTABILITY = new InformationProvider<>(
-            TargetType.BLOCK,
+    public static final InformationProvider<BlockPos, Text> BLOCK_HARVESTABILITY = InformationProvider.client(
+            TargetType.BLOCK, 0,
             (player, world, target) -> {
                 var state = world.getBlockState(target);
                 var harvestable = !state.isToolRequired() || player.getMainHandStack().isSuitableFor(state);
@@ -61,29 +80,37 @@ public class InformationProviders {
                 var effectiveTools = RegistryAccess.getEntry(Registries.BLOCK, state.getBlock()).streamTags()
                         .filter(blockTagKey -> OwoWhatsThis.effectiveToolTags().containsKey(blockTagKey.id()))
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
-                        .reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
+                        .collect(Collectors.toList());
 
+                if (SWORD_MINEABLE.test(state)) {
+                    effectiveTools.add(Text.translatable("text.owo-whats-this.toolType.sword"));
+                }
+
+                if (SHEARS_MINEABLE.test(state)) {
+                    effectiveTools.add(Text.translatable("text.owo-whats-this.toolType.shears"));
+                }
+
+                var toolsText = effectiveTools.stream().reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
                 // this cast is only here to appease IntelliJ, as it occasionally has a meltdown
                 // trying to understand the return type of this lambda
-                return (Text) effectiveTools.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
+                return (Text) toolsText.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
                         .append("\n")
                         .append(Text.translatable(harvestable ? "text.owo-whats-this.tooltip.harvestable" : "text.owo-whats-this.tooltip.not_harvestable"));
-            },
-            Text.class, true, true, 0
+            }
     );
 
-    public static final InformationProvider<BlockPos, Float> BLOCK_BREAKING_PROGRESS = new InformationProvider<>(
-            TargetType.BLOCK,
+    public static final InformationProvider<BlockPos, Float> BLOCK_BREAKING_PROGRESS = InformationProvider.client(
+            TargetType.BLOCK, -6900,
             (player, world, target) -> {
                 float progress = ((ClientPlayerInteractionManagerAccessor) MinecraftClient.getInstance().interactionManager).whatsthis$getCurrentBreakingProgress();
                 return progress > 0 ? progress : null;
-            },
-            Float.class, false, true, -6900
+            }
     );
 
     @SuppressWarnings("unchecked")
-    public static final InformationProvider<BlockPos, List<ItemStack>> BLOCK_ITEM_STORAGE = new InformationProvider<>(
-            TargetType.BLOCK,
+    public static final InformationProvider<BlockPos, List<ItemStack>> BLOCK_ITEM_STORAGE = InformationProvider.server(
+            TargetType.BLOCK, true, 0,
+            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             (player, world, blockPos) -> {
                 var storage = ItemStorage.SIDED.find(world, blockPos, null);
                 if (storage == null) return null;
@@ -96,14 +123,13 @@ public class InformationProviders {
                 });
 
                 return items.isEmpty() ? null : items;
-            },
-            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
-            true, false, 0
+            }
     );
 
     @SuppressWarnings("unchecked")
-    public static final InformationProvider<BlockPos, List<NbtCompound>> BLOCK_FLUID_STORAGE = new InformationProvider<>(
-            TargetType.BLOCK,
+    public static final InformationProvider<BlockPos, List<NbtCompound>> BLOCK_FLUID_STORAGE = InformationProvider.server(
+            TargetType.BLOCK, true, 0,
+            (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
             (player, world, blockPos) -> {
                 var storage = FluidStorage.SIDED.find(world, blockPos, null);
                 if (storage == null) return null;
@@ -119,13 +145,11 @@ public class InformationProviders {
                 }
 
                 return fluidData.isEmpty() ? null : fluidData;
-            },
-            (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
-            true, false, 0
+            }
     );
 
-    public static final InformationProvider<BlockPos, Text> BLOCK_CROP_GROWTH = new InformationProvider<>(
-            TargetType.BLOCK,
+    public static final InformationProvider<BlockPos, Text> BLOCK_CROP_GROWTH = InformationProvider.client(
+            TargetType.BLOCK, 0,
             (player, world, target) -> {
                 var targetState = world.getBlockState(target);
 
@@ -145,36 +169,25 @@ public class InformationProviders {
                 return growth >= maxGrowth
                         ? Text.translatable("text.owo-whats-this.tooltip.blockCropGrowth.fullyGrown")
                         : Text.translatable("text.owo-whats-this.tooltip.blockCropGrowth", (growth * 100) / maxGrowth);
-            },
-            Text.class, true, true, 0
+            }
     );
 
-    public static final InformationProvider<BlockPos, Text> FLUID_VISCOSITY = new InformationProvider<>(
-            TargetType.FLUID,
+    public static final InformationProvider<BlockPos, Text> FLUID_VISCOSITY = InformationProvider.client(
+            TargetType.FLUID, 0,
             (player, world, target) -> {
                 return Text.translatable("text.owo-whats-this.tooltip.fluidViscosity", FluidVariantAttributes.getViscosity(FluidToVariant.apply(world.getFluidState(target).getFluid()), world));
-            },
-            Text.class, false, true, 0
+            }
     );
 
-    public static final InformationProvider<Entity, EntityHealthInfo> ENTITY_HEALTH = new InformationProvider<>(
-            TargetType.ENTITY,
+    public static final InformationProvider<Entity, EntityHealthInfo> ENTITY_HEALTH_AND_ARMOR = InformationProvider.server(
+            TargetType.ENTITY, true, 20, EntityHealthInfo.class,
             (player, world, entity) -> (entity instanceof LivingEntity living)
-                    ? new EntityHealthInfo(living.getHealth(), living.getMaxHealth())
-                    : null,
-            EntityHealthInfo.class, true, true, 20
+                    ? new EntityHealthInfo(living.getHealth(), living.getMaxHealth(), living.getArmor())
+                    : null
     );
 
-    public static final InformationProvider<Entity, Integer> ENTITY_ARMOR = new InformationProvider<>(
-            TargetType.ENTITY,
-            (player, world, entity) -> (entity instanceof LivingEntity living)
-                    ? living.getArmor()
-                    : null,
-            Integer.class, true, false, 10
-    );
-
-    public static final InformationProvider<Entity, Text> ENTITY_STATUS_EFFECTS = new InformationProvider<>(
-            TargetType.ENTITY,
+    public static final InformationProvider<Entity, Text> ENTITY_STATUS_EFFECTS = InformationProvider.server(
+            TargetType.ENTITY, true, 0, Text.class,
             (player, world, entity) -> {
                 if (!(entity instanceof LivingEntity living)) return null;
 
@@ -192,55 +205,51 @@ public class InformationProviders {
                     if (i < effectTexts.size() - 1) display.append("\n");
                 }
                 return display;
-            },
-            Text.class, true, false, 0
+            }
     );
 
-    public static final InformationProvider<Entity, Text> ENTITY_GROWING_TIME = new InformationProvider<>(
-            TargetType.ENTITY,
+    public static final InformationProvider<Entity, Text> ENTITY_GROWING_TIME = InformationProvider.server(
+            TargetType.ENTITY, true, 0, Text.class,
             (player, world, entity) -> {
                 if (!(entity instanceof PassiveEntity passive)) return null;
                 if (passive.getBreedingAge() >= 0) return null;
 
                 return Text.translatable("text.owo-whats-this.tooltip.entityGrowingTime", NumberFormatter.time(-passive.getBreedingAge() / 20));
-            },
-            Text.class, true, false, 0
+            }
     );
 
-    public static final InformationProvider<Entity, Text> ENTITY_BREEDING_COOLDOWN = new InformationProvider<>(
-            TargetType.ENTITY,
+    public static final InformationProvider<Entity, Text> ENTITY_BREEDING_COOLDOWN = InformationProvider.server(
+            TargetType.ENTITY, true, 0, Text.class,
             (player, world, entity) -> {
                 if (!(entity instanceof PassiveEntity passive)) return null;
                 if (passive.getBreedingAge() <= 0) return null;
 
                 return Text.translatable("text.owo-whats-this.tooltip.entityBreedingCooldown", NumberFormatter.time(passive.getBreedingAge() / 20));
-            },
-            Text.class, true, false, 0
+            }
     );
 
-    public static final InformationProvider<Entity, Text> ENTITY_TNT_FUSE = new InformationProvider<>(
-            TargetType.ENTITY,
+    public static final InformationProvider<Entity, Text> ENTITY_TNT_FUSE = InformationProvider.client(
+            TargetType.ENTITY, 0,
             (player, world, entity) -> {
                 if (!(entity instanceof TntEntity tnt)) return null;
                 return Text.translatable("text.owo-whats-this.tooltip.entityTntFuse", NumberFormatter.time(tnt.getFuse() / 20));
-            },
-            Text.class, true, true, 0
+            }
     );
 
-    public static final InformationProvider<Entity, Text> ENTITY_ITEM_COUNT = new InformationProvider<>(
-            TargetType.ENTITY,
+    public static final InformationProvider<Entity, Text> ENTITY_ITEM_COUNT = InformationProvider.client(
+            TargetType.ENTITY, 0,
             (player, world, entity) -> {
                 if (!(entity instanceof ItemEntity item)) return null;
                 if (item.getStack().getCount() < 2) return null;
 
                 return Text.translatable("text.owo-whats-this.tooltip.entityItemCount", item.getStack().getCount());
-            },
-            Text.class, true, true, 0
+            }
     );
 
     @SuppressWarnings("unchecked")
-    public static final InformationProvider<PlayerEntity, List<ItemStack>> PLAYER_INVENTORY = new InformationProvider<>(
-            TargetType.PLAYER,
+    public static final InformationProvider<PlayerEntity, List<ItemStack>> PLAYER_INVENTORY = InformationProvider.server(
+            TargetType.PLAYER, true, 0,
+            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             (player, world, target) -> {
                 var items = new ArrayList<ItemStack>();
                 for (int i = 0; i < player.getInventory().size(); i++) {
@@ -251,12 +260,10 @@ public class InformationProviders {
                 }
 
                 return items;
-            },
-            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
-            true, false, 0
+            }
     );
 
-    public record EntityHealthInfo(float health, float maxHealth) {}
+    public record EntityHealthInfo(float health, float maxHealth, int armor) {}
 
     @Environment(EnvType.CLIENT)
     public static class DisplayAdapters {
@@ -266,59 +273,62 @@ public class InformationProviders {
         };
 
         public static final InformationProvider.DisplayAdapter<EntityHealthInfo> ENTITY_HEALTH = data -> {
-            return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
-                if (data.health < 30 && data.maxHealth < 30) {
-                    flowLayout.gap(-1);
-                    for (int i = 0; i < Math.floor(data.health / 2); i++) {
-                        flowLayout.child(new HeartSpriteComponent(1f));
-                    }
+            return Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(view -> {
+                view.gap(1);
+                view.child(Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
+                    if (data.health < 30 && data.maxHealth < 30) {
+                        flowLayout.gap(-1);
+                        for (int i = 0; i < Math.floor(data.health / 2); i++) {
+                            flowLayout.child(new HeartSpriteComponent(1f));
+                        }
 
-                    if (data.health % 2f > 0.05) {
-                        flowLayout.child(new HeartSpriteComponent(data.health * .5f % 1f));
-                    }
+                        if (data.health % 2f > 0.05) {
+                            flowLayout.child(new HeartSpriteComponent(data.health * .5f % 1f));
+                        }
 
-                    int missingHearts = (int) Math.floor((data.maxHealth - data.health) / 2);
-                    for (int i = 0; i < missingHearts; i++) {
-                        flowLayout.child(new HeartSpriteComponent(0));
+                        int missingHearts = (int) Math.floor((data.maxHealth - data.health) / 2);
+                        for (int i = 0; i < missingHearts; i++) {
+                            flowLayout.child(new HeartSpriteComponent(0));
+                        }
+                    } else {
+                        flowLayout.gap(2);
+                        flowLayout.child(
+                                Components.label(Text.literal(Math.round(data.health / 2f) + "x"))
+                        ).child(
+                                new HeartSpriteComponent(1)
+                        );
                     }
-                } else {
-                    flowLayout.gap(2);
-                    flowLayout.child(
-                            Components.label(Text.literal(Math.round(data.health / 2f) + "x"))
-                    ).child(
-                            new HeartSpriteComponent(1)
-                    );
-                }
-            });
-        };
+                }));
 
-        public static final InformationProvider.DisplayAdapter<Integer> ENTITY_ARMOR = data -> {
-            return Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
-                if (data < 30) {
-                    flowLayout.gap(-1);
-                    for (int i = 0; i < data / 2; i++) {
-                        flowLayout.child(Components.texture(
-                                InGameHud.GUI_ICONS_TEXTURE,
-                                34, 9, 9, 9
-                        ));
-                    }
+                if (data.armor > 0) {
+                    view.child(Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
+                        if (data.armor < 30) {
+                            flowLayout.gap(-1);
+                            for (int i = 0; i < data.armor / 2; i++) {
+                                flowLayout.child(Components.texture(
+                                        InGameHud.GUI_ICONS_TEXTURE,
+                                        34, 9, 9, 9
+                                ));
+                            }
 
-                    if (data % 2 != 0) {
-                        flowLayout.child(Components.texture(
-                                InGameHud.GUI_ICONS_TEXTURE,
-                                25, 9, 9, 9
-                        ));
-                    }
-                } else {
-                    flowLayout.gap(2);
-                    flowLayout.child(
-                            Components.label(Text.literal(Math.round(data / 2f) + "x"))
-                    ).child(
-                            Components.texture(
-                                    InGameHud.GUI_ICONS_TEXTURE,
-                                    34, 9, 9, 9
-                            )
-                    );
+                            if (data.armor % 2 != 0) {
+                                flowLayout.child(Components.texture(
+                                        InGameHud.GUI_ICONS_TEXTURE,
+                                        25, 9, 9, 9
+                                ));
+                            }
+                        } else {
+                            flowLayout.gap(2);
+                            flowLayout.child(
+                                    Components.label(Text.literal(Math.round(data.armor / 2f) + "x"))
+                            ).child(
+                                    Components.texture(
+                                            InGameHud.GUI_ICONS_TEXTURE,
+                                            34, 9, 9, 9
+                                    )
+                            );
+                        }
+                    }));
                 }
             });
         };
