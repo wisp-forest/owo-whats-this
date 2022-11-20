@@ -22,13 +22,13 @@ public class TooltipObjectManager {
         PROVIDERS_BY_TYPE.clear();
         LIVE_PROVIDERS.clear();
 
-        OwoWhatsThis.TARGET_TYPES.streamEntries()
+        OwoWhatsThis.TARGET_TYPE.streamEntries()
                 .map(RegistryEntry.Reference::value)
                 .sorted(Comparator.comparingInt(type -> -type.priority()))
                 .forEach(SORTED_TARGET_TYPES::add);
 
         var providersByType = new HashMap<TargetType<?>, List<InformationProvider<?, ?>>>();
-        OwoWhatsThis.INFORMATION_PROVIDERS.streamEntries()
+        OwoWhatsThis.INFORMATION_PROVIDER.streamEntries()
                 .filter(entry -> !OwoWhatsThis.CONFIG.disabledProviders().contains(entry.getKey().map(RegistryKey::getValue).orElse(null)))
                 .map(RegistryEntry.Reference::value)
                 .sorted(Comparator.comparingInt(provider -> -provider.priority()))

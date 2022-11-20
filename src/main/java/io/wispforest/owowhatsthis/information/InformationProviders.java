@@ -9,6 +9,7 @@ import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.FluidToVariant;
+import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
 import io.wispforest.owowhatsthis.client.component.HeartSpriteComponent;
@@ -21,11 +22,15 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.minecraft.block.CropBlock;
+import net.minecraft.block.StemBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -74,7 +79,7 @@ public class InformationProviders {
     );
 
     @SuppressWarnings("unchecked")
-    public static final InformationProvider<BlockPos, List<ItemStack>> BLOCK_INVENTORY = new InformationProvider<>(
+    public static final InformationProvider<BlockPos, List<ItemStack>> BLOCK_ITEM_STORAGE = new InformationProvider<>(
             TargetType.BLOCK,
             (player, world, blockPos) -> {
                 var storage = ItemStorage.SIDED.find(world, blockPos, null);
@@ -114,6 +119,31 @@ public class InformationProviders {
             },
             (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
             true, false, 0
+    );
+
+    public static final InformationProvider<BlockPos, Text> BLOCK_CROP_GROWTH = new InformationProvider<>(
+            TargetType.BLOCK,
+            (player, world, target) -> {
+                var targetState = world.getBlockState(target);
+
+                int growth = 0;
+                int maxGrowth = 0;
+
+                if (targetState.getBlock() instanceof CropBlock crop) {
+                    growth = targetState.get(crop.getAgeProperty());
+                    maxGrowth = crop.getMaxAge();
+                } else if (targetState.getBlock() instanceof StemBlock) {
+                    growth = targetState.get(StemBlock.AGE);
+                    maxGrowth = 7;
+                } else {
+                    return null;
+                }
+
+                return growth >= maxGrowth
+                        ? Text.translatable("text.owo-whats-this.tooltip.blockCropGrowth.fullyGrown")
+                        : Text.translatable("text.owo-whats-this.tooltip.blockCropGrowth", (growth * 100) / maxGrowth);
+            },
+            Text.class, true, true, 0
     );
 
     public static final InformationProvider<BlockPos, Text> FLUID_VISCOSITY = new InformationProvider<>(
@@ -159,6 +189,37 @@ public class InformationProviders {
                     if (i < effectTexts.size() - 1) display.append("\n");
                 }
                 return display;
+            },
+            Text.class, true, false, 0
+    );
+
+    public static final InformationProvider<Entity, Text> ENTITY_GROWING_TIME = new InformationProvider<>(
+            TargetType.ENTITY,
+            (player, world, entity) -> {
+                if (!(entity instanceof PassiveEntity passive)) return null;
+                if (passive.getBreedingAge() >= 0) return null;
+
+                return Text.translatable("text.owo-whats-this.tooltip.entityGrowingTime", NumberFormatter.time(-passive.getBreedingAge() / 20));
+            },
+            Text.class, true, false, 0
+    );
+
+    public static final InformationProvider<Entity, Text> ENTITY_BREEDING_COOLDOWN = new InformationProvider<>(
+            TargetType.ENTITY,
+            (player, world, entity) -> {
+                if (!(entity instanceof PassiveEntity passive)) return null;
+                if (passive.getBreedingAge() <= 0) return null;
+
+                return Text.translatable("text.owo-whats-this.tooltip.entityBreedingCooldown", NumberFormatter.time(passive.getBreedingAge() / 20));
+            },
+            Text.class, true, false, 0
+    );
+
+    public static final InformationProvider<Entity, Text> ENTITY_TNT_FUSE = new InformationProvider<>(
+            TargetType.ENTITY,
+            (player, world, entity) -> {
+                if (!(entity instanceof TntEntity tnt)) return null;
+                return Text.translatable("text.owo-whats-this.tooltip.entityTntFuse", NumberFormatter.time(tnt.getFuse() / 20));
             },
             Text.class, true, false, 0
     );
@@ -277,7 +338,12 @@ public class InformationProviders {
 
                                 spriteContainer.child(
                                         Components.label(
-                                                Text.translatable("text.owo-whats-this.tooltip.blockFluidAmount", FluidVariantAttributes.getName(variant), amount / 81, capacity / 81)
+                                                Text.translatable(
+                                                        "text.owo-whats-this.tooltip.blockFluidAmount",
+                                                        FluidVariantAttributes.getName(variant),
+                                                        NumberFormatter.quantity(amount / 81000d, "B"),
+                                                        NumberFormatter.quantity(capacity / 81000d, "B")
+                                                )
                                         ).positioning(Positioning.relative(0, 50)).margins(Insets.left(5))
                                 );
                             })

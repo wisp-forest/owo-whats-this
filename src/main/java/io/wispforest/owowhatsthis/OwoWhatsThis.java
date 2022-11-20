@@ -28,13 +28,13 @@ public class OwoWhatsThis implements ModInitializer {
     public static final io.wispforest.owowhatsthis.OwoWhatsThisConfig CONFIG = io.wispforest.owowhatsthis.OwoWhatsThisConfig.createAndLoad();
 
     @SuppressWarnings("unchecked")
-    public static final Registry<TargetType<?>> TARGET_TYPES =
+    public static final Registry<TargetType<?>> TARGET_TYPE =
             (Registry<TargetType<?>>) (Object) FabricRegistryBuilder.createSimple(TargetType.class, id("target_types"))
                     .attribute(RegistryAttribute.SYNCED)
                     .buildAndRegister();
 
     @SuppressWarnings("unchecked")
-    public static final Registry<InformationProvider<?, ?>> INFORMATION_PROVIDERS =
+    public static final Registry<InformationProvider<?, ?>> INFORMATION_PROVIDER =
             (Registry<InformationProvider<?, ?>>) (Object) FabricRegistryBuilder.createSimple(InformationProvider.class, id("information_providers"))
                     .attribute(RegistryAttribute.SYNCED)
                     .buildAndRegister();
@@ -44,24 +44,28 @@ public class OwoWhatsThis implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Registry.register(TARGET_TYPES, id("block"), TargetType.BLOCK);
-        Registry.register(TARGET_TYPES, id("entity"), TargetType.ENTITY);
-        Registry.register(TARGET_TYPES, id("player"), TargetType.PLAYER);
-        Registry.register(TARGET_TYPES, id("fluid"), TargetType.FLUID);
+        Registry.register(TARGET_TYPE, id("block"), TargetType.BLOCK);
+        Registry.register(TARGET_TYPE, id("entity"), TargetType.ENTITY);
+        Registry.register(TARGET_TYPE, id("player"), TargetType.PLAYER);
+        Registry.register(TARGET_TYPE, id("fluid"), TargetType.FLUID);
 
-        Registry.register(INFORMATION_PROVIDERS, id("block_breaking_progress"), InformationProviders.BLOCK_BREAKING_PROGRESS);
-        Registry.register(INFORMATION_PROVIDERS, id("block_harvestability"), InformationProviders.BLOCK_HARVESTABILITY);
-        Registry.register(INFORMATION_PROVIDERS, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
-        Registry.register(INFORMATION_PROVIDERS, id("block_inventory"), InformationProviders.BLOCK_INVENTORY);
-        Registry.register(INFORMATION_PROVIDERS, id("block_fluid_storage"), InformationProviders.BLOCK_FLUID_STORAGE);
+        Registry.register(INFORMATION_PROVIDER, id("block_breaking_progress"), InformationProviders.BLOCK_BREAKING_PROGRESS);
+        Registry.register(INFORMATION_PROVIDER, id("block_harvestability"), InformationProviders.BLOCK_HARVESTABILITY);
+        Registry.register(INFORMATION_PROVIDER, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
+        Registry.register(INFORMATION_PROVIDER, id("block_item_storage"), InformationProviders.BLOCK_ITEM_STORAGE);
+        Registry.register(INFORMATION_PROVIDER, id("block_fluid_storage"), InformationProviders.BLOCK_FLUID_STORAGE);
+        Registry.register(INFORMATION_PROVIDER, id("block_crop_growth"), InformationProviders.BLOCK_CROP_GROWTH);
 
-        Registry.register(INFORMATION_PROVIDERS, id("fluid_viscosity"), InformationProviders.FLUID_VISCOSITY);
+        Registry.register(INFORMATION_PROVIDER, id("fluid_viscosity"), InformationProviders.FLUID_VISCOSITY);
 
-        Registry.register(INFORMATION_PROVIDERS, id("entity_health"), InformationProviders.ENTITY_HEALTH);
-        Registry.register(INFORMATION_PROVIDERS, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
-        Registry.register(INFORMATION_PROVIDERS, id("entity_armor"), InformationProviders.ENTITY_ARMOR);
+        Registry.register(INFORMATION_PROVIDER, id("entity_health"), InformationProviders.ENTITY_HEALTH);
+        Registry.register(INFORMATION_PROVIDER, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
+        Registry.register(INFORMATION_PROVIDER, id("entity_armor"), InformationProviders.ENTITY_ARMOR);
+        Registry.register(INFORMATION_PROVIDER, id("entity_growing_time"), InformationProviders.ENTITY_GROWING_TIME);
+        Registry.register(INFORMATION_PROVIDER, id("entity_breeding_cooldown"), InformationProviders.ENTITY_BREEDING_COOLDOWN);
+        Registry.register(INFORMATION_PROVIDER, id("entity_tnt_fuse"), InformationProviders.ENTITY_TNT_FUSE);
 
-        Registry.register(INFORMATION_PROVIDERS, id("player_inventory"), InformationProviders.PLAYER_INVENTORY);
+        Registry.register(INFORMATION_PROVIDER, id("player_inventory"), InformationProviders.PLAYER_INVENTORY);
 
         OwoWhatsThisNetworking.initialize();
         OwoFreezer.registerFreezeCallback(TooltipObjectManager::updateAndSort);

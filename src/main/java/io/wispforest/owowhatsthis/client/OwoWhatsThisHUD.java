@@ -100,7 +100,7 @@ public class OwoWhatsThisHUD {
 
                                             if (newHash != currentHash || mustRefresh) {
                                                 var targetBuf = PacketByteBufs.create();
-                                                targetBuf.writeRegistryValue(OwoWhatsThis.TARGET_TYPES, type);
+                                                targetBuf.writeRegistryValue(OwoWhatsThis.TARGET_TYPE, type);
                                                 ((TargetType<Object>) type).serializer().accept(targetBuf, transformed);
                                                 OwoWhatsThisNetworking.CHANNEL.clientHandle().send(new RequestDataPacket(newHash, targetBuf));
                                             }
@@ -129,7 +129,7 @@ public class OwoWhatsThisHUD {
         final var dataCount = buffer.readVarInt();
 
         for (int i = 0; i < dataCount; i++) {
-            var provider = buffer.readRegistryValue(OwoWhatsThis.INFORMATION_PROVIDERS);
+            var provider = buffer.readRegistryValue(OwoWhatsThis.INFORMATION_PROVIDER);
             var data = provider.serializer().deserializer().apply(buffer);
             PROVIDER_DATA.put(provider, data);
         }

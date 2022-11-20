@@ -18,16 +18,20 @@ public class OwoWhatsThisClient implements ClientModInitializer {
         DisplayAdapters.register(TargetType.FLUID, TargetType.DisplayAdapter.FLUID);
 
         DisplayAdapters.register(InformationProviders.BLOCK_HARDNESS, InformationProviders.DisplayAdapters.TEXT);
-        DisplayAdapters.register(InformationProviders.BLOCK_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
+        DisplayAdapters.register(InformationProviders.BLOCK_ITEM_STORAGE, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
         DisplayAdapters.register(InformationProviders.BLOCK_FLUID_STORAGE, InformationProviders.DisplayAdapters.FLUID_STORAGE_LIST);
         DisplayAdapters.register(InformationProviders.BLOCK_HARVESTABILITY, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.BLOCK_BREAKING_PROGRESS, InformationProviders.DisplayAdapters.BREAKING_PROGRESS);
+        DisplayAdapters.register(InformationProviders.BLOCK_CROP_GROWTH, InformationProviders.DisplayAdapters.TEXT);
 
         DisplayAdapters.register(InformationProviders.FLUID_VISCOSITY, InformationProviders.DisplayAdapters.TEXT);
 
         DisplayAdapters.register(InformationProviders.ENTITY_HEALTH, InformationProviders.DisplayAdapters.ENTITY_HEALTH);
         DisplayAdapters.register(InformationProviders.ENTITY_STATUS_EFFECTS, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_ARMOR, InformationProviders.DisplayAdapters.ENTITY_ARMOR);
+        DisplayAdapters.register(InformationProviders.ENTITY_GROWING_TIME, InformationProviders.DisplayAdapters.TEXT);
+        DisplayAdapters.register(InformationProviders.ENTITY_BREEDING_COOLDOWN, InformationProviders.DisplayAdapters.TEXT);
+        DisplayAdapters.register(InformationProviders.ENTITY_TNT_FUSE, InformationProviders.DisplayAdapters.TEXT);
 
         DisplayAdapters.register(InformationProviders.PLAYER_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
 

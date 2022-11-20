@@ -49,15 +49,15 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
             super(Sizing.fill(100), Sizing.content());
             this.backingSet = new HashSet<>(option.value());
 
-            for (var targetType : OwoWhatsThis.TARGET_TYPES) {
+            for (var targetType : OwoWhatsThis.TARGET_TYPE) {
                 var layout = Containers.collapsible(
                         Sizing.content(), Sizing.content(),
-                        Text.translatable("targetType." + OwoWhatsThis.TARGET_TYPES.getId(targetType).toTranslationKey()),
+                        Text.translatable("targetType." + OwoWhatsThis.TARGET_TYPE.getId(targetType).toTranslationKey()),
                         true
                 );
 
                 var applicableProviders = new ArrayList<InformationProvider<?, ?>>();
-                for (var provider : OwoWhatsThis.INFORMATION_PROVIDERS) {
+                for (var provider : OwoWhatsThis.INFORMATION_PROVIDER) {
                     if (provider.applicableTargetType() == targetType) applicableProviders.add(provider);
                 }
 
@@ -65,7 +65,7 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
                 layout.child(optionGrid);
 
                 for (int i = 0; i < applicableProviders.size(); i++) {
-                    final var providerId = OwoWhatsThis.INFORMATION_PROVIDERS.getId(applicableProviders.get(i));
+                    final var providerId = OwoWhatsThis.INFORMATION_PROVIDER.getId(applicableProviders.get(i));
 
                     optionGrid.child(
                             Containers.horizontalFlow(Sizing.fill(50), Sizing.fixed(30)).<FlowLayout>configure(optionLayout -> {

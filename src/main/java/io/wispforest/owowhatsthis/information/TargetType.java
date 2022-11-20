@@ -9,8 +9,8 @@ import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owowhatsthis.FluidToVariant;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
-import io.wispforest.owowhatsthis.client.component.AligningEntityComponent;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
+import io.wispforest.owowhatsthis.client.component.OwoWhatsThisEntityComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
@@ -91,6 +91,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
 
         DisplayAdapter<BlockPos> BLOCK = blockPos -> {
             var targetState = MinecraftClient.getInstance().world.getBlockState(blockPos);
+            var previewItem = targetState.getBlock().asItem().getDefaultStack();
 
             return new PreviewData(
                     Components.label(
@@ -101,7 +102,9 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                                     )
                             )
                     ).shadow(true),
-                    Components.item(targetState.getBlock().asItem().getDefaultStack())
+                    previewItem.isEmpty()
+                            ? Containers.verticalFlow(Sizing.fixed(0), Sizing.fixed(0))
+                            : Components.item(previewItem)
             );
         };
 
@@ -134,7 +137,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                                 )
                         )
                 ).shadow(true),
-                new AligningEntityComponent<>(Sizing.fixed(24), entity).scaleToFit(true)
+                new OwoWhatsThisEntityComponent<>(Sizing.fixed(24), entity).scaleToFit(true)
         );
 
         DisplayAdapter<PlayerEntity> PLAYER = player -> {

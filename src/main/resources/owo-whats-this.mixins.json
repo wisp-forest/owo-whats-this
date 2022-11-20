@@ -6,6 +6,8 @@
   "mixins": [],
   "client": [
     "ClientPlayerInteractionManagerAccessor",
+    "EntityRenderDispatcherMixin",
+    "EntityRendererMixin",
     "PlayerListHudAccessor"
   ],
   "injectors": {

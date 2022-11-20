@@ -6,9 +6,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
-public class AligningEntityComponent<E extends Entity> extends EntityComponent<E> {
+public class OwoWhatsThisEntityComponent<E extends Entity> extends EntityComponent<E> {
 
-    public AligningEntityComponent(Sizing sizing, E entity) {
+    private static boolean drawing = false;
+
+    public OwoWhatsThisEntityComponent(Sizing sizing, E entity) {
         super(sizing, entity);
     }
 
@@ -26,11 +28,18 @@ public class AligningEntityComponent<E extends Entity> extends EntityComponent<E
         }
 
         this.mouseRotation = 90 + (entity instanceof LivingEntity living ? living.prevBodyYaw : entity.getBodyYaw());
+
+        drawing = true;
         super.draw(matrices, mouseX, mouseY, partialTicks, delta);
+        drawing = false;
 
         if (this.entity instanceof LivingEntity living) {
             living.headYaw = prevHeadYaw;
             living.prevHeadYaw = prevPrevHeadYaw;
         }
+    }
+
+    public static boolean drawing() {
+        return drawing;
     }
 }

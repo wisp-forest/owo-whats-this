@@ -19,7 +19,7 @@ public class OwoWhatsThisNetworking {
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public static void initialize() {
         CHANNEL.registerServerbound(RequestDataPacket.class, (message, access) -> {
-            var type = message.targetData().readRegistryValue(OwoWhatsThis.TARGET_TYPES);
+            var type = message.targetData().readRegistryValue(OwoWhatsThis.TARGET_TYPE);
             var target = type.deserializer().apply(access, message.targetData());
             if (target == null) return;
 
@@ -38,7 +38,7 @@ public class OwoWhatsThisNetworking {
 
             buffer.writeVarInt(applicableProviders.size());
             applicableProviders.forEach((provider, transformed) -> {
-                buffer.writeRegistryValue(OwoWhatsThis.INFORMATION_PROVIDERS, provider);
+                buffer.writeRegistryValue(OwoWhatsThis.INFORMATION_PROVIDER, provider);
                 provider.serializer().serializer().accept(buffer, transformed);
             });
 

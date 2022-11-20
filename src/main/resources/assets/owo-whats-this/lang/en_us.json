@@ -15,7 +15,11 @@
 
   "targetType.owo-whats-this.entity": "entities",
   "informationProvider.owo-whats-this.entity_health": "health",
+  "informationProvider.owo-whats-this.entity_armor": "armor",
   "informationProvider.owo-whats-this.entity_status_effects": "status effects",
+  "informationProvider.owo-whats-this.entity_tnt_fuse": "tnt fuse",
+  "informationProvider.owo-whats-this.entity_growing_time": "growing time",
+  "informationProvider.owo-whats-this.entity_breeding_cooldown": "breeding cooldown",
 
   "targetType.owo-whats-this.player": "players",
   "informationProvider.owo-whats-this.player_inventory": "inventory",
@@ -23,9 +27,10 @@
   "targetType.owo-whats-this.block": "blocks",
   "informationProvider.owo-whats-this.block_hardness": "hardness",
   "informationProvider.owo-whats-this.block_harvestability": "harvestability",
-  "informationProvider.owo-whats-this.block_inventory": "item storage",
+  "informationProvider.owo-whats-this.block_item_storage": "item storage",
   "informationProvider.owo-whats-this.block_fluid_storage": "fluid storage",
   "informationProvider.owo-whats-this.block_breaking_progress": "breaking progress",
+  "informationProvider.owo-whats-this.block_crop_growth": "crop growth",
 
   "text.owo-whats-this.toolType.axe": "Axe",
   "text.owo-whats-this.toolType.pickaxe": "Pickaxe",
@@ -48,10 +53,16 @@
     " Not harvestable"
   ],
 
-  "text.owo-whats-this.tooltip.blockHardness": "Hardness: %d",
+  "text.owo-whats-this.tooltip.blockHardness": ["Hardness: ", {"index": 0, "color": "gray"}],
   "text.owo-whats-this.tooltip.blockFluidAmount": "%s: %d/%d",
+  "text.owo-whats-this.tooltip.blockCropGrowth": ["Growth: ", {"index": 0, "color": "gray"}, {"text": "%", "color": "gray"}],
+  "text.owo-whats-this.tooltip.blockCropGrowth.fullyGrown": "Fully grown",
 
-  "text.owo-whats-this.tooltip.fluidViscosity": "Viscosity: %d",
+  "text.owo-whats-this.tooltip.fluidViscosity": ["Viscosity: ", {"index": 0, "color": "gray"}],
+
+  "text.owo-whats-this.tooltip.entityTntFuse": ["Fuse: ", {"index": 0, "color": "gray"}],
+  "text.owo-whats-this.tooltip.entityGrowingTime": ["Growing time: ", {"index": 0, "color": "gray"}],
+  "text.owo-whats-this.tooltip.entityBreedingCooldown": ["Breeding cooldown: ", {"index": 0, "color": "gray"}],
 
   "text.owo-whats-this.tooltip.status_effect": [
     {"index": 0},
