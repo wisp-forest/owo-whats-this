@@ -63,6 +63,7 @@
   "text.owo-whats-this.tooltip.entityTntFuse": ["Fuse: ", {"index": 0, "color": "gray"}],
   "text.owo-whats-this.tooltip.entityGrowingTime": ["Growing time: ", {"index": 0, "color": "gray"}],
   "text.owo-whats-this.tooltip.entityBreedingCooldown": ["Breeding cooldown: ", {"index": 0, "color": "gray"}],
+  "text.owo-whats-this.tooltip.entityItemCount": "%d Items",
 
   "text.owo-whats-this.tooltip.status_effect": [
     {"index": 0},

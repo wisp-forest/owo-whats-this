@@ -1,12 +1,15 @@
 package io.wispforest.owowhatsthis.client;
 
 import io.wispforest.owo.config.ui.ConfigScreen;
+import io.wispforest.owowhatsthis.client.component.OwoWhatsThisEntityComponent;
 import io.wispforest.owowhatsthis.information.InformationProviders;
 import io.wispforest.owowhatsthis.information.TargetType;
 import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.EntityType;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class OwoWhatsThisClient implements ClientModInitializer {
@@ -32,11 +35,21 @@ public class OwoWhatsThisClient implements ClientModInitializer {
         DisplayAdapters.register(InformationProviders.ENTITY_GROWING_TIME, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_BREEDING_COOLDOWN, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_TNT_FUSE, InformationProviders.DisplayAdapters.TEXT);
+        DisplayAdapters.register(InformationProviders.ENTITY_ITEM_COUNT, InformationProviders.DisplayAdapters.TEXT);
 
         DisplayAdapters.register(InformationProviders.PLAYER_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
 
-        OwoWhatsThisHUD.initialize();
+        OwoWhatsThisEntityComponent.registerSpecialHandler(EntityType.ITEM, component -> {
+            component.scale(component.scale() * .65f);
+            component.transform(matrices -> {
+                matrices.translate(0, -.15, 0);
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(35));
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-component.entity().getBodyYaw()));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-35));
+            });
+        });
 
+        OwoWhatsThisHUD.initialize();
         OwoWhatsThisNetworking.initializeClient();
 
         ConfigScreen.registerProvider("owo-whats-this", OwoWhatsThisConfigScreen::new);

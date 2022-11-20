@@ -27,6 +27,7 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
@@ -62,11 +63,13 @@ public class InformationProviders {
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
 
-                return effectiveTools.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
+                // this cast is only here to appease IntelliJ, as it occasionally has a meltdown
+                // trying to understand the return type of this lambda
+                return (Text) effectiveTools.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
                         .append("\n")
                         .append(Text.translatable(harvestable ? "text.owo-whats-this.tooltip.harvestable" : "text.owo-whats-this.tooltip.not_harvestable"));
             },
-            Text.class, false, true, 0
+            Text.class, true, true, 0
     );
 
     public static final InformationProvider<BlockPos, Float> BLOCK_BREAKING_PROGRESS = new InformationProvider<>(
@@ -126,8 +129,8 @@ public class InformationProviders {
             (player, world, target) -> {
                 var targetState = world.getBlockState(target);
 
-                int growth = 0;
-                int maxGrowth = 0;
+                int growth;
+                int maxGrowth;
 
                 if (targetState.getBlock() instanceof CropBlock crop) {
                     growth = targetState.get(crop.getAgeProperty());
@@ -159,7 +162,7 @@ public class InformationProviders {
             (player, world, entity) -> (entity instanceof LivingEntity living)
                     ? new EntityHealthInfo(living.getHealth(), living.getMaxHealth())
                     : null,
-            EntityHealthInfo.class, true, false, 20
+            EntityHealthInfo.class, true, true, 20
     );
 
     public static final InformationProvider<Entity, Integer> ENTITY_ARMOR = new InformationProvider<>(
@@ -221,7 +224,18 @@ public class InformationProviders {
                 if (!(entity instanceof TntEntity tnt)) return null;
                 return Text.translatable("text.owo-whats-this.tooltip.entityTntFuse", NumberFormatter.time(tnt.getFuse() / 20));
             },
-            Text.class, true, false, 0
+            Text.class, true, true, 0
+    );
+
+    public static final InformationProvider<Entity, Text> ENTITY_ITEM_COUNT = new InformationProvider<>(
+            TargetType.ENTITY,
+            (player, world, entity) -> {
+                if (!(entity instanceof ItemEntity item)) return null;
+                if (item.getStack().getCount() < 2) return null;
+
+                return Text.translatable("text.owo-whats-this.tooltip.entityItemCount", item.getStack().getCount());
+            },
+            Text.class, true, true, 0
     );
 
     @SuppressWarnings("unchecked")
