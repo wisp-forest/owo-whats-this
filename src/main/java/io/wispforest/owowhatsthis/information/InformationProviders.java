@@ -38,7 +38,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +77,7 @@ public class InformationProviders {
                 var state = world.getBlockState(target);
                 var harvestable = !state.isToolRequired() || player.getMainHandStack().isSuitableFor(state);
 
-                var effectiveTools = RegistryAccess.getEntry(Registries.BLOCK, state.getBlock()).streamTags()
+                var effectiveTools = RegistryAccess.getEntry(Registry.BLOCK, state.getBlock()).streamTags()
                         .filter(blockTagKey -> OwoWhatsThis.effectiveToolTags().containsKey(blockTagKey.id()))
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .collect(Collectors.toList());
@@ -354,10 +354,10 @@ public class InformationProviders {
                                     spriteContainer.child(
                                             new ColoringComponent<>(
                                                     Color.ofRgb(color),
-                                                    Components.sprite(sprite).horizontalSizing(Sizing.fixed(Math.min(sprite.getContents().getWidth(), width)))
+                                                    Components.sprite(sprite).horizontalSizing(Sizing.fixed(Math.min(sprite.getWidth(), width)))
                                             )
                                     );
-                                    width -= sprite.getContents().getWidth();
+                                    width -= sprite.getWidth();
                                 }
 
                                 spriteContainer.child(

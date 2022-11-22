@@ -27,7 +27,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,7 +98,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                             TextOps.concat(
                                     targetState.getBlock().getName(),
                                     Text.literal("\n").append(
-                                            TextOps.withFormatting(OwoWhatsThis.modNameOf(Registries.BLOCK.getId(targetState.getBlock())), Formatting.BLUE)
+                                            TextOps.withFormatting(OwoWhatsThis.modNameOf(Registry.BLOCK.getId(targetState.getBlock())), Formatting.BLUE)
                                     )
                             )
                     ).shadow(true),
@@ -117,7 +117,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                             TextOps.concat(
                                     FluidVariantAttributes.getName(fluidVariant),
                                     Text.literal("\n").append(
-                                            TextOps.withFormatting(OwoWhatsThis.modNameOf(Registries.FLUID.getId(fluidVariant.getFluid())), Formatting.BLUE)
+                                            TextOps.withFormatting(OwoWhatsThis.modNameOf(Registry.FLUID.getId(fluidVariant.getFluid())), Formatting.BLUE)
                                     )
                             )
                     ).shadow(true),
@@ -133,7 +133,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                         TextOps.concat(
                                 entity.getDisplayName(),
                                 Text.literal("\n").append(
-                                        TextOps.withFormatting(OwoWhatsThis.modNameOf(Registries.ENTITY_TYPE.getId(entity.getType())), Formatting.BLUE)
+                                        TextOps.withFormatting(OwoWhatsThis.modNameOf(Registry.ENTITY_TYPE.getId(entity.getType())), Formatting.BLUE)
                                 )
                         )
                 ).shadow(true),

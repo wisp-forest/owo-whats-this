@@ -9,7 +9,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class OwoWhatsThisClient implements ClientModInitializer {
@@ -42,9 +42,9 @@ public class OwoWhatsThisClient implements ClientModInitializer {
             component.scale(component.scale() * .65f);
             component.transform(matrices -> {
                 matrices.translate(0, -.15, 0);
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(35));
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-component.entity().getBodyYaw()));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-35));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(35));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-component.entity().getBodyYaw()));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-35));
             });
         });
 
