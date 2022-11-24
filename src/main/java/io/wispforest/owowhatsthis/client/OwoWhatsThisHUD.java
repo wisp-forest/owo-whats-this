@@ -89,7 +89,9 @@ public class OwoWhatsThisHUD {
                                                             ((InformationProvider.DisplayAdapter<Object>) DisplayAdapters.get(provider)).build(infoTransformed)
                                                     );
                                                 } else {
-                                                    if (provider.live()) mustRefresh = true;
+                                                    if (provider.live()) {
+                                                        mustRefresh = true;
+                                                    }
                                                     if (!PROVIDER_DATA.containsKey(provider)) continue;
 
                                                     infoView.child(
@@ -101,7 +103,7 @@ public class OwoWhatsThisHUD {
                                             if (newHash != currentHash || mustRefresh) {
                                                 var targetBuf = PacketByteBufs.create();
                                                 targetBuf.writeRegistryValue(OwoWhatsThis.TARGET_TYPE, type);
-                                                ((TargetType<Object>) type).serializer().accept(targetBuf, transformed);
+                                                ((TargetType<Object>) type).serializer().accept(transformed, targetBuf);
                                                 OwoWhatsThisNetworking.CHANNEL.clientHandle().send(new RequestDataPacket(newHash, targetBuf));
                                             }
 

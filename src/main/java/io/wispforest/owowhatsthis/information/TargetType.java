@@ -26,7 +26,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transformer, BiConsumer<PacketByteBuf, T> serializer,
+public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transformer, BiConsumer<T, PacketByteBuf> serializer,
                             BiFunction<ServerAccess, PacketByteBuf, @Nullable T> deserializer, int priority, @Nullable TargetType<? super T> parent) {
 
     public TargetType {
@@ -43,54 +42,48 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
         }
     }
 
-    public static final TargetType<BlockPos> BLOCK = new TargetType<>(
+    public static final TargetType<BlockStateWithPosition> BLOCK = new TargetType<>(
             (world, hitResult) -> hitResult instanceof BlockHitResult blockHit
                     && blockHit.getType() == HitResult.Type.BLOCK
                     && !world.getBlockState(blockHit.getBlockPos()).isAir()
-                    ? blockHit.getBlockPos()
+                    ? new BlockStateWithPosition(blockHit.getBlockPos(), world.getBlockState(blockHit.getBlockPos()))
                     : null,
-            PacketByteBuf::writeBlockPos,
-            TargetType::readBlockPos,
+            BlockStateWithPosition::write,
+            BlockStateWithPosition::read,
             0, null
     );
 
-    public static final TargetType<BlockPos> FLUID = new TargetType<>(
+    public static final TargetType<FluidStateWithPosition> FLUID = new TargetType<>(
             (world, hitResult) -> hitResult instanceof BlockHitResult blockHit
                     && blockHit.getType() == HitResult.Type.BLOCK
                     && world.getBlockState(blockHit.getBlockPos()).getBlock() instanceof FluidBlock
                     && !world.getFluidState(blockHit.getBlockPos()).isEmpty()
-                    ? blockHit.getBlockPos()
+                    ? new FluidStateWithPosition(blockHit.getBlockPos(), world.getFluidState(blockHit.getBlockPos()))
                     : null,
-            PacketByteBuf::writeBlockPos,
-            TargetType::readBlockPos,
+            FluidStateWithPosition::write,
+            FluidStateWithPosition::read,
             10, null
     );
 
     public static final TargetType<Entity> ENTITY = new TargetType<>(
             (world, hitResult) -> hitResult instanceof EntityHitResult entityHit ? entityHit.getEntity() : null,
-            (buf, entity) -> buf.writeVarInt(entity.getId()),
+            (entity, buf) -> buf.writeVarInt(entity.getId()),
             (access, buf) -> access.player().world.getEntityById(buf.readVarInt()),
             20, null
     );
 
     public static final TargetType<PlayerEntity> PLAYER = new TargetType<>(
             (world, hitResult) -> hitResult instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof PlayerEntity player ? player : null,
-            (buf, player) -> buf.writeVarInt(player.getId()),
+            (player, buf) -> buf.writeVarInt(player.getId()),
             (access, buf) -> (PlayerEntity) access.player().world.getEntityById(buf.readVarInt()),
             30, ENTITY
     );
 
-    private static BlockPos readBlockPos(ServerAccess access, PacketByteBuf buf) {
-        var pos = buf.readBlockPos();
-        if (access.player().getPos().squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) > 75) return null;
-        return pos;
-    }
-
     @Environment(EnvType.CLIENT)
     public interface DisplayAdapter<T> {
 
-        DisplayAdapter<BlockPos> BLOCK = blockPos -> {
-            var targetState = MinecraftClient.getInstance().world.getBlockState(blockPos);
+        DisplayAdapter<BlockStateWithPosition> BLOCK = target -> {
+            var targetState = target.state();
             var previewItem = targetState.getBlock().asItem().getDefaultStack();
 
             return new PreviewData(
@@ -109,8 +102,8 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
         };
 
         @SuppressWarnings("UnstableApiUsage")
-        DisplayAdapter<BlockPos> FLUID = blockPos -> {
-            var fluidVariant = FluidToVariant.apply(MinecraftClient.getInstance().world.getFluidState(blockPos));
+        DisplayAdapter<FluidStateWithPosition> FLUID = target -> {
+            var fluidVariant = FluidToVariant.apply(target.state());
 
             return new PreviewData(
                     Components.label(

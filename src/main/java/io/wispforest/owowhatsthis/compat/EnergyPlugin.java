@@ -4,13 +4,13 @@ import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.DisplayAdapters;
 import io.wispforest.owowhatsthis.client.component.TexturedProgressBarComponent;
+import io.wispforest.owowhatsthis.information.BlockStateWithPosition;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import team.reborn.energy.api.EnergyStorage;
@@ -35,11 +35,11 @@ public class EnergyPlugin implements OwoWhatsThisPlugin {
         DisplayAdapters.register(BLOCK_ENERGY_STORAGE, DisplayAdapter.ENERGY_STORAGE);
     }
 
-    public static final InformationProvider<BlockPos, EnergyStorageData> BLOCK_ENERGY_STORAGE = InformationProvider.server(
+    public static final InformationProvider<BlockStateWithPosition, EnergyStorageData> BLOCK_ENERGY_STORAGE = InformationProvider.server(
             TargetType.BLOCK, true, 0, EnergyStorageData.class,
             (player, world, target) -> {
                 for (var side : ALL_DIRECTIONS) {
-                    var storage = EnergyStorage.SIDED.find(world, target, side);
+                    var storage = EnergyStorage.SIDED.find(world, target.pos(), side);
                     if (storage == null) continue;
 
                     return new EnergyStorageData(storage.getAmount(), storage.getCapacity());

@@ -37,7 +37,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 
@@ -67,15 +66,15 @@ public class InformationProviders {
                 || state.isOf(Blocks.VINE);
     };
 
-    public static final InformationProvider<BlockPos, Text> BLOCK_HARDNESS = InformationProvider.client(
+    public static final InformationProvider<BlockStateWithPosition, Text> BLOCK_HARDNESS = InformationProvider.client(
             TargetType.BLOCK, 0,
-            (player, world, blockPos) -> Text.translatable("text.owo-whats-this.tooltip.blockHardness", world.getBlockState(blockPos).getHardness(world, blockPos))
+            (player, world, target) -> Text.translatable("text.owo-whats-this.tooltip.blockHardness", target.state().getHardness(world, target.pos()))
     );
 
-    public static final InformationProvider<BlockPos, Text> BLOCK_HARVESTABILITY = InformationProvider.client(
+    public static final InformationProvider<BlockStateWithPosition, Text> BLOCK_HARVESTABILITY = InformationProvider.client(
             TargetType.BLOCK, 0,
             (player, world, target) -> {
-                var state = world.getBlockState(target);
+                var state = target.state();
                 var harvestable = !state.isToolRequired() || player.getMainHandStack().isSuitableFor(state);
 
                 var effectiveTools = RegistryAccess.getEntry(Registry.BLOCK, state.getBlock()).streamTags()
@@ -105,7 +104,7 @@ public class InformationProviders {
             }
     );
 
-    public static final InformationProvider<BlockPos, Float> BLOCK_BREAKING_PROGRESS = InformationProvider.client(
+    public static final InformationProvider<BlockStateWithPosition, Float> BLOCK_BREAKING_PROGRESS = InformationProvider.client(
             TargetType.BLOCK, -6900,
             (player, world, target) -> {
                 float progress = ((ClientPlayerInteractionManagerAccessor) MinecraftClient.getInstance().interactionManager).whatsthis$getCurrentBreakingProgress();
@@ -114,11 +113,11 @@ public class InformationProviders {
     );
 
     @SuppressWarnings("unchecked")
-    public static final InformationProvider<BlockPos, List<ItemStack>> BLOCK_ITEM_STORAGE = InformationProvider.server(
+    public static final InformationProvider<BlockStateWithPosition, List<ItemStack>> BLOCK_ITEM_STORAGE = InformationProvider.server(
             TargetType.BLOCK, true, 0,
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
-            (player, world, blockPos) -> {
-                var storage = OwoWhatsThis.getStorageContents(ItemStorage.SIDED, world, blockPos);
+            (player, world, target) -> {
+                var storage = OwoWhatsThis.getStorageContents(ItemStorage.SIDED, world, target.pos());
                 if (storage == null) return null;
 
                 var items = new ArrayList<ItemStack>();
@@ -133,11 +132,11 @@ public class InformationProviders {
     );
 
     @SuppressWarnings("unchecked")
-    public static final InformationProvider<BlockPos, List<NbtCompound>> BLOCK_FLUID_STORAGE = InformationProvider.server(
+    public static final InformationProvider<BlockStateWithPosition, List<NbtCompound>> BLOCK_FLUID_STORAGE = InformationProvider.server(
             TargetType.BLOCK, true, 0,
             (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
-            (player, world, blockPos) -> {
-                var storage = OwoWhatsThis.getStorageContents(FluidStorage.SIDED, world, blockPos);
+            (player, world, target) -> {
+                var storage = OwoWhatsThis.getStorageContents(FluidStorage.SIDED, world, target.pos());
                 if (storage == null) return null;
 
                 var fluidData = new ArrayList<NbtCompound>();
@@ -154,19 +153,19 @@ public class InformationProviders {
             }
     );
 
-    public static final InformationProvider<BlockPos, Text> BLOCK_CROP_GROWTH = InformationProvider.client(
+    public static final InformationProvider<BlockStateWithPosition, Text> BLOCK_CROP_GROWTH = InformationProvider.client(
             TargetType.BLOCK, 0,
             (player, world, target) -> {
-                var targetState = world.getBlockState(target);
+                var state = target.state();
 
                 int growth;
                 int maxGrowth;
 
-                if (targetState.getBlock() instanceof CropBlock crop) {
-                    growth = targetState.get(crop.getAgeProperty());
+                if (state.getBlock() instanceof CropBlock crop) {
+                    growth = state.get(crop.getAgeProperty());
                     maxGrowth = crop.getMaxAge();
-                } else if (targetState.getBlock() instanceof StemBlock) {
-                    growth = targetState.get(StemBlock.AGE);
+                } else if (state.getBlock() instanceof StemBlock) {
+                    growth = state.get(StemBlock.AGE);
                     maxGrowth = 7;
                 } else {
                     return null;
@@ -178,10 +177,10 @@ public class InformationProviders {
             }
     );
 
-    public static final InformationProvider<BlockPos, Text> FLUID_VISCOSITY = InformationProvider.client(
+    public static final InformationProvider<FluidStateWithPosition, Text> FLUID_VISCOSITY = InformationProvider.client(
             TargetType.FLUID, 0,
             (player, world, target) -> {
-                return Text.translatable("text.owo-whats-this.tooltip.fluidViscosity", FluidVariantAttributes.getViscosity(FluidToVariant.apply(world.getFluidState(target).getFluid()), world));
+                return Text.translatable("text.owo-whats-this.tooltip.fluidViscosity", FluidVariantAttributes.getViscosity(FluidToVariant.apply(target.state().getFluid()), world));
             }
     );
 

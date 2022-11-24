@@ -4,13 +4,13 @@ package io.wispforest.owowhatsthis.compat;
 import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.DisplayAdapters;
+import io.wispforest.owowhatsthis.information.BlockStateWithPosition;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.InformationProviders;
 import io.wispforest.owowhatsthis.information.TargetType;
 import io.wispforest.owowhatsthis.mixin.compat.ForgeControllerBlockEntityAccessor;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
 public class AlloyForgeryPlugin implements OwoWhatsThisPlugin {
@@ -30,11 +30,11 @@ public class AlloyForgeryPlugin implements OwoWhatsThisPlugin {
         DisplayAdapters.register(BLOCK_ALLOY_FORGE_FUEL, InformationProviders.DisplayAdapters.TEXT);
     }
 
-    public static final InformationProvider<BlockPos, Text> BLOCK_ALLOY_FORGE_FUEL = InformationProvider.server(
+    public static final InformationProvider<BlockStateWithPosition, Text> BLOCK_ALLOY_FORGE_FUEL = InformationProvider.server(
             TargetType.BLOCK,
             true, 0, Text.class,
-            (player, world, blockPos) -> {
-                if (!(world.getBlockEntity(blockPos) instanceof ForgeControllerBlockEntityAccessor controller)) return null;
+            (player, world, target) -> {
+                if (!(world.getBlockEntity(target.pos()) instanceof ForgeControllerBlockEntityAccessor controller)) return null;
 
                 return Text.translatable(
                         "text.owo-whats-this.tooltip.blockAlloyForgeFuel",
