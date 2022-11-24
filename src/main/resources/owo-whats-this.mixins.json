@@ -2,8 +2,11 @@
   "required": true,
   "minVersion": "0.8",
   "package": "io.wispforest.owowhatsthis.mixin",
+  "plugin": "io.wispforest.owowhatsthis.mixin.compat.CompatMixinPlugin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+    "compat.ForgeControllerBlockEntityAccessor"
+  ],
   "client": [
     "ClientPlayerInteractionManagerAccessor",
     "EntityRenderDispatcherMixin",

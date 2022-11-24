@@ -31,7 +31,7 @@ public class EnergyPlugin implements OwoWhatsThisPlugin {
 
     @Override
     public void loadServer() {
-        Registry.register(OwoWhatsThis.INFORMATION_PROVIDER, new Identifier("block_energy_storage"), BLOCK_ENERGY_STORAGE);
+        Registry.register(OwoWhatsThis.INFORMATION_PROVIDER, OwoWhatsThis.id("block_energy_storage"), BLOCK_ENERGY_STORAGE);
     }
 
     @Override

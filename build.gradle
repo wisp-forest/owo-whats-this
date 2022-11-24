@@ -9,7 +9,13 @@ group = project.maven_group
 
 repositories {
     maven { url "https://maven.wispforest.io/" }
-    mavenLocal()
+
+    maven {
+        url "https://api.modrinth.com/maven/"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -22,6 +28,8 @@ dependencies {
     modImplementation annotationProcessor("io.wispforest:owo-lib:${project.owo_version}")
 
     modImplementation "teamreborn:energy:${project.energy_version}"
+
+    modImplementation "maven.modrinth:alloy-forgery:${project.alloy_forgery_version}"
 }
 
 processResources {

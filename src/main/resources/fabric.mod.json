@@ -19,7 +19,8 @@
       "io.wispforest.owowhatsthis.OwoWhatsThis"
     ],
     "owo-whats-this-plugin":[
-      "io.wispforest.owowhatsthis.compat.EnergyPlugin"
+      "io.wispforest.owowhatsthis.compat.EnergyPlugin",
+      "io.wispforest.owowhatsthis.compat.AlloyForgeryPlugin"
     ]
   },
 
