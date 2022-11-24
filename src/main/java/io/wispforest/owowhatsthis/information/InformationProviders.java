@@ -6,14 +6,15 @@ import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
-import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.ui.core.Color;
+import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.FluidToVariant;
 import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
-import io.wispforest.owowhatsthis.client.component.ColoringComponent;
 import io.wispforest.owowhatsthis.client.component.HeartSpriteComponent;
 import io.wispforest.owowhatsthis.client.component.ProgressBarComponent;
+import io.wispforest.owowhatsthis.client.component.TexturedProgressBarComponent;
 import io.wispforest.owowhatsthis.mixin.ClientPlayerInteractionManagerAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -352,33 +353,11 @@ public class InformationProviders {
                             NumberFormatter.quantity(capacity / 81000d, "B")
                     );
 
-                    final int barWidth = Math.max(
-                            MinecraftClient.getInstance().textRenderer.getWidth(fluidText) + 15,
-                            110
-                    );
-
-                    layout.child(
-                            Containers.horizontalFlow(Sizing.fixed(barWidth), Sizing.fixed(12)).<FlowLayout>configure(spriteContainer -> {
-                                spriteContainer.padding(Insets.of(1)).surface(Surface.outline(0xA7000000));
-
-                                int width = Math.round(barWidth * (amount / (float) capacity));
-                                while (width > 0) {
-                                    spriteContainer.child(
-                                            new ColoringComponent<>(
-                                                    Color.ofRgb(color),
-                                                    Components.sprite(sprite)
-                                            ).horizontalSizing(Sizing.fixed(Math.min(sprite.getWidth(), width)))
-                                    );
-                                    width -= sprite.getWidth();
-                                }
-
-                                spriteContainer.child(
-                                        Components.label(fluidText)
-                                                .positioning(Positioning.relative(0, 50))
-                                                .margins(Insets.left(5))
-                                );
-                            })
-                    );
+                    layout.child(TexturedProgressBarComponent.ofSprite(
+                            fluidText,
+                            amount / (float) capacity,
+                            sprite
+                    ).color(Color.ofArgb(color)));
                 }
             });
         };

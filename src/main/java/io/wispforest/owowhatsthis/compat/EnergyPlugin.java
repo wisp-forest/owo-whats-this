@@ -1,20 +1,15 @@
 package io.wispforest.owowhatsthis.compat;
 
-import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.container.Containers;
-import io.wispforest.owo.ui.container.FlowLayout;
-import io.wispforest.owo.ui.core.*;
 import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.DisplayAdapters;
+import io.wispforest.owowhatsthis.client.component.TexturedProgressBarComponent;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
@@ -65,29 +60,10 @@ public class EnergyPlugin implements OwoWhatsThisPlugin {
                     NumberFormatter.quantity(data.capacity, "E")
             );
 
-            final int barWidth = Math.max(
-                    MinecraftClient.getInstance().textRenderer.getWidth(energyText) + 15,
-                    110
+            return TexturedProgressBarComponent.ofTexture(
+                    energyText, data.stored / (float) data.capacity, OwoWhatsThis.id("textures/gui/energy_bar.png"),
+                    32, 16, 32, 10
             );
-
-            return Containers.horizontalFlow(Sizing.fixed(barWidth), Sizing.fixed(12)).<FlowLayout>configure(flowLayout -> {
-                flowLayout.padding(Insets.of(1)).surface(Surface.outline(0xA7000000));
-
-                int width = Math.round(barWidth * (data.stored / (float) data.capacity));
-                while (width > 0) {
-                    flowLayout.child(
-                            Components.texture(OwoWhatsThis.id("textures/gui/energy_bar.png"), 0, 0, 32, 10, 32, 16)
-                                    .visibleArea(PositionedRectangle.of(0, 0, Math.min(32, width), 10))
-                    );
-                    width -= 32;
-                }
-
-                flowLayout.child(
-                        Components.label(energyText)
-                                .positioning(Positioning.relative(0, 50))
-                                .margins(Insets.left(5))
-                );
-            });
         };
     }
 }
