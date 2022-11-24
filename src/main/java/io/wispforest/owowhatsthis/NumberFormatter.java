@@ -46,7 +46,7 @@ public class NumberFormatter {
             }
         }
 
-        return new BigDecimal(quantity).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
+        return new BigDecimal(quantity).setScale(OwoWhatsThis.CONFIG.decimalPlaces(), RoundingMode.HALF_UP).toPlainString()
                 + METRIC_PREFIXES.getOrDefault(order, "")
                 + unit;
     }

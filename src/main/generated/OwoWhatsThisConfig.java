@@ -13,6 +13,7 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
     private final Option<java.lang.Boolean> includeFluids = this.optionForKey(new Option.Key("includeFluids"));
     private final Option<java.lang.String> tooltipColor = this.optionForKey(new Option.Key("tooltipColor"));
     private final Option<java.lang.String> tooltipBorderColor = this.optionForKey(new Option.Key("tooltipBorderColor"));
+    private final Option<java.lang.Integer> decimalPlaces = this.optionForKey(new Option.Key("decimalPlaces"));
     private final Option<java.util.List<java.lang.String>> effectiveToolTags = this.optionForKey(new Option.Key("effectiveToolTags"));
     private final Option<java.util.List<java.lang.String>> miningLevelTags = this.optionForKey(new Option.Key("miningLevelTags"));
     private final Option<java.util.Set<net.minecraft.util.Identifier>> disabledProviders = this.optionForKey(new Option.Key("disabledProviders"));
@@ -49,6 +50,14 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
 
     public void tooltipBorderColor(java.lang.String value) {
         tooltipBorderColor.set(value);
+    }
+
+    public int decimalPlaces() {
+        return decimalPlaces.value();
+    }
+
+    public void decimalPlaces(int value) {
+        decimalPlaces.set(value);
     }
 
     public java.util.List<java.lang.String> effectiveToolTags() {

@@ -86,7 +86,7 @@ public class InformationProviders {
                 var miningLevel = RegistryAccess.getEntry(Registry.BLOCK, state.getBlock()).streamTags()
                         .filter(blockTagKey -> OwoWhatsThis.miningLevelTags().containsKey(blockTagKey.id()))
                         .map(blockTagKey -> OwoWhatsThis.miningLevelTags().get(blockTagKey.id()))
-                        .findFirst().orElse(Text.literal("Wood"));
+                        .findFirst().map(text -> Text.translatable("text.owo-whats-this.tooltip.miningLevel", text)).orElse(Text.empty());
 
                 if (SWORD_MINEABLE.test(state)) {
                     effectiveTools.add(Text.translatable("text.owo-whats-this.toolType.sword"));

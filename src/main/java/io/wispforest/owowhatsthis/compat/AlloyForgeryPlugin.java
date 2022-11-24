@@ -1,6 +1,7 @@
 package io.wispforest.owowhatsthis.compat;
 
 
+import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.DisplayAdapters;
 import io.wispforest.owowhatsthis.information.InformationProvider;
@@ -11,7 +12,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import wraith.alloyforgery.block.ForgeControllerBlockEntity;
 
 public class AlloyForgeryPlugin implements OwoWhatsThisPlugin {
 
@@ -34,9 +34,13 @@ public class AlloyForgeryPlugin implements OwoWhatsThisPlugin {
             TargetType.BLOCK,
             true, 0, Text.class,
             (player, world, blockPos) -> {
-                if (!(world.getBlockEntity(blockPos) instanceof ForgeControllerBlockEntity controller)) return null;
+                if (!(world.getBlockEntity(blockPos) instanceof ForgeControllerBlockEntityAccessor controller)) return null;
 
-                return Text.literal("Fuel: " + ((ForgeControllerBlockEntityAccessor) controller).whatsthis$fuel());
+                return Text.translatable(
+                        "text.owo-whats-this.tooltip.blockAlloyForgeFuel",
+                        NumberFormatter.quantity(controller.whatsthis$fuel(), ""),
+                        NumberFormatter.quantity(controller.whatsthis$forgeDefinition().fuelCapacity(), "")
+                );
             }
     );
 }

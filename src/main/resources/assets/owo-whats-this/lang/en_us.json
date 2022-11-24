@@ -6,6 +6,8 @@
   "text.config.owo-whats-this.option.includeFluids": "include fluids",
   "text.config.owo-whats-this.option.tooltipColor": "tooltip fill color",
   "text.config.owo-whats-this.option.tooltipBorderColor": "tooltip border color",
+  "text.config.owo-whats-this.option.decimalPlaces": "decimal places",
+  "text.config.owo-whats-this.option.decimalPlaces.tooltip": "how many decimal places to show when\ndisplaying quantities in the tooltip",
   "text.config.owo-whats-this.option.effectiveToolTags": "effective tool tags",
   "text.config.owo-whats-this.option.miningLevelTags": "mining level tags",
 
@@ -32,6 +34,8 @@
   "informationProvider.owo-whats-this.block_fluid_storage": "fluid storage",
   "informationProvider.owo-whats-this.block_breaking_progress": "breaking progress",
   "informationProvider.owo-whats-this.block_crop_growth": "crop growth",
+  "informationProvider.owo-whats-this.block_energy_storage": "energy storage",
+  "informationProvider.owo-whats-this.block_alloy_forge_fuel": "alloy forge fuel",
 
   "text.owo-whats-this.toolType.axe": "Axe",
   "text.owo-whats-this.toolType.pickaxe": "Pickaxe",
@@ -48,8 +52,11 @@
   "text.owo-whats-this.tooltip.tools": [
     "Tools: ",
     {"index": 0, "color": "#47B5FF"},
+    {"index": 1, "color": "gray"}
+  ],
+  "text.owo-whats-this.tooltip.miningLevel": [
     {"text": " (", "color": "gray"},
-    {"index": 1, "color": "gray"},
+    {"index": 0, "color": "gray"},
     {"text": ")", "color": "gray"}
   ],
   "text.owo-whats-this.tooltip.harvestable": [
@@ -69,6 +76,7 @@
   "text.owo-whats-this.tooltip.blockCropGrowth.fullyGrown": "Fully grown",
 
   "text.owo-whats-this.tooltip.blockEnergyAmount": "Energy: %d/%d",
+  "text.owo-whats-this.tooltip.blockAlloyForgeFuel": ["Fuel: ", {"index": 0, "color": "gray"}, {"text": "/", "color": "gray"}, {"index": 1, "color": "gray"}],
 
   "text.owo-whats-this.tooltip.fluidViscosity": ["Viscosity: ", {"index": 0, "color": "gray"}],
 

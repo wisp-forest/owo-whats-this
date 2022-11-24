@@ -20,7 +20,7 @@ public class TexturedProgressBarComponent extends HorizontalFlowLayout {
     protected Color color = Color.WHITE;
 
     protected TexturedProgressBarComponent(Text message, DrawFunction drawFunction) {
-        super(Sizing.fixed(Math.max(110, MinecraftClient.getInstance().textRenderer.getWidth(message) + 15)), Sizing.fixed(12));
+        super(Sizing.fixed(Math.max(110, MinecraftClient.getInstance().textRenderer.getWidth(message) + 10)), Sizing.fixed(12));
         this.drawFunction = drawFunction;
         this.surface(Surface.outline(0xA7000000));
         this.child(

@@ -1,9 +1,6 @@
 package io.wispforest.owowhatsthis;
 
-import io.wispforest.owo.config.annotation.Config;
-import io.wispforest.owo.config.annotation.Hook;
-import io.wispforest.owo.config.annotation.RegexConstraint;
-import io.wispforest.owo.config.annotation.SectionHeader;
+import io.wispforest.owo.config.annotation.*;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
@@ -23,6 +20,9 @@ public class OwoWhatsThisConfigModel {
     public String tooltipColor = "#77000000";
     @RegexConstraint("#[0-9a-fA-F]{0,8}")
     public String tooltipBorderColor = "#77000000";
+
+    @RangeConstraint(min = 0, max = 5)
+    public int decimalPlaces = 1;
 
     @Hook
     public List<String> effectiveToolTags = new ArrayList<>(
