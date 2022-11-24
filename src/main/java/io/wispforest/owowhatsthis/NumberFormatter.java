@@ -12,13 +12,13 @@ public class NumberFormatter {
 
     private static final Int2ObjectMap<String> METRIC_PREFIXES = new Int2ObjectOpenHashMap<>(
             Map.of(
+                    -6, "u",
+                    -3, "m",
                     0, "",
                     3, "k",
                     6, "M",
                     9, "G",
-                    12, "T",
-                    -3, "m",
-                    -6, "u"
+                    12, "T"
             )
     );
 
@@ -29,18 +29,24 @@ public class NumberFormatter {
     }
 
     public static String quantity(double quantity, String unit) {
+        if (Double.isInfinite(quantity)) return "∞ " + unit;
+        if (Double.isNaN(quantity)) return "NaN " + unit;
+
         int order = 0;
-        while (quantity >= 1000d) {
-            quantity /= 1000d;
-            order += 3;
+
+        if (quantity != 0) {
+            while (Math.abs(quantity) >= 1000d) {
+                quantity /= 1000d;
+                order += 3;
+            }
+
+            while (Math.abs(quantity) < 1d) {
+                quantity *= 1000;
+                order -= 3;
+            }
         }
 
-        while (quantity < 1d) {
-            quantity *= 1000;
-            order -= 3;
-        }
-
-        return new BigDecimal(quantity).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros()
+        return new BigDecimal(quantity).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
                 + METRIC_PREFIXES.getOrDefault(order, "")
                 + unit;
     }

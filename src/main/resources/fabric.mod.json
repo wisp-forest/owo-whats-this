@@ -17,6 +17,9 @@
       "io.wispforest.owowhatsthis.client.OwoWhatsThisClient"
     ], "main": [
       "io.wispforest.owowhatsthis.OwoWhatsThis"
+    ],
+    "owo-whats-this-plugin":[
+      "io.wispforest.owowhatsthis.compat.EnergyPlugin"
     ]
   },
 

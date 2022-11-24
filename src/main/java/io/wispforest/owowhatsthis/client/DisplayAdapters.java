@@ -2,10 +2,13 @@ package io.wispforest.owowhatsthis.client;
 
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Environment(EnvType.CLIENT)
 public class DisplayAdapters {
 
     private static final Map<TargetType<?>, TargetType.DisplayAdapter<?>> TYPE_DISPLAY_ADAPTERS = new HashMap<>();

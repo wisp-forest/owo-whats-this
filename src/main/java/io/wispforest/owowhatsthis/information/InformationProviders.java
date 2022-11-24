@@ -112,7 +112,7 @@ public class InformationProviders {
             TargetType.BLOCK, true, 0,
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             (player, world, blockPos) -> {
-                var storage = ItemStorage.SIDED.find(world, blockPos, null);
+                var storage = OwoWhatsThis.getStorageContents(ItemStorage.SIDED, world, blockPos);
                 if (storage == null) return null;
 
                 var items = new ArrayList<ItemStack>();
@@ -131,7 +131,7 @@ public class InformationProviders {
             TargetType.BLOCK, true, 0,
             (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
             (player, world, blockPos) -> {
-                var storage = FluidStorage.SIDED.find(world, blockPos, null);
+                var storage = OwoWhatsThis.getStorageContents(FluidStorage.SIDED, world, blockPos);
                 if (storage == null) return null;
 
                 var fluidData = new ArrayList<NbtCompound>();
@@ -252,8 +252,8 @@ public class InformationProviders {
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             (player, world, target) -> {
                 var items = new ArrayList<ItemStack>();
-                for (int i = 0; i < player.getInventory().size(); i++) {
-                    var stack = player.getInventory().getStack(i);
+                for (int i = 0; i < target.getInventory().size(); i++) {
+                    var stack = target.getInventory().getStack(i);
                     if (stack.isEmpty()) continue;
 
                     items.add(stack);
@@ -345,30 +345,37 @@ public class InformationProviders {
                     long amount = fluidNbt.getLong("owo-whats-this:amount");
                     long capacity = fluidNbt.getLong("owo-whats-this:capacity");
 
+                    final var fluidText = Text.translatable(
+                            "text.owo-whats-this.tooltip.blockFluidAmount",
+                            FluidVariantAttributes.getName(variant),
+                            NumberFormatter.quantity(amount / 81000d, "B"),
+                            NumberFormatter.quantity(capacity / 81000d, "B")
+                    );
+
+                    final int barWidth = Math.max(
+                            MinecraftClient.getInstance().textRenderer.getWidth(fluidText) + 15,
+                            110
+                    );
+
                     layout.child(
-                            Containers.horizontalFlow(Sizing.fixed(110), Sizing.fixed(12)).<FlowLayout>configure(spriteContainer -> {
+                            Containers.horizontalFlow(Sizing.fixed(barWidth), Sizing.fixed(12)).<FlowLayout>configure(spriteContainer -> {
                                 spriteContainer.padding(Insets.of(1)).surface(Surface.outline(0xA7000000));
 
-                                int width = Math.round(110 * (amount / (float) capacity));
+                                int width = Math.round(barWidth * (amount / (float) capacity));
                                 while (width > 0) {
                                     spriteContainer.child(
                                             new ColoringComponent<>(
                                                     Color.ofRgb(color),
-                                                    Components.sprite(sprite).horizontalSizing(Sizing.fixed(Math.min(sprite.getWidth(), width)))
-                                            )
+                                                    Components.sprite(sprite)
+                                            ).horizontalSizing(Sizing.fixed(Math.min(sprite.getWidth(), width)))
                                     );
                                     width -= sprite.getWidth();
                                 }
 
                                 spriteContainer.child(
-                                        Components.label(
-                                                Text.translatable(
-                                                        "text.owo-whats-this.tooltip.blockFluidAmount",
-                                                        FluidVariantAttributes.getName(variant),
-                                                        NumberFormatter.quantity(amount / 81000d, "B"),
-                                                        NumberFormatter.quantity(capacity / 81000d, "B")
-                                                )
-                                        ).positioning(Positioning.relative(0, 50)).margins(Insets.left(5))
+                                        Components.label(fluidText)
+                                                .positioning(Positioning.relative(0, 50))
+                                                .margins(Insets.left(5))
                                 );
                             })
                     );

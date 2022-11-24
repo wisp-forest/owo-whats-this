@@ -1,6 +1,7 @@
 package io.wispforest.owowhatsthis;
 
 import io.wispforest.owo.util.OwoFreezer;
+import io.wispforest.owowhatsthis.compat.OwoWhatsThisPlugin;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.InformationProviders;
 import io.wispforest.owowhatsthis.information.TargetType;
@@ -8,6 +9,9 @@ import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -16,11 +20,13 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class OwoWhatsThis implements ModInitializer {
 
@@ -41,6 +47,8 @@ public class OwoWhatsThis implements ModInitializer {
 
     private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS = new HashMap<>();
     private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS_VIEW = Collections.unmodifiableMap(EFFECTIVE_TOOL_TAGS);
+
+    private static final Direction[] ALL_DIRECTIONS = Direction.values();
 
     @Override
     public void onInitialize() {
@@ -67,6 +75,11 @@ public class OwoWhatsThis implements ModInitializer {
 
         Registry.register(INFORMATION_PROVIDER, id("player_inventory"), InformationProviders.PLAYER_INVENTORY);
 
+        for (var entrypoint : FabricLoader.getInstance().getEntrypoints("owo-whats-this-plugin", OwoWhatsThisPlugin.class)) {
+            if (!entrypoint.shouldLoad()) continue;
+            entrypoint.loadServer();
+        }
+
         OwoWhatsThisNetworking.initialize();
         OwoFreezer.registerFreezeCallback(TooltipObjectManager::updateAndSort);
         CONFIG.subscribeToDisabledProviders(strings -> TooltipObjectManager.updateAndSort());
@@ -85,6 +98,18 @@ public class OwoWhatsThis implements ModInitializer {
                 .map(ModContainer::getMetadata)
                 .map(ModMetadata::getName)
                 .orElse(id.getNamespace());
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static <T> @Nullable Set<StorageView<T>> getStorageContents(BlockApiLookup<Storage<T>, Direction> lookup, World world, BlockPos blockPos) {
+        var views = new LinkedHashSet<StorageView<T>>();
+        for (var side : ALL_DIRECTIONS) {
+            var storage = lookup.find(world, blockPos, side);
+            if (storage == null) continue;
+
+            storage.forEach(view -> views.add(view.getUnderlyingView()));
+        }
+        return views.isEmpty() ? null : views;
     }
 
     public static Map<Identifier, Text> effectiveToolTags() {

@@ -2,12 +2,14 @@ package io.wispforest.owowhatsthis.client;
 
 import io.wispforest.owo.config.ui.ConfigScreen;
 import io.wispforest.owowhatsthis.client.component.OwoWhatsThisEntityComponent;
+import io.wispforest.owowhatsthis.compat.OwoWhatsThisPlugin;
 import io.wispforest.owowhatsthis.information.InformationProviders;
 import io.wispforest.owowhatsthis.information.TargetType;
 import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.Vec3f;
 
@@ -47,6 +49,11 @@ public class OwoWhatsThisClient implements ClientModInitializer {
                 matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-35));
             });
         });
+
+        for (var entrypoint : FabricLoader.getInstance().getEntrypoints("owo-whats-this-plugin", OwoWhatsThisPlugin.class)) {
+            if (!entrypoint.shouldLoad()) continue;
+            entrypoint.loadClient();
+        }
 
         OwoWhatsThisHUD.initialize();
         OwoWhatsThisNetworking.initializeClient();

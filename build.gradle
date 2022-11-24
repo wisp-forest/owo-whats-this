@@ -20,6 +20,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation annotationProcessor("io.wispforest:owo-lib:${project.owo_version}")
+
+    modImplementation "teamreborn:energy:${project.energy_version}"
 }
 
 processResources {
