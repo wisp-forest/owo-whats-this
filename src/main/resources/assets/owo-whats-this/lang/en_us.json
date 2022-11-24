@@ -7,6 +7,7 @@
   "text.config.owo-whats-this.option.tooltipColor": "tooltip fill color",
   "text.config.owo-whats-this.option.tooltipBorderColor": "tooltip border color",
   "text.config.owo-whats-this.option.effectiveToolTags": "effective tool tags",
+  "text.config.owo-whats-this.option.miningLevelTags": "mining level tags",
 
   "text.config.owo-whats-this.section.providers": "tooltip elements",
 
@@ -39,10 +40,17 @@
   "text.owo-whats-this.toolType.sword": "Sword",
   "text.owo-whats-this.toolType.shears": "Shears",
 
+  "text.owo-whats-this.miningLevel.needs_stone_tool": "Stone",
+  "text.owo-whats-this.miningLevel.needs_iron_tool": "Iron",
+  "text.owo-whats-this.miningLevel.needs_diamond_tool": "Diamond",
+
   "text.owo-whats-this.tooltip.noTools": "No tools",
   "text.owo-whats-this.tooltip.tools": [
     "Tools: ",
-    {"index": 0, "color": "#47B5FF"}
+    {"index": 0, "color": "#47B5FF"},
+    {"text": " (", "color": "gray"},
+    {"index": 1, "color": "gray"},
+    {"text": ")", "color": "gray"}
   ],
   "text.owo-whats-this.tooltip.harvestable": [
     "",

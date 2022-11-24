@@ -37,6 +37,15 @@ public class OwoWhatsThisConfigModel {
     );
 
     @Hook
+    public List<String> miningLevelTags = new ArrayList<>(
+            List.of(
+                    BlockTags.NEEDS_STONE_TOOL.id().toString(),
+                    BlockTags.NEEDS_IRON_TOOL.id().toString(),
+                    BlockTags.NEEDS_DIAMOND_TOOL.id().toString()
+            )
+    );
+
+    @Hook
     @SectionHeader("providers")
     public Set<Identifier> disabledProviders = new HashSet<>();
 

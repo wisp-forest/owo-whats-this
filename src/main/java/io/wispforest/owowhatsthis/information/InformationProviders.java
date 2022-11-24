@@ -83,6 +83,11 @@ public class InformationProviders {
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .collect(Collectors.toList());
 
+                var miningLevel = RegistryAccess.getEntry(Registry.BLOCK, state.getBlock()).streamTags()
+                        .filter(blockTagKey -> OwoWhatsThis.miningLevelTags().containsKey(blockTagKey.id()))
+                        .map(blockTagKey -> OwoWhatsThis.miningLevelTags().get(blockTagKey.id()))
+                        .findFirst().orElse(Text.literal("Wood"));
+
                 if (SWORD_MINEABLE.test(state)) {
                     effectiveTools.add(Text.translatable("text.owo-whats-this.toolType.sword"));
                 }
@@ -94,7 +99,7 @@ public class InformationProviders {
                 var toolsText = effectiveTools.stream().reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
                 // this cast is only here to appease IntelliJ, as it occasionally has a meltdown
                 // trying to understand the return type of this lambda
-                return (Text) toolsText.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
+                return (Text) toolsText.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools, miningLevel)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
                         .append("\n")
                         .append(Text.translatable(harvestable ? "text.owo-whats-this.tooltip.harvestable" : "text.owo-whats-this.tooltip.not_harvestable"));
             }
