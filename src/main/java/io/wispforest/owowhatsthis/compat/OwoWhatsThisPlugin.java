@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 
 public interface OwoWhatsThisPlugin {
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     default boolean shouldLoad() {
         return true;
     }

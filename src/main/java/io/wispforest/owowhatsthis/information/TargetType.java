@@ -134,37 +134,27 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
         );
 
         DisplayAdapter<PlayerEntity> PLAYER = player -> {
-            int pingStep = 0;
+            int pingStatus = 4;
 
             var playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(player.getUuid());
             if (playerListEntry != null) {
-                int ping = playerListEntry.getLatency();
+                int latency = playerListEntry.getLatency();
 
-                if (ping < 0) {
-                    pingStep = 5;
-                } else if (ping < 150) {
-                    pingStep = 0;
-                } else if (ping < 300) {
-                    pingStep = 1;
-                } else if (ping < 600) {
-                    pingStep = 2;
-                } else if (ping < 1000) {
-                    pingStep = 3;
-                } else {
-                    pingStep = 4;
-                }
+                if (latency < 0) pingStatus = 5;
+                else if (latency < 150) pingStatus = 0;
+                else if (latency < 300) pingStatus = 1;
+                else if (latency < 600) pingStatus = 2;
+                else if (latency < 1000) pingStatus = 3;
             }
 
             var entityPreview = ENTITY.buildPreview(player);
             return new PreviewData(
                     Containers.horizontalFlow(Sizing.content(), Sizing.content())
                             .child(entityPreview.title())
-                            .child(
-                                    Components.texture(
-                                            InGameHud.GUI_ICONS_TEXTURE,
-                                            0, 176 + pingStep * 8, 10, 8
-                                    )
-                            ).gap(3),
+                            .child(Components.texture(
+                                    InGameHud.GUI_ICONS_TEXTURE,
+                                    0, 176 + pingStatus * 8, 10, 8
+                            )).gap(3),
                     entityPreview.preview()
             );
         };

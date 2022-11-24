@@ -17,7 +17,7 @@ public record InformationProvider<T, D>(TargetType<T> applicableTargetType, Tran
         );
     }
 
-    public static <T, D> InformationProvider<T, D> server(TargetType<T> applicableTargetType,  boolean live, int priority, PacketBufSerializer<D> serializer, Transformer<T, D> transformer) {
+    public static <T, D> InformationProvider<T, D> server(TargetType<T> applicableTargetType, boolean live, int priority, PacketBufSerializer<D> serializer, Transformer<T, D> transformer) {
         return new InformationProvider<>(
                 applicableTargetType, transformer, serializer,
                 live, false, priority
