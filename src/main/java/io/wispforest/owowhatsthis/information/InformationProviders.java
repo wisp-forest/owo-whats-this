@@ -9,7 +9,6 @@ import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.util.RegistryAccess;
-import io.wispforest.owowhatsthis.FluidToVariant;
 import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.HeartSpriteComponent;
@@ -180,7 +179,7 @@ public class InformationProviders {
     public static final InformationProvider<FluidStateWithPosition, Text> FLUID_VISCOSITY = InformationProvider.client(
             TargetType.FLUID, 0,
             (player, world, target) -> {
-                return Text.translatable("text.owo-whats-this.tooltip.fluidViscosity", FluidVariantAttributes.getViscosity(FluidToVariant.apply(target.state().getFluid()), world));
+                return Text.translatable("text.owo-whats-this.tooltip.fluidViscosity", FluidVariantAttributes.getViscosity(FluidVariant.of(target.state().getFluid()), world));
             }
     );
 

@@ -7,13 +7,13 @@ import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Sizing;
-import io.wispforest.owowhatsthis.FluidToVariant;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.component.ColoringComponent;
 import io.wispforest.owowhatsthis.client.component.OwoWhatsThisEntityComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.MinecraftClient;
@@ -103,7 +103,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
 
         @SuppressWarnings("UnstableApiUsage")
         DisplayAdapter<FluidStateWithPosition> FLUID = target -> {
-            var fluidVariant = FluidToVariant.apply(target.state());
+            var fluidVariant = FluidVariant.of(target.state().getFluid());
 
             return new PreviewData(
                     Components.label(
