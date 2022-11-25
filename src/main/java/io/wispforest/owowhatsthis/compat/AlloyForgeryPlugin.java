@@ -38,8 +38,8 @@ public class AlloyForgeryPlugin implements OwoWhatsThisPlugin {
 
                 return Text.translatable(
                         "text.owo-whats-this.tooltip.blockAlloyForgeFuel",
-                        NumberFormatter.quantity(controller.whatsthis$fuel(), ""),
-                        NumberFormatter.quantity(controller.whatsthis$forgeDefinition().fuelCapacity(), "")
+                        NumberFormatter.quantityText(controller.whatsthis$fuel(), ""),
+                        NumberFormatter.quantityText(controller.whatsthis$forgeDefinition().fuelCapacity(), "")
                 );
             }
     );

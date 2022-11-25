@@ -2,6 +2,7 @@ package io.wispforest.owowhatsthis;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.text.MutableText;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.math.BigDecimal;
@@ -26,6 +27,10 @@ public class NumberFormatter {
         var formatted = DurationFormatUtils.formatDuration(time * 1000, "H':'m':'ss");
         while (formatted.startsWith("0:")) formatted = formatted.substring(2);
         return formatted;
+    }
+
+    public static MutableText quantityText(double quantity, String unit) {
+        return MutableText.of(new QuantityTextContent(quantity, unit));
     }
 
     public static String quantity(double quantity, String unit) {

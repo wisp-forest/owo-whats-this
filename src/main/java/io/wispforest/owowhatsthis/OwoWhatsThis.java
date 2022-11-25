@@ -1,5 +1,6 @@
 package io.wispforest.owowhatsthis;
 
+import io.wispforest.owo.text.CustomTextRegistry;
 import io.wispforest.owo.util.OwoFreezer;
 import io.wispforest.owowhatsthis.compat.OwoWhatsThisPlugin;
 import io.wispforest.owowhatsthis.information.InformationProvider;
@@ -92,6 +93,8 @@ public class OwoWhatsThis implements ModInitializer {
 
         cacheMiningLevelTags();
         CONFIG.subscribeToMiningLevelTags(strings -> cacheMiningLevelTags());
+
+        CustomTextRegistry.register("quantity", QuantityTextContent.Serializer.INSTANCE);
     }
 
     public static Identifier id(String path) {
