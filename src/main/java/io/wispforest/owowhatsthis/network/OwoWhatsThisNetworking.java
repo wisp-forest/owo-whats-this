@@ -43,7 +43,6 @@ public class OwoWhatsThisNetworking {
             });
 
             CHANNEL.serverHandle(access.player()).send(new DataUpdatePacket(message.nonce(), buffer));
-//            access.player().sendMessage(Text.literal("updating " + applicableProviders.size() + " providers"));
         });
 
         CHANNEL.registerClientboundDeferred(DataUpdatePacket.class);

@@ -11,6 +11,7 @@ import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
+import io.wispforest.owowhatsthis.client.PlayerNameResolver;
 import io.wispforest.owowhatsthis.client.component.HeartSpriteComponent;
 import io.wispforest.owowhatsthis.client.component.ProgressBarComponent;
 import io.wispforest.owowhatsthis.client.component.TexturedProgressBarComponent;
@@ -31,9 +32,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -229,6 +232,19 @@ public class InformationProviders {
                 if (passive.getBreedingAge() <= 0) return null;
 
                 return Text.translatable("text.owo-whats-this.tooltip.entityBreedingCooldown", NumberFormatter.time(passive.getBreedingAge() / 20));
+            }
+    );
+
+    public static final InformationProvider<Entity, Text> ENTITY_OWNER = InformationProvider.server(
+            TargetType.ENTITY, false, 0, Text.class,
+            (player, world, entity) -> {
+                if (!(entity instanceof TameableEntity tameable)) return null;
+                if (tameable.getOwnerUuid() == null) return null;
+
+                var name = PlayerNameResolver.getName(((ServerWorld) world).getServer(), tameable.getOwnerUuid());
+                if (name == null) return Text.translatable("text.owo-whats-this.tooltip.entity_owner_unknown");
+
+                return Text.translatable("text.owo-whats-this.tooltip.entity_owner", name);
             }
     );
 

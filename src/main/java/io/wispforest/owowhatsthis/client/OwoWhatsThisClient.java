@@ -37,6 +37,7 @@ public class OwoWhatsThisClient implements ClientModInitializer {
         DisplayAdapters.register(InformationProviders.ENTITY_BREEDING_COOLDOWN, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_TNT_FUSE, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_ITEM_COUNT, InformationProviders.DisplayAdapters.TEXT);
+        DisplayAdapters.register(InformationProviders.ENTITY_OWNER, InformationProviders.DisplayAdapters.TEXT);
 
         DisplayAdapters.register(InformationProviders.PLAYER_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
 
@@ -46,6 +47,16 @@ public class OwoWhatsThisClient implements ClientModInitializer {
                 matrices.translate(0, -.15, 0);
                 matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(35));
                 matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-component.entity().getBodyYaw()));
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-35));
+            });
+        });
+
+        OwoWhatsThisEntityComponent.registerSpecialHandler(EntityType.ITEM_FRAME, component -> {
+            component.scale(component.scale() * .65f);
+            component.transform(matrices -> {
+                matrices.translate(0, .25, 0);
+                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(35));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180));
                 matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-35));
             });
         });
