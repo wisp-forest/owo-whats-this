@@ -76,7 +76,7 @@
   "text.owo-whats-this.tooltip.blockCropGrowth.fullyGrown": "Fully grown",
 
   "text.owo-whats-this.tooltip.blockEnergyAmount": "Energy: %d/%d",
-  "text.owo-whats-this.tooltip.blockAlloyForgeFuel": ["Fuel: ", {"index": 0, "color": "gray"}, {"text": "/", "color": "gray"}, {"index": 1, "color": "gray"}],
+  "text.owo-whats-this.tooltip.blockAlloyForgeFuel": "Fuel: %d/%d",
 
   "text.owo-whats-this.tooltip.fluidViscosity": ["Viscosity: ", {"index": 0, "color": "gray"}],
 

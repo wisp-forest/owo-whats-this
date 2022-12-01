@@ -116,7 +116,7 @@ public class InformationProviders {
 
     @SuppressWarnings("unchecked")
     public static final InformationProvider<BlockStateWithPosition, List<ItemStack>> BLOCK_ITEM_STORAGE = InformationProvider.server(
-            TargetType.BLOCK, true, 0,
+            TargetType.BLOCK, true, -10,
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             (player, world, target) -> {
                 var storage = OwoWhatsThis.getStorageContents(ItemStorage.SIDED, world, target.pos());
