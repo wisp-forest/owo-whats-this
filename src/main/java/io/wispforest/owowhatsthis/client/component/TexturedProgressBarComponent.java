@@ -40,9 +40,9 @@ public class TexturedProgressBarComponent extends HorizontalFlowLayout {
 
     public static TexturedProgressBarComponent ofSprite(Text message, float progress, Sprite sprite) {
         return new TexturedProgressBarComponent(message, (matrices, x, y) -> {
-            RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
-            Drawer.drawSprite(matrices, x, y, 0, sprite.getWidth(), sprite.getWidth(), sprite);
-            return sprite.getWidth();
+            RenderSystem.setShaderTexture(0, sprite.getAtlasId());
+            Drawer.drawSprite(matrices, x, y, 0, sprite.getContents().getWidth(), sprite.getContents().getHeight(), sprite);
+            return sprite.getContents().getWidth();
         }).progress(progress);
     }
 

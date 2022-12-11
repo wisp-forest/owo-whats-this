@@ -2,7 +2,7 @@ package io.wispforest.owowhatsthis;
 
 import io.wispforest.owo.config.annotation.*;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;

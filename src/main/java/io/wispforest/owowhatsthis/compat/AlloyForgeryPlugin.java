@@ -13,8 +13,8 @@ import io.wispforest.owowhatsthis.mixin.compat.ForgeControllerBlockEntityAccesso
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 
 public class AlloyForgeryPlugin implements OwoWhatsThisPlugin {
 

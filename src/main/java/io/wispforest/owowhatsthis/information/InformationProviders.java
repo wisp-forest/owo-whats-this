@@ -36,11 +36,11 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,12 +79,12 @@ public class InformationProviders {
                 var state = target.state();
                 var harvestable = !state.isToolRequired() || player.getMainHandStack().isSuitableFor(state);
 
-                var effectiveTools = RegistryAccess.getEntry(Registry.BLOCK, state.getBlock()).streamTags()
+                var effectiveTools = RegistryAccess.getEntry(Registries.BLOCK, state.getBlock()).streamTags()
                         .filter(blockTagKey -> OwoWhatsThis.effectiveToolTags().containsKey(blockTagKey.id()))
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .collect(Collectors.toList());
 
-                var miningLevel = RegistryAccess.getEntry(Registry.BLOCK, state.getBlock()).streamTags()
+                var miningLevel = RegistryAccess.getEntry(Registries.BLOCK, state.getBlock()).streamTags()
                         .filter(blockTagKey -> OwoWhatsThis.miningLevelTags().containsKey(blockTagKey.id()))
                         .map(blockTagKey -> OwoWhatsThis.miningLevelTags().get(blockTagKey.id()))
                         .findFirst().map(text -> Text.translatable("text.owo-whats-this.tooltip.miningLevel", text)).orElse(Text.empty());
