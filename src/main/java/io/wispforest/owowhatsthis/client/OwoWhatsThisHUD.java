@@ -80,7 +80,7 @@ public class OwoWhatsThisHUD {
                                             }
 
                                             boolean mustRefresh = false;
-                                            for (var provider : TooltipObjectManager.getProviders(type)) {
+                                            for (var provider : TooltipObjectManager.getProviders(type, client.player.isSneaking())) {
                                                 if (provider.client()) {
                                                     var infoTransformed = ((InformationProvider<Object, ?>) provider).transformer().apply(client.player, client.world, transformed);
                                                     if (infoTransformed == null) continue;

@@ -108,6 +108,21 @@
       "color": "gray"
     }
   ],
+  "text.owo-whats-this.config.provider_toggle.when_sneaking.tooltip": "only show while sneaking",
+  "text.owo-whats-this.config.provider_toggle.when_sneaking": [
+    {
+      "text": "[",
+      "color": "gray"
+    },
+    {
+      "text": "⭘",
+      "color": "#13A6F0"
+    },
+    {
+      "text": "]",
+      "color": "gray"
+    }
+  ],
   "text.owo-whats-this.config.provider_toggle.disabled": [
     {
       "text": "[",

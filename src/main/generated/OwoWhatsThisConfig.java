@@ -16,7 +16,7 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
     private final Option<java.lang.Integer> decimalPlaces = this.optionForKey(new Option.Key("decimalPlaces"));
     private final Option<java.util.List<java.lang.String>> effectiveToolTags = this.optionForKey(new Option.Key("effectiveToolTags"));
     private final Option<java.util.List<java.lang.String>> miningLevelTags = this.optionForKey(new Option.Key("miningLevelTags"));
-    private final Option<java.util.Set<net.minecraft.util.Identifier>> disabledProviders = this.optionForKey(new Option.Key("disabledProviders"));
+    private final Option<java.util.Map<net.minecraft.util.Identifier,java.lang.Boolean>> disabledProviders = this.optionForKey(new Option.Key("disabledProviders"));
 
     private OwoWhatsThisConfig() {
         super(io.wispforest.owowhatsthis.OwoWhatsThisConfigModel.class);
@@ -84,15 +84,15 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
         miningLevelTags.observe(subscriber);
     }
 
-    public java.util.Set<net.minecraft.util.Identifier> disabledProviders() {
+    public java.util.Map<net.minecraft.util.Identifier,java.lang.Boolean> disabledProviders() {
         return disabledProviders.value();
     }
 
-    public void disabledProviders(java.util.Set<net.minecraft.util.Identifier> value) {
+    public void disabledProviders(java.util.Map<net.minecraft.util.Identifier,java.lang.Boolean> value) {
         disabledProviders.set(value);
     }
 
-    public void subscribeToDisabledProviders(Consumer<java.util.Set<net.minecraft.util.Identifier>> subscriber) {
+    public void subscribeToDisabledProviders(Consumer<java.util.Map<net.minecraft.util.Identifier,java.lang.Boolean>> subscriber) {
         disabledProviders.observe(subscriber);
     }
 

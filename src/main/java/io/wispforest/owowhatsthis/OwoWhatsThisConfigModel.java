@@ -6,9 +6,9 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @Config(name = "owo-whats-this", wrapperName = "OwoWhatsThisConfig")
 public class OwoWhatsThisConfigModel {
@@ -45,8 +45,18 @@ public class OwoWhatsThisConfigModel {
             )
     );
 
+    /**
+     * Mapping from {@code provider id -> allow while sneaking}
+     * <p>
+     * {@code <id> -> true} means shown while sneaking
+     * <br>
+     * {@code <id> -> false} means always hide
+     */
     @Hook
     @SectionHeader("providers")
-    public Set<Identifier> disabledProviders = new HashSet<>();
+    public Map<Identifier, Boolean> disabledProviders = new HashMap<>();
 
+    public enum ProviderState {
+        ENABLED, WHEN_SNEAKING, DISABLED
+    }
 }

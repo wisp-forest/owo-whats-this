@@ -1,33 +1,50 @@
 package io.wispforest.owowhatsthis.client.component;
 
-import io.wispforest.owo.config.ui.component.ConfigToggleButton;
+import io.wispforest.owo.config.Option;
+import io.wispforest.owo.config.ui.component.ConfigEnumButton;
+import io.wispforest.owo.util.Observable;
+import io.wispforest.owowhatsthis.OwoWhatsThisConfigModel.ProviderState;
 import net.minecraft.text.Text;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnstableApiUsage")
-public class ProviderConfigButton extends ConfigToggleButton {
+public class ProviderConfigButton extends ConfigEnumButton {
 
-    protected static final Text ENABLED_MESSAGE = Text.translatable("text.owo-whats-this.config.provider_toggle.enabled");
-    protected static final Text DISABLED_MESSAGE = Text.translatable("text.owo-whats-this.config.provider_toggle.disabled");
+    protected final Observable<ProviderState> listeners = Observable.of(null);
 
-    protected final List<Consumer<Boolean>> listeners = new ArrayList<>();
+    public ProviderConfigButton() {
+        this.backingValues = ProviderState.values();
+    }
+
+    public ProviderConfigButton init(ProviderState selected) {
+        this.selectedIndex = selected.ordinal();
+        this.updateMessage();
+        return this;
+    }
+
+    public ProviderConfigButton onChanged(Consumer<ProviderState> listener) {
+        this.listeners.observe(listener);
+        return this;
+    }
 
     @Override
     protected void updateMessage() {
-        this.setMessage(this.enabled ? ENABLED_MESSAGE : DISABLED_MESSAGE);
+        if (this.backingValues == null) return;
+
+        var selected = (ProviderState) this.backingValues[this.selectedIndex];
+        this.listeners.set(selected);
+
+        this.setMessage(switch (selected) {
+            case ENABLED -> Text.translatable("text.owo-whats-this.config.provider_toggle.enabled");
+            case WHEN_SNEAKING -> Text.translatable("text.owo-whats-this.config.provider_toggle.when_sneaking");
+            case DISABLED -> Text.translatable("text.owo-whats-this.config.provider_toggle.disabled");
+        });
     }
 
     @Override
-    public void onPress() {
-        super.onPress();
-        for (var listener : this.listeners) listener.accept(this.enabled);
-    }
-
-    public ProviderConfigButton onChanged(Consumer<Boolean> listener) {
-        this.listeners.add(listener);
-        return this;
+    @Deprecated
+    public ConfigEnumButton init(Option<? extends Enum<?>> option, int selectedIndex) {
+        return super.init(option, selectedIndex);
     }
 }

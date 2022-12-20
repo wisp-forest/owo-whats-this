@@ -27,9 +27,13 @@ dependencies {
 
     modImplementation annotationProcessor("io.wispforest:owo-lib:${project.owo_version}")
 
-    modImplementation "teamreborn:energy:${project.energy_version}"
+    modCompileOnly "teamreborn:energy:${project.energy_version}"
+    modLocalRuntime ("teamreborn:energy:${project.energy_version}") {
+        exclude group: "net.fabricmc.fabric-api"
+    }
 
-    modImplementation "maven.modrinth:alloy-forgery:${project.alloy_forgery_version}"
+    modCompileOnly "maven.modrinth:alloy-forgery:${project.alloy_forgery_version}"
+    modLocalRuntime "maven.modrinth:alloy-forgery:${project.alloy_forgery_version}"
 }
 
 processResources {

@@ -26,7 +26,7 @@ public class OwoWhatsThisNetworking {
             var buffer = PacketByteBufs.create();
             var applicableProviders = new HashMap<InformationProvider<Object, Object>, Object>();
 
-            for (var provider : TooltipObjectManager.getProviders(type)) {
+            for (var provider : TooltipObjectManager.getProviders(type, access.player().isSneaking())) {
                 if (provider.client()) continue;
                 applicableProviders.put(
                         (InformationProvider<Object, Object>) provider,

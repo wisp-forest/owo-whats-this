@@ -15,17 +15,20 @@ import io.wispforest.owo.ui.core.Positioning;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.VerticalAlignment;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
+import io.wispforest.owowhatsthis.OwoWhatsThisConfigModel.ProviderState;
 import io.wispforest.owowhatsthis.client.component.ProviderConfigButton;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OwoWhatsThisConfigScreen extends ConfigScreen {
 
@@ -35,19 +38,19 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
         this.extraFactories.put(option -> option.backingField().field().getName().equals("disabledProviders"), PROVIDER_CONFIG_FACTORY);
     }
 
-    private static final OptionComponentFactory<Set<Identifier>> PROVIDER_CONFIG_FACTORY = (model, option) -> {
+    private static final OptionComponentFactory<Map<Identifier, Boolean>> PROVIDER_CONFIG_FACTORY = (model, option) -> {
         var container = new ProviderConfigContainer(option);
         return new OptionComponentFactory.Result(container, container);
     };
 
     private static class ProviderConfigContainer extends VerticalFlowLayout implements OptionComponent {
 
-        protected final Set<Identifier> backingSet;
+        protected final Map<Identifier, Boolean> backingMap;
 
         @SuppressWarnings("UnstableApiUsage")
-        protected ProviderConfigContainer(Option<Set<Identifier>> option) {
+        protected ProviderConfigContainer(Option<Map<Identifier, Boolean>> option) {
             super(Sizing.fill(100), Sizing.content());
-            this.backingSet = new HashSet<>(option.value());
+            this.backingMap = new HashMap<>(option.value());
 
             for (var targetType : OwoWhatsThis.TARGET_TYPE) {
                 var layout = Containers.collapsible(
@@ -75,15 +78,26 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
 
                                 optionLayout.child(new SearchAnchorComponent(optionLayout, Option.Key.ROOT, providerName::getString));
                                 optionLayout.child(Components.label(providerName))
-                                        .child(new ProviderConfigButton()
-                                                .onChanged(enabled -> {
-                                                    if (enabled) this.backingSet.remove(providerId);
-                                                    else this.backingSet.add(providerId);
+                                        .child(new ProviderConfigButton().<ProviderConfigButton>configure(button -> {
+                                                    button.onChanged(state -> {
+                                                        if (state == ProviderState.ENABLED) this.backingMap.remove(providerId);
+                                                        else this.backingMap.put(providerId, state == ProviderState.WHEN_SNEAKING);
+
+                                                        if (state == ProviderState.WHEN_SNEAKING) {
+                                                            button.tooltip(Text.translatable("text.owo-whats-this.config.provider_toggle.when_sneaking.tooltip"));
+                                                        } else {
+                                                            button.tooltip((List<TooltipComponent>) null);
+                                                        }
+                                                    });
+                                                    button.init(this.backingMap.containsKey(providerId) ?
+                                                            !this.backingMap.get(providerId)
+                                                                    ? ProviderState.DISABLED
+                                                                    : ProviderState.WHEN_SNEAKING
+                                                            : ProviderState.ENABLED);
+                                                    button.renderer(ButtonComponent.Renderer.flat(0, 0x77000000, 0));
+                                                    button.positioning(Positioning.relative(100, 50));
+                                                    button.margins(Insets.right(5)).sizing(Sizing.fixed(25), Sizing.fixed(15));
                                                 })
-                                                .enabled(!this.backingSet.contains(providerId))
-                                                .renderer(ButtonComponent.Renderer.flat(0, 0x77000000, 0))
-                                                .positioning(Positioning.relative(100, 50))
-                                                .margins(Insets.right(5)).sizing(Sizing.fixed(25), Sizing.fixed(15))
                                         );
                             }), i / 2, i % 2
                     );
@@ -100,7 +114,7 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
 
         @Override
         public Object parsedValue() {
-            return this.backingSet;
+            return this.backingMap;
         }
     }
 }

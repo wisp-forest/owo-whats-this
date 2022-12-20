@@ -13,6 +13,7 @@ public class TooltipObjectManager {
     private static final List<TargetType<?>> SORTED_TARGET_TYPES_VIEW = Collections.unmodifiableList(SORTED_TARGET_TYPES);
 
     private static final Map<TargetType<?>, List<InformationProvider<?, ?>>> PROVIDERS_BY_TYPE = new HashMap<>();
+    private static final Map<TargetType<?>, List<InformationProvider<?, ?>>> ALWAYS_VISIBLE_PROVIDERS_BY_TYPE = new HashMap<>();
 
     private static final List<InformationProvider<?, ?>> LIVE_PROVIDERS = new ArrayList<>();
     private static final List<InformationProvider<?, ?>> LIVE_PROVIDERS_VIEW = Collections.unmodifiableList(LIVE_PROVIDERS);
@@ -29,7 +30,11 @@ public class TooltipObjectManager {
 
         var providersByType = new HashMap<TargetType<?>, List<InformationProvider<?, ?>>>();
         OwoWhatsThis.INFORMATION_PROVIDER.streamEntries()
-                .filter(entry -> !OwoWhatsThis.CONFIG.disabledProviders().contains(entry.getKey().map(RegistryKey::getValue).orElse(null)))
+                .filter(entry -> {
+                    var id = entry.getKey().map(RegistryKey::getValue).orElse(null);
+                    if (!OwoWhatsThis.CONFIG.disabledProviders().containsKey(id)) return true;
+                    return OwoWhatsThis.CONFIG.disabledProviders().get(id);
+                })
                 .map(RegistryEntry.Reference::value)
                 .sorted(Comparator.comparingInt(provider -> -provider.priority()))
                 .forEach(provider -> {
@@ -50,6 +55,22 @@ public class TooltipObjectManager {
                     Collections.unmodifiableList(providers)
             );
         });
+
+        PROVIDERS_BY_TYPE.forEach((targetType, informationProviders) -> {
+            var alwaysVisibleProviders = new ArrayList<InformationProvider<?, ?>>();
+
+            for (var provider : informationProviders) {
+                var id = OwoWhatsThis.INFORMATION_PROVIDER.getId(provider);
+                if (OwoWhatsThis.CONFIG.disabledProviders().containsKey(id)) continue;
+                alwaysVisibleProviders.add(provider);
+
+            }
+
+            ALWAYS_VISIBLE_PROVIDERS_BY_TYPE.put(
+                    targetType,
+                    Collections.unmodifiableList(alwaysVisibleProviders)
+            );
+        });
     }
 
     public static List<TargetType<?>> sortedTargetTypes() {
@@ -61,7 +82,7 @@ public class TooltipObjectManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<InformationProvider<T, ?>> getProviders(TargetType<T> type) {
-        return (List<InformationProvider<T, ?>>) (Object) PROVIDERS_BY_TYPE.get(type);
+    public static <T> List<InformationProvider<T, ?>> getProviders(TargetType<T> type, boolean sneaking) {
+        return (List<InformationProvider<T, ?>>) (Object) (sneaking ? PROVIDERS_BY_TYPE : ALWAYS_VISIBLE_PROVIDERS_BY_TYPE).get(type);
     }
 }
