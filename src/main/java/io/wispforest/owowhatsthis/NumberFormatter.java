@@ -1,5 +1,6 @@
 package io.wispforest.owowhatsthis;
 
+import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.text.MutableText;
@@ -7,20 +8,23 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 
 public class NumberFormatter {
 
     private static final Int2ObjectMap<String> METRIC_PREFIXES = new Int2ObjectOpenHashMap<>(
-            Map.of(
-                    -6, "u",
-                    -3, "m",
-                    0, "",
-                    3, "k",
-                    6, "M",
-                    9, "G",
-                    12, "T"
-            )
+            ImmutableMap.<Integer, String>builder()
+                    .put(-30, "q").put(-27, "r")
+                    .put(-24, "y").put(-21, "z")
+                    .put(-18, "a").put(-15, "f")
+                    .put(-12, "p").put(-9, "n")
+                    .put(-6, "μ").put(-3, "m")
+                    .put(0, "")
+                    .put(3, "k").put(6, "M")
+                    .put(9, "G").put(12, "T")
+                    .put(15, "P").put(18, "E")
+                    .put(21, "Z").put(24, "Y")
+                    .put(27, "R").put(30, "Q")
+                    .build()
     );
 
     public static String time(long time) {
