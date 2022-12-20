@@ -18,6 +18,7 @@ import io.wispforest.owowhatsthis.client.component.TexturedProgressBarComponent;
 import io.wispforest.owowhatsthis.mixin.ClientPlayerInteractionManagerAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.mininglevel.v1.MiningLevelManager;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -84,10 +85,17 @@ public class InformationProviders {
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .collect(Collectors.toList());
 
-                var miningLevel = RegistryAccess.getEntry(Registries.BLOCK, state.getBlock()).streamTags()
-                        .filter(blockTagKey -> OwoWhatsThis.miningLevelTags().containsKey(blockTagKey.id()))
-                        .map(blockTagKey -> OwoWhatsThis.miningLevelTags().get(blockTagKey.id()))
-                        .findFirst().map(text -> Text.translatable("text.owo-whats-this.tooltip.miningLevel", text)).orElse(Text.empty());
+                int miningLevel = MiningLevelManager.getRequiredMiningLevel(state);
+                Text miningLevelName;
+                if (miningLevel > 0) {
+                    var miningLevelId = MiningLevelManager.getBlockTag(miningLevel).id().toString().split(":");
+                    miningLevelName = Text.translatable(
+                            "text.owo-whats-this.tooltip.miningLevel",
+                            Text.translatable("text.owo-whats-this.miningLevel." + miningLevelId[miningLevelId.length - 1])
+                    );
+                } else {
+                    miningLevelName = Text.empty();
+                }
 
                 if (SWORD_MINEABLE.test(state)) {
                     effectiveTools.add(Text.translatable("text.owo-whats-this.toolType.sword"));
@@ -100,7 +108,7 @@ public class InformationProviders {
                 var toolsText = effectiveTools.stream().reduce((mutableText, text) -> TextOps.concat(mutableText, Text.of(", ")).append(text));
                 // this cast is only here to appease IntelliJ, as it occasionally has a meltdown
                 // trying to understand the return type of this lambda
-                return (Text) toolsText.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools, miningLevel)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
+                return (Text) toolsText.map(tools -> Text.translatable("text.owo-whats-this.tooltip.tools", tools, miningLevelName)).orElse(Text.translatable("text.owo-whats-this.tooltip.noTools"))
                         .append("\n")
                         .append(Text.translatable(harvestable ? "text.owo-whats-this.tooltip.harvestable" : "text.owo-whats-this.tooltip.not_harvestable"));
             }

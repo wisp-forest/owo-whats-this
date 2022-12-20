@@ -49,9 +49,6 @@ public class OwoWhatsThis implements ModInitializer {
     private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS = new HashMap<>();
     private static final Map<Identifier, Text> EFFECTIVE_TOOL_TAGS_VIEW = Collections.unmodifiableMap(EFFECTIVE_TOOL_TAGS);
 
-    private static final Map<Identifier, Text> MINING_LEVEL_TAGS = new HashMap<>();
-    private static final Map<Identifier, Text> MINING_LEVEL_TAGS_VIEW = Collections.unmodifiableMap(MINING_LEVEL_TAGS);
-
     private static final Direction[] ALL_DIRECTIONS = Direction.values();
 
     @Override
@@ -92,9 +89,6 @@ public class OwoWhatsThis implements ModInitializer {
         cacheEffectiveToolTags();
         CONFIG.subscribeToEffectiveToolTags(strings -> cacheEffectiveToolTags());
 
-        cacheMiningLevelTags();
-        CONFIG.subscribeToMiningLevelTags(strings -> cacheMiningLevelTags());
-
         CustomTextRegistry.register("quantity", QuantityTextContent.Serializer.INSTANCE);
     }
 
@@ -133,21 +127,6 @@ public class OwoWhatsThis implements ModInitializer {
             EFFECTIVE_TOOL_TAGS.put(
                     new Identifier(s),
                     Text.translatable("text.owo-whats-this.toolType." + splitName[splitName.length - 1])
-            );
-        });
-    }
-
-    public static Map<Identifier, Text> miningLevelTags() {
-        return MINING_LEVEL_TAGS_VIEW;
-    }
-
-    private static void cacheMiningLevelTags() {
-        MINING_LEVEL_TAGS.clear();
-        CONFIG.miningLevelTags().forEach(s -> {
-            var splitName = s.split(":");
-            MINING_LEVEL_TAGS.put(
-                    new Identifier(s),
-                    Text.translatable("text.owo-whats-this.miningLevel." + splitName[splitName.length - 1])
             );
         });
     }
