@@ -50,6 +50,7 @@ public class TooltipObjectManager {
                 parent = parent.parent();
             }
 
+            providers.sort(Comparator.comparingInt(provider -> -provider.priority()));
             PROVIDERS_BY_TYPE.put(
                     targetType,
                     Collections.unmodifiableList(providers)
@@ -63,7 +64,6 @@ public class TooltipObjectManager {
                 var id = OwoWhatsThis.INFORMATION_PROVIDER.getId(provider);
                 if (OwoWhatsThis.CONFIG.disabledProviders().containsKey(id)) continue;
                 alwaysVisibleProviders.add(provider);
-
             }
 
             ALWAYS_VISIBLE_PROVIDERS_BY_TYPE.put(
