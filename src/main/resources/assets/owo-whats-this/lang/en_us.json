@@ -23,6 +23,9 @@
   "informationProvider.owo-whats-this.entity_growing_time": "growing time",
   "informationProvider.owo-whats-this.entity_breeding_cooldown": "breeding cooldown",
   "informationProvider.owo-whats-this.entity_item_count": "item count",
+  "informationProvider.owo-whats-this.entity_owner": "pet owner",
+  "informationProvider.owo-whats-this.entity_minecart_inventory": "minecart inventory",
+  "informationProvider.owo-whats-this.entity_chest_boat_inventory": "chest boat inventory",
 
   "targetType.owo-whats-this.player": "players",
   "informationProvider.owo-whats-this.player_inventory": "inventory",

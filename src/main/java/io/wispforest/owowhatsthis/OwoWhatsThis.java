@@ -1,5 +1,6 @@
 package io.wispforest.owowhatsthis;
 
+import io.wispforest.owo.registration.reflect.FieldRegistrationHandler;
 import io.wispforest.owo.text.CustomTextRegistry;
 import io.wispforest.owo.util.OwoFreezer;
 import io.wispforest.owowhatsthis.compat.OwoWhatsThisPlugin;
@@ -58,24 +59,7 @@ public class OwoWhatsThis implements ModInitializer {
         Registry.register(TARGET_TYPE, id("player"), TargetType.PLAYER);
         Registry.register(TARGET_TYPE, id("fluid"), TargetType.FLUID);
 
-        Registry.register(INFORMATION_PROVIDER, id("block_breaking_progress"), InformationProviders.BLOCK_BREAKING_PROGRESS);
-        Registry.register(INFORMATION_PROVIDER, id("block_harvestability"), InformationProviders.BLOCK_HARVESTABILITY);
-        Registry.register(INFORMATION_PROVIDER, id("block_hardness"), InformationProviders.BLOCK_HARDNESS);
-        Registry.register(INFORMATION_PROVIDER, id("block_item_storage"), InformationProviders.BLOCK_ITEM_STORAGE);
-        Registry.register(INFORMATION_PROVIDER, id("block_fluid_storage"), InformationProviders.BLOCK_FLUID_STORAGE);
-        Registry.register(INFORMATION_PROVIDER, id("block_crop_growth"), InformationProviders.BLOCK_CROP_GROWTH);
-
-        Registry.register(INFORMATION_PROVIDER, id("fluid_viscosity"), InformationProviders.FLUID_VISCOSITY);
-
-        Registry.register(INFORMATION_PROVIDER, id("entity_health_and_armor"), InformationProviders.ENTITY_HEALTH_AND_ARMOR);
-        Registry.register(INFORMATION_PROVIDER, id("entity_status_effects"), InformationProviders.ENTITY_STATUS_EFFECTS);
-        Registry.register(INFORMATION_PROVIDER, id("entity_growing_time"), InformationProviders.ENTITY_GROWING_TIME);
-        Registry.register(INFORMATION_PROVIDER, id("entity_breeding_cooldown"), InformationProviders.ENTITY_BREEDING_COOLDOWN);
-        Registry.register(INFORMATION_PROVIDER, id("entity_tnt_fuse"), InformationProviders.ENTITY_TNT_FUSE);
-        Registry.register(INFORMATION_PROVIDER, id("entity_item_count"), InformationProviders.ENTITY_ITEM_COUNT);
-        Registry.register(INFORMATION_PROVIDER, id("entity_owner"), InformationProviders.ENTITY_OWNER);
-
-        Registry.register(INFORMATION_PROVIDER, id("player_inventory"), InformationProviders.PLAYER_INVENTORY);
+        FieldRegistrationHandler.register(InformationProviders.class, MOD_ID, false);
 
         for (var entrypoint : FabricLoader.getInstance().getEntrypoints("owo-whats-this-plugin", OwoWhatsThisPlugin.class)) {
             if (!entrypoint.shouldLoad()) continue;

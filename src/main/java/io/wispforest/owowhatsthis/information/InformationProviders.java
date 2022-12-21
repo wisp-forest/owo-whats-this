@@ -2,6 +2,7 @@ package io.wispforest.owowhatsthis.information;
 
 import io.wispforest.owo.network.serialization.PacketBufSerializer;
 import io.wispforest.owo.ops.TextOps;
+import io.wispforest.owo.registration.reflect.AutoRegistryContainer;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
@@ -35,9 +36,12 @@ import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
+import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -49,7 +53,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("UnstableApiUsage")
-public class InformationProviders {
+public class InformationProviders implements AutoRegistryContainer<InformationProvider<?, ?>> {
 
     private static final Predicate<BlockState> SWORD_MINEABLE = state -> {
         return state.isOf(Blocks.COBWEB)
@@ -275,6 +279,44 @@ public class InformationProviders {
     );
 
     @SuppressWarnings("unchecked")
+    public static final InformationProvider<Entity, List<ItemStack>> ENTITY_MINECART_INVENTORY = InformationProvider.server(
+            TargetType.ENTITY, true, 0,
+            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
+            (player, world, target) -> {
+                if (!(target instanceof StorageMinecartEntity minecart)) return null;
+
+                var items = new ArrayList<ItemStack>();
+                for (int i = 0; i < minecart.getInventory().size(); i++) {
+                    var stack = minecart.getInventory().get(i);
+                    if (stack.isEmpty()) continue;
+
+                    items.add(stack);
+                }
+
+                return items;
+            }
+    );
+
+    @SuppressWarnings("unchecked")
+    public static final InformationProvider<Entity, List<ItemStack>> ENTITY_CHEST_BOAT_INVENTORY = InformationProvider.server(
+            TargetType.ENTITY, true, 0,
+            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
+            (player, world, target) -> {
+                if (!(target instanceof ChestBoatEntity boat)) return null;
+
+                var items = new ArrayList<ItemStack>();
+                for (int i = 0; i < boat.getInventory().size(); i++) {
+                    var stack = boat.getInventory().get(i);
+                    if (stack.isEmpty()) continue;
+
+                    items.add(stack);
+                }
+
+                return items;
+            }
+    );
+
+    @SuppressWarnings("unchecked")
     public static final InformationProvider<PlayerEntity, List<ItemStack>> PLAYER_INVENTORY = InformationProvider.server(
             TargetType.PLAYER, true, 0,
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
@@ -290,6 +332,17 @@ public class InformationProviders {
                 return items;
             }
     );
+
+    @Override
+    public Registry<InformationProvider<?, ?>> getRegistry() {
+        return OwoWhatsThis.INFORMATION_PROVIDER;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<InformationProvider<?, ?>> getTargetFieldType() {
+        return (Class<InformationProvider<?,?>>) (Object) InformationProvider.class;
+    }
 
     public record EntityHealthInfo(float health, float maxHealth, int armor) {}
 

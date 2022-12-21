@@ -39,6 +39,8 @@ public class OwoWhatsThisClient implements ClientModInitializer {
         DisplayAdapters.register(InformationProviders.ENTITY_TNT_FUSE, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_ITEM_COUNT, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.ENTITY_OWNER, InformationProviders.DisplayAdapters.TEXT);
+        DisplayAdapters.register(InformationProviders.ENTITY_MINECART_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
+        DisplayAdapters.register(InformationProviders.ENTITY_CHEST_BOAT_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
 
         DisplayAdapters.register(InformationProviders.PLAYER_INVENTORY, InformationProviders.DisplayAdapters.ITEM_STACK_LIST);
 
