@@ -3,11 +3,15 @@
 
   "text.config.owo-whats-this.section.main": "main settings",
 
+  "text.config.owo-whats-this.option.enableTooltip": "enable tooltip",
+  "text.config.owo-whats-this.option.enableTooltip.tooltip": "whether to show the owo-whats-this tooltip.\ndisabling this effectively disables the mod",
   "text.config.owo-whats-this.option.includeFluids": "include fluids",
   "text.config.owo-whats-this.option.tooltipColor": "tooltip fill color",
   "text.config.owo-whats-this.option.tooltipBorderColor": "tooltip border color",
   "text.config.owo-whats-this.option.decimalPlaces": "decimal places",
   "text.config.owo-whats-this.option.decimalPlaces.tooltip": "how many decimal places to show when\ndisplaying quantities in the tooltip",
+  "text.config.owo-whats-this.option.updateDelay": "update delay (in ticks)",
+  "text.config.owo-whats-this.option.updateDelay.tooltip": "how many ticks to wait before requesting new data from the server",
   "text.config.owo-whats-this.option.effectiveToolTags": "effective tool tags",
   "text.config.owo-whats-this.option.miningLevelTags": "mining level tags",
 

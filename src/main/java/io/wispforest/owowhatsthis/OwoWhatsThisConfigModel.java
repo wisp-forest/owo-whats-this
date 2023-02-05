@@ -15,6 +15,8 @@ import java.util.Map;
 public class OwoWhatsThisConfigModel {
 
     @SectionHeader("main")
+    public boolean enableTooltip = true;
+
     public boolean includeFluids = false;
 
     @WithAlpha
@@ -24,6 +26,8 @@ public class OwoWhatsThisConfigModel {
 
     @RangeConstraint(min = 0, max = 5)
     public int decimalPlaces = 1;
+
+    public int updateDelay = 10;
 
     @Hook
     public List<String> effectiveToolTags = new ArrayList<>(

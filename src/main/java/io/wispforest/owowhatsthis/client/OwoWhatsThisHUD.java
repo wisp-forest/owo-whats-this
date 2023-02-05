@@ -3,10 +3,10 @@ package io.wispforest.owowhatsthis.client;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.hud.Hud;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
+import io.wispforest.owowhatsthis.RateLimitTracker;
 import io.wispforest.owowhatsthis.TooltipObjectManager;
 import io.wispforest.owowhatsthis.information.InformationProvider;
 import io.wispforest.owowhatsthis.information.TargetType;
@@ -27,6 +27,7 @@ public class OwoWhatsThisHUD {
     public static final Identifier COMPONENT_ID = OwoWhatsThis.id("tooltip");
 
     private static final Map<InformationProvider<?, ?>, Object> PROVIDER_DATA = new HashMap<>();
+    private static final RateLimitTracker rateLimit = new RateLimitTracker();
 
     private static int currentHash = 0;
 
@@ -44,7 +45,7 @@ public class OwoWhatsThisHUD {
             if (client.world == null) return;
 
             var component = Hud.getComponent(COMPONENT_ID);
-            if (!(component instanceof VerticalFlowLayout view)) return;
+            if (!(component instanceof FlowLayout view)) return;
 
             final var target = OwoWhatsThis.raycast(client.player, 1);
 
@@ -52,6 +53,7 @@ public class OwoWhatsThisHUD {
                 view.clearChildren();
                 view.surface(Surface.BLANK);
 
+                if (!OwoWhatsThis.CONFIG.enableTooltip()) return;
                 if (((PlayerListHudAccessor) MinecraftClient.getInstance().inGameHud.getPlayerListHud()).whatsThis$isVisible()) return;
 
                 for (var type : TooltipObjectManager.sortedTargetTypes()) {
@@ -74,7 +76,9 @@ public class OwoWhatsThisHUD {
                                             infoView.gap(4).margins(Insets.top(5));
 
                                             int newHash = transformed.hashCode();
-                                            if (newHash != currentHash) {
+                                            final var targetChanged = newHash != currentHash;
+
+                                            if (targetChanged) {
                                                 PROVIDER_DATA.clear();
                                             }
 
@@ -99,7 +103,8 @@ public class OwoWhatsThisHUD {
                                                 }
                                             }
 
-                                            if (newHash != currentHash || mustRefresh) {
+                                            if (targetChanged) rateLimit.setOverride(0);
+                                            if ((targetChanged || mustRefresh) && rateLimit.update(client.world.getTime())) {
                                                 var targetBuf = PacketByteBufs.create();
                                                 targetBuf.writeRegistryValue(OwoWhatsThis.TARGET_TYPE, type);
                                                 ((TargetType<Object>) type).serializer().accept(transformed, targetBuf);
@@ -123,6 +128,7 @@ public class OwoWhatsThisHUD {
     @SuppressWarnings("ConstantConditions")
     public static void readProviderData(DataUpdatePacket message) {
         if (message.nonce() != currentHash) return;
+        rateLimit.clearOverride();
 
         for (var liveProvider : TooltipObjectManager.liveProviders()) PROVIDER_DATA.remove(liveProvider);
 

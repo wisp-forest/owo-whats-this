@@ -26,6 +26,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -76,6 +77,7 @@ public class OwoWhatsThis implements ModInitializer {
         CustomTextRegistry.register("quantity", QuantityTextContent.Serializer.INSTANCE);
     }
 
+    @ApiStatus.Internal
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
     }
