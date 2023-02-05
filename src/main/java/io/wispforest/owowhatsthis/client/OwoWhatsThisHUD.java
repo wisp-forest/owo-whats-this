@@ -58,8 +58,7 @@ public class OwoWhatsThisHUD {
                     var transformed = type.transformer().apply(client.world, target);
                     if (transformed == null) continue;
 
-                    view.surface(Surface.flat(Integer.parseUnsignedInt(OwoWhatsThis.CONFIG.tooltipColor().substring(1), 16))
-                            .and(Surface.outline(Integer.parseUnsignedInt(OwoWhatsThis.CONFIG.tooltipBorderColor().substring(1), 16))));
+                    view.surface(Surface.flat(OwoWhatsThis.CONFIG.tooltipColor().argb()).and(Surface.outline(OwoWhatsThis.CONFIG.tooltipBorderColor().argb())));
 
                     view.child(
                             Containers.grid(Sizing.content(), Sizing.content(), 2, 2).<GridLayout>configure(grid -> {

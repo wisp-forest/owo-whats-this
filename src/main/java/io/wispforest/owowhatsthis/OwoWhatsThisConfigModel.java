@@ -1,6 +1,7 @@
 package io.wispforest.owowhatsthis;
 
 import io.wispforest.owo.config.annotation.*;
+import io.wispforest.owo.ui.core.Color;
 import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
@@ -16,10 +17,10 @@ public class OwoWhatsThisConfigModel {
     @SectionHeader("main")
     public boolean includeFluids = false;
 
-    @RegexConstraint("#[0-9a-fA-F]{0,8}")
-    public String tooltipColor = "#77000000";
-    @RegexConstraint("#[0-9a-fA-F]{0,8}")
-    public String tooltipBorderColor = "#77000000";
+    @WithAlpha
+    public Color tooltipColor = Color.ofArgb(0x77000000);
+    @WithAlpha
+    public Color tooltipBorderColor = Color.ofArgb(0x77000000);
 
     @RangeConstraint(min = 0, max = 5)
     public int decimalPlaces = 1;
