@@ -19,6 +19,7 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
@@ -66,9 +67,9 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
     );
 
     public static final TargetType<Entity> ENTITY = new TargetType<>(
-            (world, hitResult) -> hitResult instanceof EntityHitResult entityHit ? entityHit.getEntity() : null,
+            (world, hitResult) -> hitResult instanceof EntityHitResult entityHit ? fixEnderDragon(entityHit.getEntity()) : null,
             (entity, buf) -> buf.writeVarInt(entity.getId()),
-            (access, buf) -> access.player().world.getEntityById(buf.readVarInt()),
+            (access, buf) -> fixEnderDragon(access.player().world.getEntityById(buf.readVarInt())),
             20, null
     );
 
@@ -78,6 +79,11 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
             (access, buf) -> (PlayerEntity) access.player().world.getEntityById(buf.readVarInt()),
             30, ENTITY
     );
+
+    private static Entity fixEnderDragon(Entity entity) {
+        if (!(entity instanceof EnderDragonPart part)) return entity;
+        return part.owner;
+    }
 
     @Environment(EnvType.CLIENT)
     public interface DisplayAdapter<T> {
