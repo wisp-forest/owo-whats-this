@@ -2,7 +2,7 @@ package io.wispforest.owowhatsthis.client.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.container.HorizontalFlowLayout;
+import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.NinePatchRenderer;
 import io.wispforest.owo.ui.util.ScissorStack;
@@ -11,7 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
-public class ColoredProgressBarComponent extends HorizontalFlowLayout {
+public class ColoredProgressBarComponent extends FlowLayout {
 
     protected static final NinePatchRenderer BAR_RENDERER = new NinePatchRenderer(
             OwoWhatsThis.id("textures/gui/progress_bar.png"),
@@ -22,7 +22,7 @@ public class ColoredProgressBarComponent extends HorizontalFlowLayout {
     protected float progress = 0f;
 
     public ColoredProgressBarComponent(Text message) {
-        super(Sizing.fixed(Math.max(110, MinecraftClient.getInstance().textRenderer.getWidth(message) + 10)), Sizing.fixed(12));
+        super(Sizing.fixed(Math.max(110, MinecraftClient.getInstance().textRenderer.getWidth(message) + 10)), Sizing.fixed(12), Algorithm.HORIZONTAL);
         this.surface(Surface.outline(0xA7000000));
         this.child(
                 Components.label(message)

@@ -2,7 +2,7 @@ package io.wispforest.owowhatsthis.client.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.container.HorizontalFlowLayout;
+import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.Drawer;
 import io.wispforest.owo.ui.util.ScissorStack;
@@ -12,7 +12,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class TexturedProgressBarComponent extends HorizontalFlowLayout {
+public class TexturedProgressBarComponent extends FlowLayout {
 
     protected final DrawFunction drawFunction;
 
@@ -20,7 +20,7 @@ public class TexturedProgressBarComponent extends HorizontalFlowLayout {
     protected Color color = Color.WHITE;
 
     protected TexturedProgressBarComponent(Text message, DrawFunction drawFunction) {
-        super(Sizing.fixed(Math.max(110, MinecraftClient.getInstance().textRenderer.getWidth(message) + 10)), Sizing.fixed(12));
+        super(Sizing.fixed(Math.max(110, MinecraftClient.getInstance().textRenderer.getWidth(message) + 10)), Sizing.fixed(12), Algorithm.HORIZONTAL);
         this.drawFunction = drawFunction;
         this.surface(Surface.outline(0xA7000000));
         this.child(
