@@ -8,6 +8,7 @@ import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.core.Color;
+import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.NumberFormatter;
@@ -451,7 +452,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             return Containers.grid(Sizing.content(), Sizing.content(), rows, Math.min(data.size(), 9)).<GridLayout>configure(layout -> {
                 for (int i = 0; i < data.size(); i++) {
                     layout.child(
-                            Components.item(data.get(i)).showOverlay(true),
+                            Components.item(data.get(i)).showOverlay(true).margins(Insets.of(1)),
                             i / 9, i % 9
                     );
                 }
