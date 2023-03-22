@@ -15,6 +15,7 @@ import io.wispforest.owowhatsthis.network.DataUpdatePacket;
 import io.wispforest.owowhatsthis.network.OwoWhatsThisNetworking;
 import io.wispforest.owowhatsthis.network.RequestDataPacket;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
@@ -33,6 +34,8 @@ public class OwoWhatsThisHUD {
 
     @SuppressWarnings("unchecked")
     public static void initialize() {
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> rateLimit.reset());
 
         Hud.add(COMPONENT_ID, () -> {
             return Containers.verticalFlow(Sizing.content(), Sizing.content())

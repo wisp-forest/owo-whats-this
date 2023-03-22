@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
@@ -25,6 +26,10 @@ public class OwoWhatsThisNetworking {
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public static void initialize() {
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            CLIENT_DATA.remove(handler.player.getUuid());
+        });
+
         CHANNEL.registerServerbound(RequestDataPacket.class, (message, access) -> {
             var type = message.targetData().readRegistryValue(OwoWhatsThis.TARGET_TYPE);
             var target = type.deserializer().apply(access, message.targetData());

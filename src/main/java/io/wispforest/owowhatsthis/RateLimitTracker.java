@@ -29,4 +29,9 @@ public class RateLimitTracker {
         }
     }
 
+    public void reset() {
+        this.lastPassTime = -1;
+        this.override = -1;
+    }
+
 }
