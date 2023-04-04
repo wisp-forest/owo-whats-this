@@ -3,13 +3,12 @@ package io.wispforest.owowhatsthis.client;
 import io.wispforest.owo.config.Option;
 import io.wispforest.owo.config.ui.ConfigScreen;
 import io.wispforest.owo.config.ui.OptionComponentFactory;
-import io.wispforest.owo.config.ui.component.OptionComponent;
+import io.wispforest.owo.config.ui.component.OptionValueProvider;
 import io.wispforest.owo.config.ui.component.SearchAnchorComponent;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
-import io.wispforest.owo.ui.container.VerticalFlowLayout;
 import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Positioning;
 import io.wispforest.owo.ui.core.Sizing;
@@ -40,16 +39,15 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
 
     private static final OptionComponentFactory<Map<Identifier, Boolean>> PROVIDER_CONFIG_FACTORY = (model, option) -> {
         var container = new ProviderConfigContainer(option);
-        return new OptionComponentFactory.Result(container, container);
+        return new OptionComponentFactory.Result<>(container, container);
     };
 
-    private static class ProviderConfigContainer extends VerticalFlowLayout implements OptionComponent {
+    private static class ProviderConfigContainer extends FlowLayout implements OptionValueProvider {
 
         protected final Map<Identifier, Boolean> backingMap;
 
-        @SuppressWarnings("UnstableApiUsage")
         protected ProviderConfigContainer(Option<Map<Identifier, Boolean>> option) {
-            super(Sizing.fill(100), Sizing.content());
+            super(Sizing.fill(100), Sizing.content(), Algorithm.VERTICAL);
             this.backingMap = new HashMap<>(option.value());
 
             for (var targetType : OwoWhatsThis.TARGET_TYPE) {
@@ -81,7 +79,8 @@ public class OwoWhatsThisConfigScreen extends ConfigScreen {
                                         .child(new ProviderConfigButton().<ProviderConfigButton>configure(button -> {
                                                     button.onChanged(state -> {
                                                         if (state == ProviderState.ENABLED) this.backingMap.remove(providerId);
-                                                        else this.backingMap.put(providerId, state == ProviderState.WHEN_SNEAKING);
+                                                        else
+                                                            this.backingMap.put(providerId, state == ProviderState.WHEN_SNEAKING);
 
                                                         if (state == ProviderState.WHEN_SNEAKING) {
                                                             button.tooltip(Text.translatable("text.owo-whats-this.config.provider_toggle.when_sneaking.tooltip"));

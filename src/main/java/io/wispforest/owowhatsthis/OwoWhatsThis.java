@@ -20,6 +20,7 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
@@ -36,15 +37,15 @@ public class OwoWhatsThis implements ModInitializer {
     public static final String MOD_ID = "owo-whats-this";
     public static final io.wispforest.owowhatsthis.OwoWhatsThisConfig CONFIG = io.wispforest.owowhatsthis.OwoWhatsThisConfig.createAndLoad();
 
-    @SuppressWarnings("unchecked")
+    public static final RegistryKey<Registry<TargetType<?>>> TARGET_TYPE_KEY = RegistryKey.ofRegistry(id("target_types"));
     public static final Registry<TargetType<?>> TARGET_TYPE =
-            (Registry<TargetType<?>>) (Object) FabricRegistryBuilder.createSimple(TargetType.class, id("target_types"))
+            FabricRegistryBuilder.createSimple(TARGET_TYPE_KEY)
                     .attribute(RegistryAttribute.SYNCED)
                     .buildAndRegister();
 
-    @SuppressWarnings("unchecked")
+    public static final RegistryKey<Registry<InformationProvider<?, ?>>> INFORMATION_PROVIDER_KEY = RegistryKey.ofRegistry(id("information_providers"));
     public static final Registry<InformationProvider<?, ?>> INFORMATION_PROVIDER =
-            (Registry<InformationProvider<?, ?>>) (Object) FabricRegistryBuilder.createSimple(InformationProvider.class, id("information_providers"))
+            FabricRegistryBuilder.createSimple(INFORMATION_PROVIDER_KEY)
                     .attribute(RegistryAttribute.SYNCED)
                     .buildAndRegister();
 
