@@ -119,7 +119,7 @@ public class OwoWhatsThis implements ModInitializer {
     }
 
     public static HitResult raycast(Entity entity, float tickDelta) {
-        var blockTarget = entity.raycast(5, tickDelta, OwoWhatsThis.CONFIG.includeFluids());
+        var blockTarget = entity.raycast(5, tickDelta, OwoWhatsThis.CONFIG.showFluids());
 
         var maxReach = entity.getRotationVec(tickDelta).multiply(5);
         var entityTarget = ProjectileUtil.raycast(

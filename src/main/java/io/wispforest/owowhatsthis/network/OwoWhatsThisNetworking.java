@@ -33,6 +33,7 @@ public class OwoWhatsThisNetworking {
         CHANNEL.registerServerbound(RequestDataPacket.class, (message, access) -> {
             var type = message.targetData().readRegistryValue(OwoWhatsThis.TARGET_TYPE);
             var target = type.deserializer().apply(access, message.targetData());
+            message.targetData().release();
             if (target == null) return;
 
             if (!updateRateLimit(access.player(), target.hashCode())) return;
