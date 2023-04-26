@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.text.MutableText;
+import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.math.BigDecimal;
@@ -55,7 +56,8 @@ public class NumberFormatter {
             }
         }
 
-        return new BigDecimal(quantity).setScale(OwoWhatsThis.CONFIG.decimalPlaces(), RoundingMode.HALF_UP).toPlainString()
+        var decimal = new BigDecimal(quantity).setScale(OwoWhatsThis.CONFIG.decimalPlaces(), RoundingMode.HALF_UP);
+        return (MathHelper.fractionalPart(decimal.doubleValue()) == 0 ? decimal.longValue() : decimal.toPlainString())
                 + METRIC_PREFIXES.getOrDefault(order, "")
                 + unit;
     }

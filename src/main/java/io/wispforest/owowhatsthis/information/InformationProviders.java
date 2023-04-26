@@ -358,7 +358,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             return Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(view -> {
                 view.gap(1);
                 view.child(Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
-                    if (data.health < 30 && data.maxHealth < 30) {
+                    if (data.health <= 40 && data.maxHealth <= 40) {
                         flowLayout.gap(-1);
                         for (int i = 0; i < Math.floor(data.health / 2); i++) {
                             flowLayout.child(new HeartSpriteComponent(1f));
@@ -384,7 +384,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
 
                 if (data.armor > 0) {
                     view.child(Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
-                        if (data.armor < 30) {
+                        if (data.armor <= 40) {
                             flowLayout.gap(-1);
                             for (int i = 0; i < data.armor / 2; i++) {
                                 flowLayout.child(Components.texture(
