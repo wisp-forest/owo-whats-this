@@ -27,6 +27,9 @@ public class OwoWhatsThisConfigModel {
     @RangeConstraint(min = 0, max = 5)
     public int decimalPlaces = 1;
 
+    @RangeConstraint(min = 2, max = 10)
+    public int maxItemContainerPreviewRows = 5;
+
     public int updateDelay = 10;
 
     @Hook

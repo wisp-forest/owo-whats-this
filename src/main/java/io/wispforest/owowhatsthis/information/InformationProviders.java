@@ -342,7 +342,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
     @Override
     @SuppressWarnings("unchecked")
     public Class<InformationProvider<?, ?>> getTargetFieldType() {
-        return (Class<InformationProvider<?,?>>) (Object) InformationProvider.class;
+        return (Class<InformationProvider<?, ?>>) (Object) InformationProvider.class;
     }
 
     public record EntityHealthInfo(float health, float maxHealth, int armor) {}
@@ -448,17 +448,29 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
         };
 
         public static final InformationProvider.DisplayAdapter<List<ItemStack>> ITEM_STACK_LIST = data -> {
-            int rows = MathHelper.ceilDiv(data.size(), 9);
-            return Containers.grid(Sizing.content(), Sizing.content(), rows, Math.min(data.size(), 9)).<GridLayout>configure(layout -> {
-                for (int i = 0; i < data.size(); i++) {
+            int displayCount;
+            boolean showEllipsis;
+            if (data.size() <= OwoWhatsThis.CONFIG.maxItemContainerPreviewRows() * 9) {
+                displayCount = data.size();
+                showEllipsis = false;
+            } else {
+                displayCount = OwoWhatsThis.CONFIG.maxItemContainerPreviewRows() * 9 - 1;
+                showEllipsis = true;
+            }
+
+            int rows = MathHelper.ceilDiv(displayCount, 9);
+            return Containers.grid(Sizing.content(), Sizing.content(), rows, Math.min(displayCount, 9)).<GridLayout>configure(layout -> {
+                for (int i = 0; i < displayCount; i++) {
                     layout.child(
                             Components.item(data.get(i)).showOverlay(true).margins(Insets.of(1)),
                             i / 9, i % 9
                     );
                 }
+
+                if (showEllipsis) {
+                    layout.child(Components.label(Text.literal("...")).shadow(true).margins(Insets.of(3, 0, 6, 0)), OwoWhatsThis.CONFIG.maxItemContainerPreviewRows() - 1, 8);
+                }
             });
         };
-
     }
-
 }

@@ -16,6 +16,7 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
     private final Option<io.wispforest.owo.ui.core.Color> tooltipColor = this.optionForKey(new Option.Key("tooltipColor"));
     private final Option<io.wispforest.owo.ui.core.Color> tooltipBorderColor = this.optionForKey(new Option.Key("tooltipBorderColor"));
     private final Option<java.lang.Integer> decimalPlaces = this.optionForKey(new Option.Key("decimalPlaces"));
+    private final Option<java.lang.Integer> maxItemContainerPreviewRows = this.optionForKey(new Option.Key("maxItemContainerPreviewRows"));
     private final Option<java.lang.Integer> updateDelay = this.optionForKey(new Option.Key("updateDelay"));
     private final Option<java.util.List<java.lang.String>> effectiveToolTags = this.optionForKey(new Option.Key("effectiveToolTags"));
     private final Option<java.util.Map<net.minecraft.util.Identifier,java.lang.Boolean>> disabledProviders = this.optionForKey(new Option.Key("disabledProviders"));
@@ -78,6 +79,14 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
 
     public void decimalPlaces(int value) {
         decimalPlaces.set(value);
+    }
+
+    public int maxItemContainerPreviewRows() {
+        return maxItemContainerPreviewRows.value();
+    }
+
+    public void maxItemContainerPreviewRows(int value) {
+        maxItemContainerPreviewRows.set(value);
     }
 
     public int updateDelay() {
