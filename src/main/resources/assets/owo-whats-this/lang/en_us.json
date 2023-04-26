@@ -5,7 +5,7 @@
 
   "text.config.owo-whats-this.option.enableTooltip": "enable tooltip",
   "text.config.owo-whats-this.option.enableTooltip.tooltip": "whether to show the owo-whats-this tooltip.\ndisabling this effectively disables the mod",
-  "text.config.owo-whats-this.option.includeFluids": "include fluids",
+  "text.config.owo-whats-this.option.showFluids": "show fluids",
   "text.config.owo-whats-this.option.tooltipColor": "tooltip fill color",
   "text.config.owo-whats-this.option.tooltipBorderColor": "tooltip border color",
   "text.config.owo-whats-this.option.decimalPlaces": "decimal places",

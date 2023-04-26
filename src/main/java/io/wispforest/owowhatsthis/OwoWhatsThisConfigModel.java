@@ -17,7 +17,7 @@ public class OwoWhatsThisConfigModel {
     @SectionHeader("main")
     public boolean enableTooltip = true;
 
-    public boolean includeFluids = false;
+    public boolean showFluids = false;
 
     @WithAlpha
     public Color tooltipColor = Color.ofArgb(0x77000000);

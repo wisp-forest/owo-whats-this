@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis.OwoWhatsThisConfigModel> {
 
     private final Option<java.lang.Boolean> enableTooltip = this.optionForKey(new Option.Key("enableTooltip"));
-    private final Option<java.lang.Boolean> includeFluids = this.optionForKey(new Option.Key("includeFluids"));
+    private final Option<java.lang.Boolean> showFluids = this.optionForKey(new Option.Key("showFluids"));
     private final Option<io.wispforest.owo.ui.core.Color> tooltipColor = this.optionForKey(new Option.Key("tooltipColor"));
     private final Option<io.wispforest.owo.ui.core.Color> tooltipBorderColor = this.optionForKey(new Option.Key("tooltipBorderColor"));
     private final Option<java.lang.Integer> decimalPlaces = this.optionForKey(new Option.Key("decimalPlaces"));
@@ -49,12 +49,12 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
         enableTooltip.set(value);
     }
 
-    public boolean includeFluids() {
-        return includeFluids.value();
+    public boolean showFluids() {
+        return showFluids.value();
     }
 
-    public void includeFluids(boolean value) {
-        includeFluids.set(value);
+    public void showFluids(boolean value) {
+        showFluids.set(value);
     }
 
     public io.wispforest.owo.ui.core.Color tooltipColor() {

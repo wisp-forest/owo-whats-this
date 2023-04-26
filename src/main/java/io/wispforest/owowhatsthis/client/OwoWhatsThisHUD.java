@@ -143,6 +143,8 @@ public class OwoWhatsThisHUD {
             var data = provider.serializer().deserializer().apply(buffer);
             PROVIDER_DATA.put(provider, data);
         }
+
+        buffer.release();
     }
 
 }
