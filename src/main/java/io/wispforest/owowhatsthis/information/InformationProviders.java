@@ -182,6 +182,9 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                 } else if (state.getBlock() instanceof StemBlock) {
                     growth = state.get(StemBlock.AGE);
                     maxGrowth = 7;
+                } else if (state.getBlock() instanceof NetherWartBlock) {
+                    growth = state.get(NetherWartBlock.AGE);
+                    maxGrowth = 3;
                 } else {
                     return null;
                 }

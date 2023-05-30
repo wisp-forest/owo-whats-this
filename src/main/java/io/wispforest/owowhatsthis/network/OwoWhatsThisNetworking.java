@@ -24,7 +24,7 @@ public class OwoWhatsThisNetworking {
 
     private static final Object2ObjectMap<UUID, ClientData> CLIENT_DATA = new Object2ObjectLinkedOpenHashMap<>();
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
+    @SuppressWarnings({"unchecked", "DataFlowIssue"})
     public static void initialize() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             CLIENT_DATA.remove(handler.player.getUuid());

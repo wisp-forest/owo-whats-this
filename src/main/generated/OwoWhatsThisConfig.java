@@ -11,15 +11,17 @@ import java.util.function.Consumer;
 
 public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis.OwoWhatsThisConfigModel> {
 
-    private final Option<java.lang.Boolean> enableTooltip = this.optionForKey(new Option.Key("enableTooltip"));
-    private final Option<java.lang.Boolean> showFluids = this.optionForKey(new Option.Key("showFluids"));
-    private final Option<io.wispforest.owo.ui.core.Color> tooltipColor = this.optionForKey(new Option.Key("tooltipColor"));
-    private final Option<io.wispforest.owo.ui.core.Color> tooltipBorderColor = this.optionForKey(new Option.Key("tooltipBorderColor"));
-    private final Option<java.lang.Integer> decimalPlaces = this.optionForKey(new Option.Key("decimalPlaces"));
-    private final Option<java.lang.Integer> maxItemContainerPreviewRows = this.optionForKey(new Option.Key("maxItemContainerPreviewRows"));
-    private final Option<java.lang.Integer> updateDelay = this.optionForKey(new Option.Key("updateDelay"));
-    private final Option<java.util.List<java.lang.String>> effectiveToolTags = this.optionForKey(new Option.Key("effectiveToolTags"));
-    private final Option<java.util.Map<net.minecraft.util.Identifier,java.lang.Boolean>> disabledProviders = this.optionForKey(new Option.Key("disabledProviders"));
+    public final Keys keys = new Keys();
+
+    private final Option<java.lang.Boolean> enableTooltip = this.optionForKey(this.keys.enableTooltip);
+    private final Option<java.lang.Boolean> showFluids = this.optionForKey(this.keys.showFluids);
+    private final Option<io.wispforest.owo.ui.core.Color> tooltipColor = this.optionForKey(this.keys.tooltipColor);
+    private final Option<io.wispforest.owo.ui.core.Color> tooltipBorderColor = this.optionForKey(this.keys.tooltipBorderColor);
+    private final Option<java.lang.Integer> decimalPlaces = this.optionForKey(this.keys.decimalPlaces);
+    private final Option<java.lang.Integer> maxItemContainerPreviewRows = this.optionForKey(this.keys.maxItemContainerPreviewRows);
+    private final Option<java.lang.Integer> updateDelay = this.optionForKey(this.keys.updateDelay);
+    private final Option<java.util.List<java.lang.String>> effectiveToolTags = this.optionForKey(this.keys.effectiveToolTags);
+    private final Option<java.util.Map<net.minecraft.util.Identifier,java.lang.Boolean>> disabledProviders = this.optionForKey(this.keys.disabledProviders);
 
     private OwoWhatsThisConfig() {
         super(io.wispforest.owowhatsthis.OwoWhatsThisConfigModel.class);
@@ -122,7 +124,16 @@ public class OwoWhatsThisConfig extends ConfigWrapper<io.wispforest.owowhatsthis
     }
 
 
-
-
+    public static class Keys {
+        public final Option.Key enableTooltip = new Option.Key("enableTooltip");
+        public final Option.Key showFluids = new Option.Key("showFluids");
+        public final Option.Key tooltipColor = new Option.Key("tooltipColor");
+        public final Option.Key tooltipBorderColor = new Option.Key("tooltipBorderColor");
+        public final Option.Key decimalPlaces = new Option.Key("decimalPlaces");
+        public final Option.Key maxItemContainerPreviewRows = new Option.Key("maxItemContainerPreviewRows");
+        public final Option.Key updateDelay = new Option.Key("updateDelay");
+        public final Option.Key effectiveToolTags = new Option.Key("effectiveToolTags");
+        public final Option.Key disabledProviders = new Option.Key("disabledProviders");
+    }
 }
 
