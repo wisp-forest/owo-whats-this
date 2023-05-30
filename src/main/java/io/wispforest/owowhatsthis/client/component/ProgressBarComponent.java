@@ -1,6 +1,7 @@
 package io.wispforest.owowhatsthis.client.component;
 
 import io.wispforest.owo.ui.base.BaseComponent;
+import io.wispforest.owo.ui.core.AnimatableProperty;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.util.Drawer;
@@ -9,8 +10,8 @@ import net.minecraft.util.Formatting;
 
 public class ProgressBarComponent extends BaseComponent {
 
-    protected Color trackColor = Color.ofArgb(0x77000000);
-    protected Color barColor = Color.ofFormatting(Formatting.BLUE);
+    protected AnimatableProperty<Color> trackColor = AnimatableProperty.of(Color.ofArgb(0x77000000));
+    protected AnimatableProperty<Color> barColor = AnimatableProperty.of(Color.ofFormatting(Formatting.BLUE));
 
     protected float progress = 0f;
 
@@ -20,8 +21,15 @@ public class ProgressBarComponent extends BaseComponent {
 
     @Override
     public void draw(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, float delta) {
-        Drawer.fill(matrices, x, y, this.x + this.width, this.y + this.height, this.trackColor.argb());
-        Drawer.fill(matrices, x, y, this.x + (int) (this.width * this.progress), this.y + this.height, this.barColor.argb());
+        Drawer.fill(matrices, x, y, this.x + this.width, this.y + this.height, this.trackColor.get().argb());
+        Drawer.fill(matrices, x, y, this.x + (int) (this.width * this.progress), this.y + this.height, this.barColor.get().argb());
+    }
+
+    @Override
+    public void update(float delta, int mouseX, int mouseY) {
+        super.update(delta, mouseX, mouseY);
+        this.trackColor.update(delta);
+        this.barColor.update(delta);
     }
 
     public ProgressBarComponent progress(float progress) {
@@ -34,20 +42,20 @@ public class ProgressBarComponent extends BaseComponent {
     }
 
     public ProgressBarComponent trackColor(Color trackColor) {
-        this.trackColor = trackColor;
+        this.trackColor.set(trackColor);
         return this;
     }
 
-    public Color trackColor() {
+    public AnimatableProperty<Color> trackColor() {
         return this.trackColor;
     }
 
     public ProgressBarComponent barColor(Color barColor) {
-        this.barColor = barColor;
+        this.barColor.set(barColor);
         return this;
     }
 
-    public Color barColor() {
+    public AnimatableProperty<Color> barColor() {
         return this.barColor;
     }
 }

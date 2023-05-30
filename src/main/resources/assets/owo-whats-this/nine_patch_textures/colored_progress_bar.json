@@ -1,0 +1,14 @@
+{
+  "texture": "owo-whats-this:textures/gui/progress_bar.png",
+  "texture_width": 32,
+  "texture_height": 16,
+  "repeat": true,
+  "corner_patch_size": {
+    "width": 1,
+    "height": 1
+  },
+  "center_patch_size": {
+    "width": 30,
+    "height": 6
+  }
+}
