@@ -45,7 +45,7 @@ public class OwoWhatsThisNetworking {
                 if (provider.client()) continue;
                 applicableProviders.put(
                         (InformationProvider<Object, Object>) provider,
-                        ((InformationProvider<Object, Object>) provider).transformer().apply(access.player(), access.player().world, target)
+                        ((InformationProvider<Object, Object>) provider).transformer().apply(access.player(), access.player().getWorld(), target)
                 );
             }
 

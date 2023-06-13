@@ -29,17 +29,17 @@ public class ColoredProgressBarComponent extends StackLayout {
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, float delta) {
+    public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
         final var color = this.color.get();
         RenderSystem.setShaderColor(color.red(), color.green(), color.blue(), color.alpha());
 
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableBlend();
-        NinePatchTexture.draw(COLORED_PROGRESS_BAR, matrices, this.x + 1, this.y + 1, (int) ((this.width - 2) * progress), this.height - 2);
+        NinePatchTexture.draw(COLORED_PROGRESS_BAR, context, this.x + 1, this.y + 1, (int) ((this.width - 2) * progress), this.height - 2);
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        super.draw(matrices, mouseX, mouseY, partialTicks, delta);
+        super.draw(context, mouseX, mouseY, partialTicks, delta);
     }
 
     @Override

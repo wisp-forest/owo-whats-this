@@ -16,7 +16,7 @@ public record BlockStateWithPosition(BlockPos pos, BlockState state) {
 
         return new BlockStateWithPosition(
                 pos,
-                access.player().world.getBlockState(pos)
+                access.player().getWorld().getBlockState(pos)
         );
     }
 }

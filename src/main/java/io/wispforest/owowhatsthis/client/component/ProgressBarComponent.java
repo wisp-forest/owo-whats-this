@@ -3,9 +3,8 @@ package io.wispforest.owowhatsthis.client.component;
 import io.wispforest.owo.ui.base.BaseComponent;
 import io.wispforest.owo.ui.core.AnimatableProperty;
 import io.wispforest.owo.ui.core.Color;
+import io.wispforest.owo.ui.core.OwoUIDrawContext;
 import io.wispforest.owo.ui.core.Sizing;
-import io.wispforest.owo.ui.util.Drawer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Formatting;
 
 public class ProgressBarComponent extends BaseComponent {
@@ -20,9 +19,9 @@ public class ProgressBarComponent extends BaseComponent {
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, float delta) {
-        Drawer.fill(matrices, x, y, this.x + this.width, this.y + this.height, this.trackColor.get().argb());
-        Drawer.fill(matrices, x, y, this.x + (int) (this.width * this.progress), this.y + this.height, this.barColor.get().argb());
+    public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
+        context.fill(x, y, this.x + this.width, this.y + this.height, this.trackColor.get().argb());
+        context.fill(x, y, this.x + (int) (this.width * this.progress), this.y + this.height, this.barColor.get().argb());
     }
 
     @Override

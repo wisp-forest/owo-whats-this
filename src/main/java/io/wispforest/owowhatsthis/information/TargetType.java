@@ -17,7 +17,6 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.player.PlayerEntity;
@@ -69,14 +68,14 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
     public static final TargetType<Entity> ENTITY = new TargetType<>(
             (world, hitResult) -> hitResult instanceof EntityHitResult entityHit ? fixEnderDragon(entityHit.getEntity()) : null,
             (entity, buf) -> buf.writeVarInt(entity.getId()),
-            (access, buf) -> fixEnderDragon(access.player().world.getEntityById(buf.readVarInt())),
+            (access, buf) -> fixEnderDragon(access.player().getWorld().getEntityById(buf.readVarInt())),
             20, null
     );
 
     public static final TargetType<PlayerEntity> PLAYER = new TargetType<>(
             (world, hitResult) -> hitResult instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof PlayerEntity player ? player : null,
             (player, buf) -> buf.writeVarInt(player.getId()),
-            (access, buf) -> (PlayerEntity) access.player().world.getEntityById(buf.readVarInt()),
+            (access, buf) -> (PlayerEntity) access.player().getWorld().getEntityById(buf.readVarInt()),
             30, ENTITY
     );
 
@@ -158,7 +157,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
                     Containers.horizontalFlow(Sizing.content(), Sizing.content())
                             .child(entityPreview.title())
                             .child(Components.texture(
-                                    InGameHud.GUI_ICONS_TEXTURE,
+                                    InformationProviders.GUI_ICONS_TEXTURE,
                                     0, 176 + pingStatus * 8, 10, 8
                             )).gap(3),
                     entityPreview.preview()

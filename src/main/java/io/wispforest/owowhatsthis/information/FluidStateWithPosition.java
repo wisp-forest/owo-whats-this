@@ -16,7 +16,7 @@ public record FluidStateWithPosition(BlockPos pos, FluidState state) {
 
         return new FluidStateWithPosition(
                 pos,
-                access.player().world.getFluidState(pos)
+                access.player().getWorld().getFluidState(pos)
         );
     }
 }

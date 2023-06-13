@@ -1,6 +1,7 @@
 package io.wispforest.owowhatsthis.client.component;
 
 import io.wispforest.owo.ui.component.EntityComponent;
+import io.wispforest.owo.ui.core.OwoUIDrawContext;
 import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -23,7 +24,7 @@ public class OwoWhatsThisEntityComponent<E extends Entity> extends EntityCompone
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, float delta) {
+    public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
         float prevHeadYaw = 0f;
         float prevPrevHeadYaw = 0f;
 
@@ -40,7 +41,7 @@ public class OwoWhatsThisEntityComponent<E extends Entity> extends EntityCompone
         this.runHandler();
 
         drawing = true;
-        super.draw(matrices, mouseX, mouseY, partialTicks, delta);
+        super.draw(context, mouseX, mouseY, partialTicks, delta);
         drawing = false;
 
         if (this.entity instanceof LivingEntity living) {

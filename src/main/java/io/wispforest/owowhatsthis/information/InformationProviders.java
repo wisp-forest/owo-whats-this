@@ -28,7 +28,6 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -46,6 +45,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
@@ -56,12 +56,10 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public class InformationProviders implements AutoRegistryContainer<InformationProvider<?, ?>> {
 
+    public static final Identifier GUI_ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
+
     private static final Predicate<BlockState> SWORD_MINEABLE = state -> {
-        return state.isOf(Blocks.COBWEB)
-                || state.isIn(BlockTags.LEAVES)
-                || state.getMaterial() == Material.REPLACEABLE_PLANT
-                || state.getMaterial() == Material.GOURD
-                || state.getMaterial() == Material.PLANT;
+        return state.isOf(Blocks.COBWEB) || state.isIn(BlockTags.SWORD_EFFICIENT);
     };
 
     private static final Predicate<BlockState> SHEARS_MINEABLE = state -> {
@@ -177,7 +175,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                 int maxGrowth;
 
                 if (state.getBlock() instanceof CropBlock crop) {
-                    growth = state.get(crop.getAgeProperty());
+                    growth = crop.getAge(state);
                     maxGrowth = crop.getMaxAge();
                 } else if (state.getBlock() instanceof StemBlock) {
                     growth = state.get(StemBlock.AGE);
@@ -219,7 +217,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
 
                 var effectTexts = new ArrayList<Text>();
                 for (var effect : effects) {
-                    effectTexts.add(Text.translatable("text.owo-whats-this.tooltip.status_effect", Text.translatable(effect.getTranslationKey()), StatusEffectUtil.durationToString(effect, 1)));
+                    effectTexts.add(Text.translatable("text.owo-whats-this.tooltip.status_effect", Text.translatable(effect.getTranslationKey()), StatusEffectUtil.getDurationText(effect, 1)));
                 }
 
                 var display = Text.empty();
@@ -391,14 +389,14 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                             flowLayout.gap(-1);
                             for (int i = 0; i < data.armor / 2; i++) {
                                 flowLayout.child(Components.texture(
-                                        InGameHud.GUI_ICONS_TEXTURE,
+                                        GUI_ICONS_TEXTURE,
                                         34, 9, 9, 9
                                 ));
                             }
 
                             if (data.armor % 2 != 0) {
                                 flowLayout.child(Components.texture(
-                                        InGameHud.GUI_ICONS_TEXTURE,
+                                        GUI_ICONS_TEXTURE,
                                         25, 9, 9, 9
                                 ));
                             }
@@ -408,7 +406,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                                     Components.label(Text.literal(Math.round(data.armor / 2f) + "x"))
                             ).child(
                                     Components.texture(
-                                            InGameHud.GUI_ICONS_TEXTURE,
+                                            GUI_ICONS_TEXTURE,
                                             34, 9, 9, 9
                                     )
                             );
