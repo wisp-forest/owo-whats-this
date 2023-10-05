@@ -130,7 +130,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             TargetType.BLOCK, true, -10,
             (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
             (player, world, target) -> {
-                var storage = OwoWhatsThis.getStorageContents(ItemStorage.SIDED, world, target.pos());
+                var storage = ItemStorage.SIDED.find(world, target.pos(), null);
                 if (storage == null) return null;
 
                 var items = new ArrayList<ItemStack>();
@@ -149,7 +149,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             TargetType.BLOCK, true, 0,
             (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
             (player, world, target) -> {
-                var storage = OwoWhatsThis.getStorageContents(FluidStorage.SIDED, world, target.pos());
+                var storage = FluidStorage.SIDED.find(world, target.pos(), null);
                 if (storage == null) return null;
 
                 var fluidData = new ArrayList<NbtCompound>();
@@ -384,32 +384,22 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                 }));
 
                 if (data.armor > 0) {
+                    var atlas = MinecraftClient.getInstance().getGuiAtlasManager();
                     view.child(Containers.horizontalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(flowLayout -> {
                         if (data.armor <= 40) {
                             flowLayout.gap(-1);
                             for (int i = 0; i < data.armor / 2; i++) {
-                                flowLayout.child(Components.texture(
-                                        GUI_ICONS_TEXTURE,
-                                        34, 9, 9, 9
-                                ));
+                                flowLayout.child(Components.sprite(atlas.getSprite(new Identifier("hud/armor_full"))));
                             }
 
                             if (data.armor % 2 != 0) {
-                                flowLayout.child(Components.texture(
-                                        GUI_ICONS_TEXTURE,
-                                        25, 9, 9, 9
-                                ));
+                                flowLayout.child(Components.sprite(atlas.getSprite(new Identifier("hud/armor_half"))));
                             }
                         } else {
                             flowLayout.gap(2);
                             flowLayout.child(
                                     Components.label(Text.literal(Math.round(data.armor / 2f) + "x"))
-                            ).child(
-                                    Components.texture(
-                                            GUI_ICONS_TEXTURE,
-                                            34, 9, 9, 9
-                                    )
-                            );
+                            ).child(Components.sprite(atlas.getSprite(new Identifier("hud/armor_full"))));
                         }
                     }));
                 }

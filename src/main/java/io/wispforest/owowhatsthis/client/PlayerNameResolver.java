@@ -1,6 +1,5 @@
 package io.wispforest.owowhatsthis.client;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -23,12 +22,17 @@ public class PlayerNameResolver {
             return presentPlayer.getName();
         }
 
-        var profile = new GameProfile(uuid, null);
-        Util.getIoWorkerExecutor().submit(() -> {
-            server.getSessionService().fillProfileProperties(profile, false);
-            if (profile.getName() == null) return;
+        var userCache = server.getUserCache();
+        if (userCache != null && userCache.getByUuid(uuid).isPresent()) {
+            NAME_CACHE.put(uuid, Text.literal(userCache.getByUuid(uuid).get().getName()));
+            return NAME_CACHE.get(uuid);
+        }
 
-            NAME_CACHE.put(uuid, Text.literal(profile.getName()));
+        Util.getIoWorkerExecutor().submit(() -> {
+            var profile = server.getSessionService().fetchProfile(uuid, false);
+            if (profile == null) return;
+
+            NAME_CACHE.put(uuid, Text.literal(profile.profile().getName()));
         });
 
         NAME_CACHE.put(uuid, null);

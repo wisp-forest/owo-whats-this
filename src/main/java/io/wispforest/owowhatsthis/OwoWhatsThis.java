@@ -91,18 +91,6 @@ public class OwoWhatsThis implements ModInitializer {
                 .orElse(id.getNamespace());
     }
 
-    @SuppressWarnings("UnstableApiUsage")
-    public static <T> @Nullable Set<StorageView<T>> getStorageContents(BlockApiLookup<Storage<T>, Direction> lookup, World world, BlockPos blockPos) {
-        var views = new LinkedHashSet<StorageView<T>>();
-        for (var side : ALL_DIRECTIONS) {
-            var storage = lookup.find(world, blockPos, side);
-            if (storage == null) continue;
-
-            storage.forEach(view -> views.add(view.getUnderlyingView()));
-        }
-        return views.isEmpty() ? null : views;
-    }
-
     public static Map<Identifier, Text> effectiveToolTags() {
         return EFFECTIVE_TOOL_TAGS_VIEW;
     }

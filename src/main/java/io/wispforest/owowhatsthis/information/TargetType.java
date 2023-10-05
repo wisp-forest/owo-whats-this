@@ -89,7 +89,7 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
 
         DisplayAdapter<BlockStateWithPosition> BLOCK = target -> {
             var targetState = target.state();
-            var previewItem = targetState.getBlock().asItem().getDefaultStack();
+            var previewItem = targetState.getBlock().getPickStack(MinecraftClient.getInstance().world, target.pos(), targetState);
 
             return new PreviewData(
                     Components.label(
