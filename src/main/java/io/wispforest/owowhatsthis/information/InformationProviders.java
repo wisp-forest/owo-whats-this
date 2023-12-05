@@ -1,8 +1,9 @@
 package io.wispforest.owowhatsthis.information;
 
-import io.wispforest.owo.network.serialization.PacketBufSerializer;
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.registration.reflect.AutoRegistryContainer;
+import io.wispforest.owo.serialization.endec.BuiltInEndecs;
+import io.wispforest.owo.serialization.format.nbt.NbtEndec;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
@@ -125,10 +126,9 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             }
     );
 
-    @SuppressWarnings("unchecked")
     public static final InformationProvider<BlockStateWithPosition, List<ItemStack>> BLOCK_ITEM_STORAGE = InformationProvider.server(
             TargetType.BLOCK, true, -10,
-            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
+            BuiltInEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 var storage = ItemStorage.SIDED.find(world, target.pos(), null);
                 if (storage == null) return null;
@@ -144,10 +144,9 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             }
     );
 
-    @SuppressWarnings("unchecked")
     public static final InformationProvider<BlockStateWithPosition, List<NbtCompound>> BLOCK_FLUID_STORAGE = InformationProvider.server(
             TargetType.BLOCK, true, 0,
-            (PacketBufSerializer<List<NbtCompound>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, NbtCompound.class),
+            NbtEndec.COMPOUND.listOf(),
             (player, world, target) -> {
                 var storage = FluidStorage.SIDED.find(world, target.pos(), null);
                 if (storage == null) return null;
@@ -280,10 +279,9 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             }
     );
 
-    @SuppressWarnings("unchecked")
     public static final InformationProvider<Entity, List<ItemStack>> ENTITY_MINECART_INVENTORY = InformationProvider.server(
             TargetType.ENTITY, true, 0,
-            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
+            BuiltInEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 if (!(target instanceof StorageMinecartEntity minecart)) return null;
 
@@ -299,10 +297,9 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             }
     );
 
-    @SuppressWarnings("unchecked")
     public static final InformationProvider<Entity, List<ItemStack>> ENTITY_CHEST_BOAT_INVENTORY = InformationProvider.server(
             TargetType.ENTITY, true, 0,
-            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
+            BuiltInEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 if (!(target instanceof ChestBoatEntity boat)) return null;
 
@@ -318,10 +315,9 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             }
     );
 
-    @SuppressWarnings("unchecked")
     public static final InformationProvider<PlayerEntity, List<ItemStack>> PLAYER_INVENTORY = InformationProvider.server(
             TargetType.PLAYER, true, 0,
-            (PacketBufSerializer<List<ItemStack>>) (Object) PacketBufSerializer.createCollectionSerializer(List.class, ItemStack.class),
+            BuiltInEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 var items = new ArrayList<ItemStack>();
                 for (int i = 0; i < target.getInventory().size(); i++) {

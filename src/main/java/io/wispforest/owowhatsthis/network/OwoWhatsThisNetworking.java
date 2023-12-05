@@ -54,7 +54,7 @@ public class OwoWhatsThisNetworking {
             buffer.writeVarInt(applicableProviders.size());
             applicableProviders.forEach((provider, transformed) -> {
                 buffer.writeRegistryValue(OwoWhatsThis.INFORMATION_PROVIDER, provider);
-                provider.serializer().serializer().accept(buffer, transformed);
+                buffer.write(provider.endec(), transformed);
             });
 
             CHANNEL.serverHandle(access.player()).send(new DataUpdatePacket(message.nonce(), buffer));

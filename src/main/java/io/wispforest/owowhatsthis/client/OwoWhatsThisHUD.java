@@ -140,7 +140,7 @@ public class OwoWhatsThisHUD {
 
         for (int i = 0; i < dataCount; i++) {
             var provider = buffer.readRegistryValue(OwoWhatsThis.INFORMATION_PROVIDER);
-            var data = provider.serializer().deserializer().apply(buffer);
+            var data = buffer.read(provider.endec());
             PROVIDER_DATA.put(provider, data);
         }
 
