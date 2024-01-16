@@ -1,16 +1,27 @@
 package io.wispforest.owowhatsthis;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import io.wispforest.owo.text.CustomTextContent;
-import io.wispforest.owo.text.CustomTextContentSerializer;
+import io.wispforest.owo.serialization.Endec;
+import io.wispforest.owo.serialization.SerializationAttribute;
+import io.wispforest.owo.serialization.StructEndec;
+import io.wispforest.owo.serialization.endec.StructEndecBuilder;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
+import net.minecraft.text.TextContent;
 
 import java.util.Optional;
 
-public record QuantityTextContent(double quantity, String unit) implements CustomTextContent {
+public record QuantityTextContent(double quantity, String unit) implements TextContent {
+
+    public static final StructEndec<QuantityTextContent> ENDEC = StructEndecBuilder.of(
+            Endec.DOUBLE.fieldOf("quantity", QuantityTextContent::quantity),
+            Endec.STRING.fieldOf("unit", QuantityTextContent::unit),
+            QuantityTextContent::new
+    );
+
+    public static final Type<QuantityTextContent> TYPE = new Type<>(
+            ENDEC.mapCodec(SerializationAttribute.HUMAN_READABLE),
+            OwoWhatsThis.id("quantity").toString()
+    );
 
     @Override
     public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> visitor, Style style) {
@@ -23,25 +34,8 @@ public record QuantityTextContent(double quantity, String unit) implements Custo
     }
 
     @Override
-    public CustomTextContentSerializer<?> serializer() {
-        return Serializer.INSTANCE;
+    public Type<?> getType() {
+        return TYPE;
     }
 
-    public enum Serializer implements CustomTextContentSerializer<QuantityTextContent> {
-        INSTANCE;
-
-        @Override
-        public QuantityTextContent deserialize(JsonObject obj, JsonDeserializationContext ctx) {
-            return new QuantityTextContent(
-                    obj.get("quantity").getAsDouble(),
-                    obj.get("unit").getAsString()
-            );
-        }
-
-        @Override
-        public void serialize(QuantityTextContent content, JsonObject obj, JsonSerializationContext ctx) {
-            obj.addProperty("quantity", content.quantity);
-            obj.addProperty("unit", content.unit);
-        }
-    }
 }

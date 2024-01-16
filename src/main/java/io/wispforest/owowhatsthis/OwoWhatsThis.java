@@ -75,7 +75,7 @@ public class OwoWhatsThis implements ModInitializer {
         cacheEffectiveToolTags();
         CONFIG.subscribeToEffectiveToolTags(strings -> cacheEffectiveToolTags());
 
-        CustomTextRegistry.register("quantity", QuantityTextContent.Serializer.INSTANCE);
+        CustomTextRegistry.register(QuantityTextContent.TYPE, "quantity");
     }
 
     @ApiStatus.Internal

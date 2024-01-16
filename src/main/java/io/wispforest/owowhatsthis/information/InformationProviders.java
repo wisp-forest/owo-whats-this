@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
 public class InformationProviders implements AutoRegistryContainer<InformationProvider<?, ?>> {
 
     public static final Identifier GUI_ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
@@ -216,7 +215,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
 
                 var effectTexts = new ArrayList<Text>();
                 for (var effect : effects) {
-                    effectTexts.add(Text.translatable("text.owo-whats-this.tooltip.status_effect", Text.translatable(effect.getTranslationKey()), StatusEffectUtil.getDurationText(effect, 1)));
+                    effectTexts.add(Text.translatable("text.owo-whats-this.tooltip.status_effect", Text.translatable(effect.getTranslationKey()), StatusEffectUtil.getDurationText(effect, 1, living.getWorld().getTickManager().getTickRate())));
                 }
 
                 var display = Text.empty();
