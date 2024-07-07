@@ -80,7 +80,7 @@ public class OwoWhatsThis implements ModInitializer {
 
     @ApiStatus.Internal
     public static Identifier id(String path) {
-        return new Identifier(MOD_ID, path);
+        return Identifier.of(MOD_ID, path);
     }
 
     public static String modNameOf(Identifier id) {
@@ -100,7 +100,7 @@ public class OwoWhatsThis implements ModInitializer {
         CONFIG.effectiveToolTags().forEach(s -> {
             var splitName = s.split("/");
             EFFECTIVE_TOOL_TAGS.put(
-                    new Identifier(s),
+                    Identifier.of(s),
                     Text.translatable("text.owo-whats-this.toolType." + splitName[splitName.length - 1])
             );
         });

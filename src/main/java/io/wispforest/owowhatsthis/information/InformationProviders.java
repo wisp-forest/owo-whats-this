@@ -2,7 +2,7 @@ package io.wispforest.owowhatsthis.information;
 
 import io.wispforest.owo.ops.TextOps;
 import io.wispforest.owo.registration.reflect.AutoRegistryContainer;
-import io.wispforest.owo.serialization.endec.BuiltInEndecs;
+import io.wispforest.owo.serialization.endec.MinecraftEndecs;
 import io.wispforest.owo.serialization.format.nbt.NbtEndec;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.Containers;
@@ -21,7 +21,6 @@ import io.wispforest.owowhatsthis.client.component.TexturedProgressBarComponent;
 import io.wispforest.owowhatsthis.mixin.ClientPlayerInteractionManagerAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.mininglevel.v1.MiningLevelManager;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -41,6 +40,7 @@ import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.BlockTags;
@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 
 public class InformationProviders implements AutoRegistryContainer<InformationProvider<?, ?>> {
 
-    public static final Identifier GUI_ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
+    public static final Identifier GUI_ICONS_TEXTURE = Identifier.of("textures/gui/icons.png");
 
     private static final Predicate<BlockState> SWORD_MINEABLE = state -> {
         return state.isOf(Blocks.COBWEB) || state.isIn(BlockTags.SWORD_EFFICIENT);
@@ -88,17 +88,20 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .collect(Collectors.toList());
 
-                int miningLevel = MiningLevelManager.getRequiredMiningLevel(state);
-                Text miningLevelName;
-                if (miningLevel > 0) {
-                    var miningLevelId = MiningLevelManager.getBlockTag(miningLevel).id().toString().split(":");
-                    miningLevelName = Text.translatable(
-                            "text.owo-whats-this.tooltip.miningLevel",
-                            Text.translatable("text.owo-whats-this.miningLevel." + miningLevelId[miningLevelId.length - 1])
-                    );
-                } else {
-                    miningLevelName = Text.empty();
-                }
+                // TODO: figure this out.
+//                int miningLevel = MiningLevelManager.getRequiredMiningLevel(state);
+//                Text miningLevelName;
+//                if (miningLevel > 0) {
+//                    var miningLevelId = MiningLevelManager.getBlockTag(miningLevel).id().toString().split(":");
+//                    miningLevelName = Text.translatable(
+//                            "text.owo-whats-this.tooltip.miningLevel",
+//                            Text.translatable("text.owo-whats-this.miningLevel." + miningLevelId[miningLevelId.length - 1])
+//                    );
+//                } else {
+//                    miningLevelName = Text.empty();
+//                }
+
+                Text miningLevelName = Text.empty();
 
                 if (SWORD_MINEABLE.test(state)) {
                     effectiveTools.add(Text.translatable("text.owo-whats-this.toolType.sword"));
@@ -127,7 +130,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
 
     public static final InformationProvider<BlockStateWithPosition, List<ItemStack>> BLOCK_ITEM_STORAGE = InformationProvider.server(
             TargetType.BLOCK, true, -10,
-            BuiltInEndecs.ITEM_STACK.listOf(),
+            MinecraftEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 var storage = ItemStorage.SIDED.find(world, target.pos(), null);
                 if (storage == null) return null;
@@ -154,7 +157,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                 for (var entry : storage) {
                     if (entry.isResourceBlank()) continue;
 
-                    var nbt = entry.getResource().toNbt();
+                    var nbt = (NbtCompound) FluidVariant.CODEC.encodeStart(world.getRegistryManager().getOps(NbtOps.INSTANCE), entry.getResource()).getOrThrow();
                     nbt.putLong("owo-whats-this:amount", entry.getAmount());
                     nbt.putLong("owo-whats-this:capacity", entry.getCapacity());
                     fluidData.add(nbt);
@@ -280,7 +283,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
 
     public static final InformationProvider<Entity, List<ItemStack>> ENTITY_MINECART_INVENTORY = InformationProvider.server(
             TargetType.ENTITY, true, 0,
-            BuiltInEndecs.ITEM_STACK.listOf(),
+            MinecraftEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 if (!(target instanceof StorageMinecartEntity minecart)) return null;
 
@@ -298,7 +301,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
 
     public static final InformationProvider<Entity, List<ItemStack>> ENTITY_CHEST_BOAT_INVENTORY = InformationProvider.server(
             TargetType.ENTITY, true, 0,
-            BuiltInEndecs.ITEM_STACK.listOf(),
+            MinecraftEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 if (!(target instanceof ChestBoatEntity boat)) return null;
 
@@ -316,7 +319,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
 
     public static final InformationProvider<PlayerEntity, List<ItemStack>> PLAYER_INVENTORY = InformationProvider.server(
             TargetType.PLAYER, true, 0,
-            BuiltInEndecs.ITEM_STACK.listOf(),
+            MinecraftEndecs.ITEM_STACK.listOf(),
             (player, world, target) -> {
                 var items = new ArrayList<ItemStack>();
                 for (int i = 0; i < target.getInventory().size(); i++) {
@@ -384,17 +387,17 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                         if (data.armor <= 40) {
                             flowLayout.gap(-1);
                             for (int i = 0; i < data.armor / 2; i++) {
-                                flowLayout.child(Components.sprite(atlas.getSprite(new Identifier("hud/armor_full"))));
+                                flowLayout.child(Components.sprite(atlas.getSprite(Identifier.of("hud/armor_full"))));
                             }
 
                             if (data.armor % 2 != 0) {
-                                flowLayout.child(Components.sprite(atlas.getSprite(new Identifier("hud/armor_half"))));
+                                flowLayout.child(Components.sprite(atlas.getSprite(Identifier.of("hud/armor_half"))));
                             }
                         } else {
                             flowLayout.gap(2);
                             flowLayout.child(
                                     Components.label(Text.literal(Math.round(data.armor / 2f) + "x"))
-                            ).child(Components.sprite(atlas.getSprite(new Identifier("hud/armor_full"))));
+                            ).child(Components.sprite(atlas.getSprite(Identifier.of("hud/armor_full"))));
                         }
                     }));
                 }
@@ -405,7 +408,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
             return Containers.verticalFlow(Sizing.content(), Sizing.content()).<FlowLayout>configure(layout -> {
                 layout.gap(2);
                 for (var fluidNbt : data) {
-                    var variant = FluidVariant.fromNbt(fluidNbt);
+                    var variant = FluidVariant.CODEC.parse(MinecraftClient.getInstance().world.getRegistryManager().getOps(NbtOps.INSTANCE), fluidNbt).getOrThrow();
 
                     var sprite = FluidVariantRendering.getSprite(variant);
                     int color = FluidVariantRendering.getColor(variant);

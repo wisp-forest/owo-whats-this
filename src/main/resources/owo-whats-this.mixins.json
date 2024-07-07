@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "io.wispforest.owowhatsthis.mixin",
   "plugin": "io.wispforest.owowhatsthis.mixin.compat.CompatMixinPlugin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "compat.ForgeControllerBlockEntityAccessor"
   ],

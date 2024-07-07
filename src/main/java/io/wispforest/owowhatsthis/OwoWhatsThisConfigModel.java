@@ -2,7 +2,6 @@ package io.wispforest.owowhatsthis;
 
 import io.wispforest.owo.config.annotation.*;
 import io.wispforest.owo.ui.core.Color;
-import net.fabricmc.fabric.api.mininglevel.v1.FabricMineableTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 
@@ -39,8 +38,9 @@ public class OwoWhatsThisConfigModel {
                     BlockTags.PICKAXE_MINEABLE.id().toString(),
                     BlockTags.SHOVEL_MINEABLE.id().toString(),
                     BlockTags.HOE_MINEABLE.id().toString(),
-                    FabricMineableTags.SHEARS_MINEABLE.id().toString(),
-                    FabricMineableTags.SWORD_MINEABLE.id().toString()
+                    BlockTags.SWORD_EFFICIENT.id().toString()
+                    // TODO: I think fabric removed this tags without replacement lmao
+//                    FabricMineableTags.SHEARS_MINEABLE.id().toString(),
             )
     );
 
