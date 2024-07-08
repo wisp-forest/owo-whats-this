@@ -44,6 +44,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -88,20 +89,17 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .collect(Collectors.toList());
 
-                // TODO: figure this out.
-//                int miningLevel = MiningLevelManager.getRequiredMiningLevel(state);
-//                Text miningLevelName;
-//                if (miningLevel > 0) {
-//                    var miningLevelId = MiningLevelManager.getBlockTag(miningLevel).id().toString().split(":");
-//                    miningLevelName = Text.translatable(
-//                            "text.owo-whats-this.tooltip.miningLevel",
-//                            Text.translatable("text.owo-whats-this.miningLevel." + miningLevelId[miningLevelId.length - 1])
-//                    );
-//                } else {
-//                    miningLevelName = Text.empty();
-//                }
-
-                Text miningLevelName = Text.empty();
+                TagKey<Block> miningLevel = MiningLevelHack.getRequiredMiningLeveltag(state);
+                Text miningLevelName;
+                if (miningLevel != null) {
+                    var miningLevelId = miningLevel.id().toString().split(":");
+                    miningLevelName = Text.translatable(
+                            "text.owo-whats-this.tooltip.miningLevel",
+                            Text.translatable("text.owo-whats-this.miningLevel." + miningLevelId[miningLevelId.length - 1])
+                    );
+                } else {
+                    miningLevelName = Text.empty();
+                }
 
                 if (SWORD_MINEABLE.test(state)) {
                     effectiveTools.add(Text.translatable("text.owo-whats-this.toolType.sword"));

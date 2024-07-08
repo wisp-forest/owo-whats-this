@@ -37,8 +37,7 @@ public class OwoWhatsThisConfigModel {
                     BlockTags.AXE_MINEABLE.id().toString(),
                     BlockTags.PICKAXE_MINEABLE.id().toString(),
                     BlockTags.SHOVEL_MINEABLE.id().toString(),
-                    BlockTags.HOE_MINEABLE.id().toString(),
-                    BlockTags.SWORD_EFFICIENT.id().toString()
+                    BlockTags.HOE_MINEABLE.id().toString()
                     // TODO: I think fabric removed this tags without replacement lmao
 //                    FabricMineableTags.SHEARS_MINEABLE.id().toString(),
             )
