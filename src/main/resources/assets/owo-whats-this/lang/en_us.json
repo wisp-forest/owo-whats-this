@@ -42,6 +42,7 @@
   "informationProvider.owo-whats-this.block_fluid_storage": "fluid storage",
   "informationProvider.owo-whats-this.block_breaking_progress": "breaking progress",
   "informationProvider.owo-whats-this.block_crop_growth": "crop growth",
+  "informationProvider.owo-whats-this.block_beehive_stats": "bee hive statistics",
   "informationProvider.owo-whats-this.block_energy_storage": "energy storage",
   "informationProvider.owo-whats-this.block_alloy_forge_fuel": "alloy forge fuel",
 
@@ -82,6 +83,11 @@
   "text.owo-whats-this.tooltip.blockFluidAmount": "%s: %d/%d",
   "text.owo-whats-this.tooltip.blockCropGrowth": ["Growth: ", {"index": 0, "color": "gray"}, {"text": "%", "color": "gray"}],
   "text.owo-whats-this.tooltip.blockCropGrowth.fullyGrown": "Fully grown",
+
+  "text.owo-whats-this.tooltip.blockBeehiveStats.bees": ["Bees: ", {"index": 0, "color": "gray"}],
+  "text.owo-whats-this.tooltip.blockBeehiveStats.no_bees": {"text": "No bees", "color": "gray"},
+  "text.owo-whats-this.tooltip.blockBeehiveStats.honey": ["Honey level: ", {"index": 0, "color": "gray"}],
+  "text.owo-whats-this.tooltip.blockBeehiveStats.no_honey": {"text": "No honey", "color": "gray"},
 
   "text.owo-whats-this.tooltip.blockEnergyAmount": "Energy: %d/%d",
   "text.owo-whats-this.tooltip.blockAlloyForgeFuel": "Fuel: %d/%d",

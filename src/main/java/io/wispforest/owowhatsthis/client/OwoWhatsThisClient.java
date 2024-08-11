@@ -29,6 +29,7 @@ public class OwoWhatsThisClient implements ClientModInitializer {
         DisplayAdapters.register(InformationProviders.BLOCK_HARVESTABILITY, InformationProviders.DisplayAdapters.TEXT);
         DisplayAdapters.register(InformationProviders.BLOCK_BREAKING_PROGRESS, InformationProviders.DisplayAdapters.BREAKING_PROGRESS);
         DisplayAdapters.register(InformationProviders.BLOCK_CROP_GROWTH, InformationProviders.DisplayAdapters.TEXT);
+        DisplayAdapters.register(InformationProviders.BLOCK_BEEHIVE_STATS, InformationProviders.DisplayAdapters.TEXT);
 
         DisplayAdapters.register(InformationProviders.FLUID_VISCOSITY, InformationProviders.DisplayAdapters.TEXT);
 
