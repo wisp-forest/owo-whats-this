@@ -50,7 +50,7 @@ public class OwoWhatsThisHUD {
             var component = Hud.getComponent(COMPONENT_ID);
             if (!(component instanceof FlowLayout view)) return;
 
-            final var target = OwoWhatsThis.raycast(client.player, 1);
+            final var target = OwoWhatsThis.raycast(client.cameraEntity, 1);
 
             view.<FlowLayout>configure(layout -> {
                 view.clearChildren();

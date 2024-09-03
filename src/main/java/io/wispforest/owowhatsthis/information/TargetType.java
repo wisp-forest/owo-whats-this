@@ -24,6 +24,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -139,26 +140,29 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
         );
 
         DisplayAdapter<PlayerEntity> PLAYER = player -> {
-            int pingStatus = 4;
+            int pingStatus = 1;
 
             var playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(player.getUuid());
             if (playerListEntry != null) {
                 int latency = playerListEntry.getLatency();
 
-                if (latency < 0) pingStatus = 5;
-                else if (latency < 150) pingStatus = 0;
-                else if (latency < 300) pingStatus = 1;
-                else if (latency < 600) pingStatus = 2;
-                else if (latency < 1000) pingStatus = 3;
+                if (latency < 0) pingStatus = 0;
+                else if (latency < 150) pingStatus = 5;
+                else if (latency < 300) pingStatus = 4;
+                else if (latency < 600) pingStatus = 3;
+                else if (latency < 1000) pingStatus = 2;
             }
+
+            var pingId = pingStatus == 0
+                    ? new Identifier("icon/ping_unknown")
+                    : new Identifier("icon/ping_" + pingStatus);
 
             var entityPreview = ENTITY.buildPreview(player);
             return new PreviewData(
                     Containers.horizontalFlow(Sizing.content(), Sizing.content())
                             .child(entityPreview.title())
-                            .child(Components.texture(
-                                    InformationProviders.GUI_ICONS_TEXTURE,
-                                    0, 176 + pingStatus * 8, 10, 8
+                            .child(Components.sprite(
+                                    MinecraftClient.getInstance().getGuiAtlasManager().getSprite(pingId)
                             )).gap(3),
                     entityPreview.preview()
             );

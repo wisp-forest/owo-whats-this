@@ -27,6 +27,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -189,6 +190,29 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                 return growth >= maxGrowth
                         ? Text.translatable("text.owo-whats-this.tooltip.blockCropGrowth.fullyGrown")
                         : Text.translatable("text.owo-whats-this.tooltip.blockCropGrowth", (growth * 100) / maxGrowth);
+            }
+    );
+
+    public static final InformationProvider<BlockStateWithPosition, Text> BLOCK_BEEHIVE_STATS = InformationProvider.server(
+            TargetType.BLOCK, true, 0,
+            Text.class,
+            (player, world, target) -> {
+                if (!(world.getBlockEntity(target.pos()) instanceof BeehiveBlockEntity hive)) return null;
+
+                var bees = hive.getBeeCount();
+                var beesText = bees != 0
+                        ? Text.translatable("text.owo-whats-this.tooltip.blockBeehiveStats.bees", bees)
+                        : Text.translatable("text.owo-whats-this.tooltip.blockBeehiveStats.no_bees");
+
+                var honeyLevel = hive.getCachedState().get(BeehiveBlock.HONEY_LEVEL);
+                var honeyText = honeyLevel != 0
+                        ? Text.translatable("text.owo-whats-this.tooltip.blockBeehiveStats.honey", (honeyLevel + "/" + BeehiveBlock.FULL_HONEY_LEVEL))
+                        : Text.translatable("text.owo-whats-this.tooltip.blockBeehiveStats.no_honey");
+
+                return Text.empty()
+                        .append(beesText)
+                        .append(Text.literal("\n"))
+                        .append(honeyText);
             }
     );
 
