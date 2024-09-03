@@ -1,5 +1,6 @@
 package io.wispforest.owowhatsthis.network;
 
+import io.netty.buffer.Unpooled;
 import io.wispforest.owo.network.OwoNetChannel;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.RateLimitTracker;
@@ -10,8 +11,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
@@ -31,14 +32,14 @@ public class OwoWhatsThisNetworking {
         });
 
         CHANNEL.registerServerbound(RequestDataPacket.class, (message, access) -> {
-            var type = message.targetData().readRegistryValue(OwoWhatsThis.TARGET_TYPE);
+            var type = OwoWhatsThis.TARGET_TYPE.get(message.targetData().readVarInt());
             var target = type.deserializer().apply(access, message.targetData());
             message.targetData().release();
             if (target == null) return;
 
             if (!updateRateLimit(access.player(), target.hashCode())) return;
 
-            var buffer = PacketByteBufs.create();
+            var buffer = new RegistryByteBuf(Unpooled.buffer(), access.runtime().getRegistryManager());
             var applicableProviders = new HashMap<InformationProvider<Object, Object>, Object>();
 
             for (var provider : TooltipObjectManager.getProviders(type, access.player().isSneaking())) {
@@ -53,7 +54,7 @@ public class OwoWhatsThisNetworking {
 
             buffer.writeVarInt(applicableProviders.size());
             applicableProviders.forEach((provider, transformed) -> {
-                buffer.writeRegistryValue(OwoWhatsThis.INFORMATION_PROVIDER, provider);
+                buffer.writeVarInt(OwoWhatsThis.INFORMATION_PROVIDER.getRawId(provider));
                 buffer.write(provider.endec(), transformed);
             });
 

@@ -1,9 +1,11 @@
 package io.wispforest.owowhatsthis;
 
-import io.wispforest.owo.serialization.Endec;
-import io.wispforest.owo.serialization.SerializationAttribute;
-import io.wispforest.owo.serialization.StructEndec;
-import io.wispforest.owo.serialization.endec.StructEndecBuilder;
+import io.wispforest.endec.Endec;
+import io.wispforest.endec.SerializationAttributes;
+import io.wispforest.endec.SerializationContext;
+import io.wispforest.endec.StructEndec;
+import io.wispforest.endec.impl.StructEndecBuilder;
+import io.wispforest.owo.serialization.CodecUtils;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextContent;
@@ -19,7 +21,7 @@ public record QuantityTextContent(double quantity, String unit) implements TextC
     );
 
     public static final Type<QuantityTextContent> TYPE = new Type<>(
-            ENDEC.mapCodec(SerializationAttribute.HUMAN_READABLE),
+            CodecUtils.toMapCodec(ENDEC, SerializationContext.attributes(SerializationAttributes.HUMAN_READABLE)),
             OwoWhatsThis.id("quantity").toString()
     );
 

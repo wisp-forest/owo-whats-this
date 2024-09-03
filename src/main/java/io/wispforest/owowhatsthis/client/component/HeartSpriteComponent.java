@@ -12,10 +12,10 @@ public class HeartSpriteComponent extends StackLayout {
         super(Sizing.fixed(9), Sizing.fixed(9));
 
         var atlas = MinecraftClient.getInstance().getGuiAtlasManager();
-        this.child(Components.sprite(atlas.getSprite(new Identifier("hud/heart/container"))));
+        this.child(Components.sprite(atlas.getSprite(Identifier.of("hud/heart/container"))));
 
         if (progress > 0) {
-            this.child(Components.sprite(atlas.getSprite(progress <= .5f ? new Identifier("hud/heart/half") : new Identifier("hud/heart/full"))));
+            this.child(Components.sprite(atlas.getSprite(progress <= .5f ? Identifier.of("hud/heart/half") : Identifier.of("hud/heart/full"))));
         }
     }
 

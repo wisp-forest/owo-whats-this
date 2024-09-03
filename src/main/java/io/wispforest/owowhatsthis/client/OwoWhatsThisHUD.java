@@ -109,7 +109,7 @@ public class OwoWhatsThisHUD {
                                             if (targetChanged) rateLimit.setOverride(0);
                                             if ((targetChanged || mustRefresh) && rateLimit.update(client.world.getTime())) {
                                                 var targetBuf = PacketByteBufs.create();
-                                                targetBuf.writeRegistryValue(OwoWhatsThis.TARGET_TYPE, type);
+                                                targetBuf.writeVarInt(OwoWhatsThis.TARGET_TYPE.getRawId(type));
                                                 ((TargetType<Object>) type).serializer().accept(transformed, targetBuf);
                                                 OwoWhatsThisNetworking.CHANNEL.clientHandle().send(new RequestDataPacket(newHash, targetBuf));
                                             }
@@ -139,7 +139,7 @@ public class OwoWhatsThisHUD {
         final var dataCount = buffer.readVarInt();
 
         for (int i = 0; i < dataCount; i++) {
-            var provider = buffer.readRegistryValue(OwoWhatsThis.INFORMATION_PROVIDER);
+            var provider = OwoWhatsThis.INFORMATION_PROVIDER.get(buffer.readVarInt());
             var data = buffer.read(provider.endec());
             PROVIDER_DATA.put(provider, data);
         }
