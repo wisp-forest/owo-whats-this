@@ -154,8 +154,8 @@ public record TargetType<T>(BiFunction<World, HitResult, @Nullable T> transforme
             }
 
             var pingId = pingStatus == 0
-                    ? new Identifier("icon/ping_unknown")
-                    : new Identifier("icon/ping_" + pingStatus);
+                    ? Identifier.of("icon/ping_unknown")
+                    : Identifier.of("icon/ping_" + pingStatus);
 
             var entityPreview = ENTITY.buildPreview(player);
             return new PreviewData(

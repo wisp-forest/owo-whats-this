@@ -1,5 +1,7 @@
 package io.wispforest.owowhatsthis.client;
 
+import io.wispforest.endec.SerializationContext;
+import io.wispforest.owo.serialization.RegistriesAttribute;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
@@ -18,6 +20,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -129,7 +132,7 @@ public class OwoWhatsThisHUD {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public static void readProviderData(DataUpdatePacket message) {
+    public static void readProviderData(DynamicRegistryManager registries, DataUpdatePacket message) {
         if (message.nonce() != currentHash) return;
         rateLimit.clearOverride();
 
@@ -140,7 +143,7 @@ public class OwoWhatsThisHUD {
 
         for (int i = 0; i < dataCount; i++) {
             var provider = OwoWhatsThis.INFORMATION_PROVIDER.get(buffer.readVarInt());
-            var data = buffer.read(provider.endec());
+            var data = buffer.read(SerializationContext.attributes(RegistriesAttribute.of(registries)), provider.endec());
             PROVIDER_DATA.put(provider, data);
         }
 

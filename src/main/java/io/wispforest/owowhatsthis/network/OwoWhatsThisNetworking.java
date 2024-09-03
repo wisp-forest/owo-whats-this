@@ -1,7 +1,9 @@
 package io.wispforest.owowhatsthis.network;
 
 import io.netty.buffer.Unpooled;
+import io.wispforest.endec.SerializationContext;
 import io.wispforest.owo.network.OwoNetChannel;
+import io.wispforest.owo.serialization.RegistriesAttribute;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.RateLimitTracker;
 import io.wispforest.owowhatsthis.TooltipObjectManager;
@@ -55,7 +57,7 @@ public class OwoWhatsThisNetworking {
             buffer.writeVarInt(applicableProviders.size());
             applicableProviders.forEach((provider, transformed) -> {
                 buffer.writeVarInt(OwoWhatsThis.INFORMATION_PROVIDER.getRawId(provider));
-                buffer.write(provider.endec(), transformed);
+                buffer.write(SerializationContext.attributes(RegistriesAttribute.of(access.runtime().getRegistryManager())), provider.endec(), transformed);
             });
 
             CHANNEL.serverHandle(access.player()).send(new DataUpdatePacket(message.nonce(), buffer));
@@ -83,7 +85,7 @@ public class OwoWhatsThisNetworking {
     @Environment(EnvType.CLIENT)
     public static void initializeClient() {
         CHANNEL.registerClientbound(DataUpdatePacket.class, (message, access) -> {
-            OwoWhatsThisHUD.readProviderData(message);
+            OwoWhatsThisHUD.readProviderData(access.player().getRegistryManager(), message);
         });
     }
 
