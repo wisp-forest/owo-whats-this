@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public record InformationProvider<T, D>(TargetType<T> applicableTargetType, Transformer<T, D> transformer, Endec<D> endec,
                                         boolean live, boolean client, int priority) {
-    private static final ReflectiveEndecBuilder REFLECTIVE_BUILDER = new ReflectiveEndecBuilder(builder -> {
+    public static final ReflectiveEndecBuilder REFLECTIVE_BUILDER = new ReflectiveEndecBuilder(builder -> {
         builder.register(Endec.VAR_INT, Integer.class, int.class);
         builder.register(Endec.VAR_LONG, Long.class, long.class);
         MinecraftEndecs.addDefaults(builder);

@@ -11,7 +11,6 @@ import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
-import io.wispforest.owo.util.RegistryAccess;
 import io.wispforest.owowhatsthis.NumberFormatter;
 import io.wispforest.owowhatsthis.OwoWhatsThis;
 import io.wispforest.owowhatsthis.client.PlayerNameResolver;
@@ -85,7 +84,7 @@ public class InformationProviders implements AutoRegistryContainer<InformationPr
                 var state = target.state();
                 var harvestable = !state.isToolRequired() || player.getMainHandStack().isSuitableFor(state);
 
-                var effectiveTools = RegistryAccess.getEntry(Registries.BLOCK, state.getBlock()).streamTags()
+                var effectiveTools = Registries.BLOCK.getEntry(state.getBlock()).streamTags()
                         .filter(blockTagKey -> OwoWhatsThis.effectiveToolTags().containsKey(blockTagKey.id()))
                         .map(blockTagKey -> OwoWhatsThis.effectiveToolTags().get(blockTagKey.id()))
                         .collect(Collectors.toList());
